@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.omnine.sdsweb;
 
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
