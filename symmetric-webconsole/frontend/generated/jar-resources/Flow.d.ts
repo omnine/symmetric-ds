@@ -1,5 +1,5 @@
 export interface FlowConfig {
-    imports?: () => Promise<any>;
+    imports?: () => void;
 }
 interface AppConfig {
     productionMode: boolean;
@@ -25,11 +25,10 @@ interface FlowRoute {
 }
 export interface NavigationParameters {
     pathname: string;
-    search?: string;
+    search: string;
 }
 export interface PreventCommands {
     prevent: () => any;
-    continue?: () => any;
 }
 export interface PreventAndRedirectCommands extends PreventCommands {
     redirect: (route: string) => any;

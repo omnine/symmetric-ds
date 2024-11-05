@@ -17,17 +17,16 @@ class FlowComponentDirective extends AsyncDirective {
 
   updateContent(part, appid, nodeid) {
     const { parentNode, startNode } = part;
-    this.__parentNode = parentNode;
 
     const hasNewNodeId = nodeid !== undefined && nodeid !== null;
     const newNode = hasNewNodeId ? this.getNewNode(appid, nodeid) : null;
     const oldNode = this.getOldNode(part);
 
-    clearTimeout(this.__parentNode.__nodeRetryTimeout);
+    clearTimeout(this.__nodeRetryTimeout);
 
     if (hasNewNodeId && !newNode) {
       // If the node is not found, try again later.
-      this.__parentNode.__nodeRetryTimeout = setTimeout(() => this.updateContent(part, appid, nodeid));
+      this.__nodeRetryTimeout = setTimeout(() => this.updateContent(part, appid, nodeid));
     } else if (oldNode === newNode) {
       return;
     } else if (oldNode && newNode) {
@@ -52,7 +51,7 @@ class FlowComponentDirective extends AsyncDirective {
   }
 
   disconnected() {
-    clearTimeout(this.__parentNode.__nodeRetryTimeout);
+    clearTimeout(this.__nodeRetryTimeout);
   }
 }
 
