@@ -40,3 +40,4 @@ out
 pnpmfile.js
 .npmrc
 src/main/frontend/generated
+frontend/generated
