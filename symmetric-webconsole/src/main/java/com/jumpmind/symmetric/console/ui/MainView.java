@@ -24,14 +24,16 @@ public class MainView extends VerticalLayout {
         TextField textField = new TextField("Nanoart");
         // Button click listeners can be defined as lambda expressions
         GreetService greetService = new GreetService();
-        Button button = new Button("Symmetric OK", e -> {
+        Button button = new Button("Engine Name", e -> {
             // ISymmetricEngine engine = AbstractSymmetricEngine.findEngineByName(engineName);
             List<ISymmetricEngine> list = new ArrayList<>(AbstractSymmetricEngine.findEngines());
-            File sourceProperies = new File("master-nano190013.properties");
-            ISymmetricEngine engine = new ClientSymmetricEngine(sourceProperies, false); // no need to register!
-            Node targetNode = engine.getNodeService().findIdentity();
-            List<Node> nodes = engine.getNodeService().findAllNodes();
-            add(new Paragraph(greetService.greet(textField.getValue())));
+            /*
+             * File sourceProperies = new File("master-nano190013.properties"); ISymmetricEngine engine = new ClientSymmetricEngine(sourceProperies, false); //
+             * no need to register! Node targetNode = engine.getNodeService().findIdentity(); List<Node> nodes = engine.getNodeService().findAllNodes(); add(new
+             * Paragraph(greetService.greet(textField.getValue())));
+             * 
+             */
+            add(new Paragraph(greetService.greet(list.get(0).getEngineName())));
         });
         // Theme variants give you predefined extra styles for components.
         // Example: Primary button is more prominent look.
