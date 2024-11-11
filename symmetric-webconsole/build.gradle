@@ -1,49 +1,41 @@
 buildscript {
-    repositories {
-    	mavenCentral()
-	    maven { setUrl("https://maven.vaadin.com/vaadin-prereleases") }
-			maven { setUrl("https://repo.spring.io/milestone") }
-		}
+	repositories {
+		mavenCentral()
+		maven { setUrl("https://maven.vaadin.com/vaadin-prereleases") }
+		maven { setUrl("https://repo.spring.io/milestone") }
+	}
 }
 plugins {
-	id 'org.springframework.boot' version '3.1.9'
-	id 'io.spring.dependency-management' version '1.1.6'
 	id 'java'
-	id 'com.vaadin'
+	id 'org.springframework.boot' version '3.3.4'
+	id 'io.spring.dependency-management' version '1.1.0'
+	id 'com.vaadin' version "$vaadinVersion"
 }
 
 repositories {
 	mavenCentral()
 	maven { setUrl("https://maven.vaadin.com/vaadin-prereleases") }
 	maven { setUrl("https://repo.spring.io/milestone") }
-	maven { setUrl("https://maven.vaadin.com/vaadin-addons") }
-}
-
-vaadin {
-   productionMode = true
-}
-
-/*
-configurations {
-	developmentOnly
-	runtimeClasspath {
-		extendsFrom developmentOnly
+	maven {
+		setUrl("https://maven.vaadin.com/vaadin-addons")
 	}
+    flatDir {
+        dirs 'libs'
+    }	
 }
-*/
 
-//apply from: symAssembleDir + '/common.gradle'
-// apply from: symAssembleDir + '/asciidoc.gradle'
-//apply plugin: 'distribution'
+// apply from: symAssembleDir + '/common.gradle'
+// apply plugin: 'distribution'
 
 dependencies {
 //	api project(":symmetric-client")
-	implementation('com.vaadin:vaadin-spring-boot-starter')
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'com.vaadin:vaadin-spring-boot-starter'
+	implementation 'org.parttio:line-awesome:1.1.0'
+	implementation 'jakarta.persistence:jakarta.persistence-api:3.2.0'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	testImplementation('org.springframework.boot:spring-boot-starter-test') {
-		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-	}
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation name: 'symmetric-client-3.15.x-SNAPSHOT'
+	implementation name: 'symmetric-core-3.15.x-SNAPSHOT'
 }
 
 dependencyManagement {
