@@ -7,11 +7,19 @@ import com.vaadin.hilla.Nonnull;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.jumpmind.symmetric.AbstractSymmetricEngine;
 import org.jumpmind.symmetric.ISymmetricEngine;
 import org.jumpmind.symmetric.ClientSymmetricEngine;
 import org.jumpmind.symmetric.model.Node;
+import org.jumpmind.symmetric.model.Channel;
+import org.jumpmind.symmetric.model.NodeGroup;
+import org.jumpmind.symmetric.model.NodeGroupLink;
+import org.jumpmind.symmetric.model.Router;
+import org.jumpmind.symmetric.model.Trigger;
+
+import org.jumpmind.symmetric.route.IDataRouter;
 
 @Endpoint
 @AnonymousAllowed
@@ -49,6 +57,28 @@ public class HelloReactEndpoint {
             vnNodes.add(vnNode);
 
         }
+
+        // get the channel ids
+        List<String> channelIds = new ArrayList<>();
+        Map<String, Channel> channels = engine.getConfigurationService().getChannels(false);
+        for (Channel channel : channels.values()) {
+          if (channel.isReloadFlag()) {
+            channelIds.add(channel.getChannelId());
+          }
+        } 
+      
+        // 
+        List<NodeGroup> groups = engine.getConfigurationService().getNodeGroups();
+        //
+        List<NodeGroupLink> links = engine.getConfigurationService().getNodeGroupLinks(false);
+        
+        //
+        Map<String, IDataRouter> routerMap = engine.getRouterService().getRouters();
+        //
+        List<Trigger> triggers = engine.getTriggerRouterService().getTriggersForCurrentNode(false);
+
+        //
+        List<Router> routers = engine.getTriggerRouterService().getRouters();;
 
         return vnNodes;
     }

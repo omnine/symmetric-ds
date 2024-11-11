@@ -3,6 +3,7 @@ import { Notification } from '@vaadin/react-components/Notification.js';
 import { TextField } from '@vaadin/react-components/TextField.js';
 import {Grid} from '@vaadin/react-components/Grid';
 import {GridColumn} from '@vaadin/react-components/GridColumn';
+import {GridSelectionColumn} from '@vaadin/react-components/GridSelectionColumn';
 import { HelloReactEndpoint } from 'Frontend/generated/endpoints.js';
 import { useState } from 'react';
 import VNNode from 'Frontend/generated/com/jumpmind/symmetric/console/ui/data/VNNode';
@@ -41,6 +42,7 @@ export default function HelloReactView() {
           </Button>
       </section>
       <Grid items={nodes} columnReorderingAllowed>
+        <GridSelectionColumn />
         <GridColumn path="name" resizable />
         <GridColumn path="syncUrl" resizable />
       </Grid>
