@@ -14,12 +14,14 @@ export default function HelloReactView() {
   return (
     <>
       <section className="flex p-m gap-m items-end">
+        {/*
         <TextField
           label="Your name"
           onValueChanged={(e) => {
             setName(e.detail.value);
           }}
         />
+
         <Button
           onClick={async () => {
             const serverResponse = await HelloReactEndpoint.sayHello(name);
@@ -28,6 +30,7 @@ export default function HelloReactView() {
         >
           Say hello
         </Button>
+        */}
           <Button
               onClick={async () => {
                   const nodes = await HelloReactEndpoint.listNodes();
@@ -37,8 +40,9 @@ export default function HelloReactView() {
               List Nodes
           </Button>
       </section>
-      <Grid items={nodes}>
-        <GridColumn path="name" autoWidth/>
+      <Grid items={nodes} columnReorderingAllowed>
+        <GridColumn path="name" resizable />
+        <GridColumn path="syncUrl" resizable />
       </Grid>
 
     </>

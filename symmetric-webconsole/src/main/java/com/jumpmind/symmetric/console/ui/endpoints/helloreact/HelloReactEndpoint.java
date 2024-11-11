@@ -45,6 +45,7 @@ public class HelloReactEndpoint {
         for (Node node : engine.getNodeService().findAllNodes()) {
             VNNode vnNode = new VNNode();
             vnNode.setName(node.getNodeId());
+            vnNode.setSyncUrl(node.getSyncUrl());
             vnNodes.add(vnNode);
 
         }

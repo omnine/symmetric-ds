@@ -20,6 +20,8 @@ public class VNNode {
     @GeneratedValue
     private Long id;
     private String name;
+    private String syncUrl;
+    
 
     public Long getId() {
         return id;
@@ -32,5 +34,14 @@ public class VNNode {
     public void setName(String name) {
         this.name = name;
     }
+
+    public String getSyncUrl() {
+        return syncUrl;
+    }
+
+    public void setSyncUrl(String syncUrl) {
+        this.syncUrl = syncUrl;
+    }
+    
 
 }
