@@ -101,8 +101,8 @@ subprojects { subproject ->
     jacocoTestReport {
 		executionData(file("${project.buildDir}/jacoco/*.exec"))
     	reports {
-    		xml.enabled true
-	        html.enabled true
+            xml.required.set(true)
+	        html.required.set(true)
 	        xml.destination file("${buildDir}/reports/jacoco.xml")
 	        html.destination file("${buildDir}/reports/jacoco.html")
 
@@ -201,7 +201,7 @@ subprojects { subproject ->
     
     
     task sourcesJar(type: Jar, dependsOn:classes) {
-        classifier = 'sources'
+        archiveClassifier = 'sources'
         from sourceSets.main.allSource
     }
     
@@ -237,7 +237,7 @@ subprojects { subproject ->
     }
 
     task testJar(type: Jar) {
-        classifier "test"
+        archiveClassifier.set("test")
         from sourceSets.test.output
     }
     
