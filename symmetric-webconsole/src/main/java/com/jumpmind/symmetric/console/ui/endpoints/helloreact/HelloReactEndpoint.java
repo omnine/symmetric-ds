@@ -8,6 +8,9 @@ import com.vaadin.hilla.Nonnull;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Set;
 
 import org.jumpmind.symmetric.AbstractSymmetricEngine;
 import org.jumpmind.symmetric.ISymmetricEngine;
@@ -21,10 +24,16 @@ import org.jumpmind.symmetric.model.Trigger;
 
 import org.jumpmind.symmetric.route.IDataRouter;
 
+import com.vaadin.flow.server.VaadinServlet;
+
+
+import org.jumpmind.symmetric.web.ServletUtils;
+import org.jumpmind.symmetric.web.SymmetricEngineHolder;
+import org.jumpmind.symmetric.web.FailedEngineInfo;
+
 @Endpoint
 @AnonymousAllowed
 public class HelloReactEndpoint {
-
     @Nonnull
     public String sayHello(@Nonnull String name) {
         if (name.isEmpty()) {
@@ -33,6 +42,14 @@ public class HelloReactEndpoint {
             return "Hello " + name;
         }
     }
+
+
+    public void checkEngineHealthy() {
+        VaadinServlet vs = VaadinServlet.getCurrent();
+        SymmetricEngineHolder seh = ServletUtils.getSymmetricEngineHolder(vs.getServletContext());
+        Map<String, FailedEngineInfo> failedEngineMap = new HashMap<>(seh.getEnginesFailed());
+        Set<String> failedEngineNames = new HashSet<>(failedEngineMap.keySet());
+    }    
 
     @Nonnull
     public ArrayList<VNNode> listNodes() {
