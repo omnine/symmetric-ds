@@ -35,21 +35,27 @@ import org.jumpmind.symmetric.web.FailedEngineInfo;
 @AnonymousAllowed
 public class HelloReactEndpoint {
     @Nonnull
-    public String sayHello(@Nonnull String name) {
-        if (name.isEmpty()) {
-            return "Hello stranger";
-        } else {
-            return "Hello " + name;
-        }
-    }
-
-
-    public void checkEngineHealthy() {
+    public String sayHello() {
         VaadinServlet vs = VaadinServlet.getCurrent();
         SymmetricEngineHolder seh = ServletUtils.getSymmetricEngineHolder(vs.getServletContext());
         Map<String, FailedEngineInfo> failedEngineMap = new HashMap<>(seh.getEnginesFailed());
+        if(failedEngineMap.isEmpty()) {
+            return "Hello";
+        }
+
+        int successfulEnginesCount = seh.getEngineCount() - failedEngineMap.size();
+
         Set<String> failedEngineNames = new HashSet<>(failedEngineMap.keySet());
-    }    
+
+        String errorMessage = "";
+        for (String key : failedEngineMap.keySet()) {
+            errorMessage += ((FailedEngineInfo)failedEngineMap.get(key)).getErrorMessage();
+        } 
+
+        return errorMessage;
+
+    }
+   
 
     @Nonnull
     public ArrayList<VNNode> listNodes() {

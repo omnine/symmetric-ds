@@ -22,16 +22,16 @@ export default function HelloReactView() {
             setName(e.detail.value);
           }}
         />
-
+        */}
         <Button
           onClick={async () => {
-            const serverResponse = await HelloReactEndpoint.sayHello(name);
+            const serverResponse = await HelloReactEndpoint.sayHello();
             Notification.show(serverResponse);
           }}
         >
           Say hello
         </Button>
-        */}
+
           <Button
               onClick={async () => {
                   const nodes = await HelloReactEndpoint.listNodes();
