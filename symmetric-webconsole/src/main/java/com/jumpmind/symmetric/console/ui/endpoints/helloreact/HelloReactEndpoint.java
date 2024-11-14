@@ -7,6 +7,7 @@ import com.vaadin.hilla.Nonnull;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashSet;
 import java.util.HashMap;
@@ -21,6 +22,8 @@ import org.jumpmind.symmetric.model.NodeGroup;
 import org.jumpmind.symmetric.model.NodeGroupLink;
 import org.jumpmind.symmetric.model.Router;
 import org.jumpmind.symmetric.model.Trigger;
+import org.jumpmind.symmetric.model.IncomingBatch;
+import org.jumpmind.symmetric.model.OutgoingBatches;
 
 import org.jumpmind.symmetric.route.IDataRouter;
 
@@ -53,6 +56,10 @@ public class HelloReactEndpoint {
         } 
 
         return errorMessage;
+        /*
+         * For checking Monitors, need to implement interface IMonitorService extends IBuiltInExtensionPoint
+         * 
+         */
 
     }
    
@@ -71,6 +78,35 @@ public class HelloReactEndpoint {
         ISymmetricEngine engine = list.get(0);
 //        add(new Paragraph(greetService.greet(engine.getEngineName())));
 //        add(new Paragraph("Nodes:"));
+
+        List<Node> offlineNodesList = engine.getNodeService()
+        .findOfflineNodes((long)engine.getParameterService().getInt("console.report.as.offline.minutes", 1440));
+        if (offlineNodesList.size() == 1
+        && offlineNodesList.get(0).getNodeId().equals(engine.getNodeService().getCachedIdentity().getNodeId())) {
+            offlineNodesList.clear();
+        }
+
+        // if offlineNodesList.size() == 0, then all nodes are online; All Nodes Online
+
+
+        // 
+        List<IncomingBatch> incomingErrors = engine.getIncomingBatchService().findIncomingBatchErrors(-1);
+        List<IncomingBatch> systemIncomingErrors = new ArrayList<>();
+  
+        Set<String> sysChannels = new HashSet<>(Arrays.asList("heartbeat", "config", "monitor", "dynamic"));
+        for (IncomingBatch batch : incomingErrors) {
+           if (sysChannels.contains(batch.getChannelId())) {
+              systemIncomingErrors.add(batch);
+           }
+        }
+  
+        incomingErrors.removeAll(systemIncomingErrors);
+        // incomingErrors.size(); to check Incoming Batches OK
+
+        OutgoingBatches outgoingErrors = engine.getOutgoingBatchService().getOutgoingBatchErrors(-1);
+        outgoingErrors.filterBatchesForChannels(sysChannels);
+        outgoingErrors.countBatches(true);        // to check Outgoing Batches OK
+
 
         ArrayList<VNNode> vnNodes = new ArrayList<>();
         for (Node node : engine.getNodeService().findAllNodes()) {
