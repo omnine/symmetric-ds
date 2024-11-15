@@ -1,6 +1,7 @@
 package com.jumpmind.symmetric.console.ui.endpoints.helloreact;
 
 import com.jumpmind.symmetric.console.ui.data.VNNode;
+import com.jumpmind.symmetric.console.ui.data.HealthInfo;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.hilla.Endpoint;
 import com.vaadin.hilla.Nonnull;
@@ -70,6 +71,20 @@ public class HelloReactEndpoint {
          */
 
     }
+
+
+    @Nonnull
+    public HealthInfo HealthCheck() {
+        Set<String> sysChannels = new HashSet<>(Arrays.asList("heartbeat", "config", "monitor", "dynamic"));
+        List<ISymmetricEngine> list = new ArrayList<>(AbstractSymmetricEngine.findEngines());
+        ISymmetricEngine engine = list.get(0);        
+        HealthInfo healthInfo = new HealthInfo();
+        OutgoingBatches outgoingErrors = engine.getOutgoingBatchService().getOutgoingBatchErrors(-1);
+        outgoingErrors.filterBatchesForChannels(sysChannels);
+        healthInfo.setOutgoingErrors(outgoingErrors.countBatches(true));
+
+        return healthInfo;
+    }
    
 
     @Nonnull
@@ -111,9 +126,7 @@ public class HelloReactEndpoint {
         incomingErrors.removeAll(systemIncomingErrors);
         // incomingErrors.size(); to check Incoming Batches OK
 
-        OutgoingBatches outgoingErrors = engine.getOutgoingBatchService().getOutgoingBatchErrors(-1);
-        outgoingErrors.filterBatchesForChannels(sysChannels);
-        outgoingErrors.countBatches(true);        // to check Outgoing Batches OK
+      // to check Outgoing Batches OK
 
 
         ArrayList<VNNode> vnNodes = new ArrayList<>();
