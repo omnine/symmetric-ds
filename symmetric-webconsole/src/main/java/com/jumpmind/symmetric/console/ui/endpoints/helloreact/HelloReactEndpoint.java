@@ -34,9 +34,17 @@ import org.jumpmind.symmetric.web.ServletUtils;
 import org.jumpmind.symmetric.web.SymmetricEngineHolder;
 import org.jumpmind.symmetric.web.FailedEngineInfo;
 
+// The only difference is that @BrowserCallable doesn't support the value attribute.
 @Endpoint
 @AnonymousAllowed
 public class HelloReactEndpoint {
+    private int totalOfflineNodes = 0;
+
+    @Nonnull
+    public int getOfflineNodes() {
+        return totalOfflineNodes;
+    }
+
     @Nonnull
     public String sayHello() {
         VaadinServlet vs = VaadinServlet.getCurrent();
