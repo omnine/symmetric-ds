@@ -12,27 +12,30 @@ import { VerticalLayout } from '@vaadin/react-components/VerticalLayout.js';
 
 import '@vaadin/icons';
 import { Icon } from '@vaadin/react-components/Icon.js';
+import HealthInfo from 'Frontend/generated/com/jumpmind/symmetric/console/ui/data/HealthInfo';
 
 export default function HelloReactView() {
   const [name, setName] = useState('');
-  const [totalOfflineNodes, setTotalOfflineNodes] = useState(-1);  
-
+  const [healthInfo, setHealthInfo] = useState<HealthInfo | null>(null);
 //  const nodes = useSignal<VNNode[]>([]);
   const [nodes, setNodes] = useState<(VNNode | undefined)[]>([]);
   useEffect(() => {
-    HelloReactEndpoint.getOfflineNodes().then(ton => setTotalOfflineNodes(ton));
+    HelloReactEndpoint.checkHealth().then(healthInfo => setHealthInfo(healthInfo));
   });
+
+  const renderHealthInfo = (hi: HealthInfo) => {
+    return (<Details summary="Health" opened>
+      <VerticalLayout>
+        {hi["totalOfflineNodes"]==0? <span>All Nodes Online <Icon icon="vaadin:check" /></span>:<span>{hi["totalOfflineNodes"]}  Offline Node <Icon icon="vaadin:warning" /></span>}
+        {hi["totalIncomingErrors"]==0? <span>Incoming Batches OK <Icon icon="vaadin:check" /></span>:<span>{hi["totalIncomingErrors"]}  Incoming Error <Icon icon="vaadin:warning" /></span>}
+        {hi["totalOutgoingErrors"]==0? <span>Outgoing Batches OK<Icon icon="vaadin:check" /></span>:<span>{hi["totalOutgoingErrors"]}  Outgoing Error <Icon icon="vaadin:warning" /></span>}
+      </VerticalLayout>
+    </Details>);
+  }
 
   return (
     <>
-      <div>{totalOfflineNodes}</div>
-      <Details summary="Contact information" opened>
-        <VerticalLayout>
-          <span>Sophia Williams<Icon icon="vaadin:check" /></span>
-          <span>sophia.williams@company.com</span>
-          <span>(501) 555-9128</span>
-        </VerticalLayout>
-      </Details>
+      {healthInfo && renderHealthInfo(healthInfo)}
         <section className="flex p-m gap-m items-end">
         {/*
         <TextField

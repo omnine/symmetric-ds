@@ -39,13 +39,6 @@ import org.jumpmind.symmetric.web.FailedEngineInfo;
 @Endpoint
 @AnonymousAllowed
 public class HelloReactEndpoint {
-    private int totalOfflineNodes = 0;
-
-    @Nonnull
-    public int getOfflineNodes() {
-        return totalOfflineNodes;
-    }
-
     @Nonnull
     public String sayHello() {
         VaadinServlet vs = VaadinServlet.getCurrent();
@@ -74,11 +67,22 @@ public class HelloReactEndpoint {
 
 
     @Nonnull
-    public HealthInfo HealthCheck() {
+    public HealthInfo checkHealth() {
         Set<String> sysChannels = new HashSet<>(Arrays.asList("heartbeat", "config", "monitor", "dynamic"));
         List<ISymmetricEngine> list = new ArrayList<>(AbstractSymmetricEngine.findEngines());
         ISymmetricEngine engine = list.get(0);        
         HealthInfo healthInfo = new HealthInfo();
+
+        List<Node> offlineNodesList = engine.getNodeService()
+        .findOfflineNodes((long)engine.getParameterService().getInt("console.report.as.offline.minutes", 1440));
+        if (offlineNodesList.size() == 1
+        && offlineNodesList.get(0).getNodeId().equals(engine.getNodeService().getCachedIdentity().getNodeId())) {
+            offlineNodesList.clear();
+        }
+
+        healthInfo.totalOfflineNodes = offlineNodesList.size();
+        // if offlineNodesList.size() == 0, then all nodes are online; All Nodes Online
+
 
         // 
         List<IncomingBatch> incomingErrors = engine.getIncomingBatchService().findIncomingBatchErrors(-1);
@@ -117,14 +121,7 @@ public class HelloReactEndpoint {
 //        add(new Paragraph(greetService.greet(engine.getEngineName())));
 //        add(new Paragraph("Nodes:"));
 
-        List<Node> offlineNodesList = engine.getNodeService()
-        .findOfflineNodes((long)engine.getParameterService().getInt("console.report.as.offline.minutes", 1440));
-        if (offlineNodesList.size() == 1
-        && offlineNodesList.get(0).getNodeId().equals(engine.getNodeService().getCachedIdentity().getNodeId())) {
-            offlineNodesList.clear();
-        }
 
-        // if offlineNodesList.size() == 0, then all nodes are online; All Nodes Online
 
 
 
