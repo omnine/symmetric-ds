@@ -7,6 +7,9 @@ import {GridSelectionColumn} from '@vaadin/react-components/GridSelectionColumn'
 import { HelloReactEndpoint } from 'Frontend/generated/endpoints.js';
 import { useState, useEffect } from 'react';
 import VNNode from 'Frontend/generated/com/jumpmind/symmetric/console/ui/data/VNNode';
+import { Details } from '@vaadin/react-components/Details.js';
+import { VerticalLayout } from '@vaadin/react-components/VerticalLayout.js';
+import { Icon } from '@vaadin/react-components/Icon.js';
 
 export default function HelloReactView() {
   const [name, setName] = useState('');
@@ -17,10 +20,17 @@ export default function HelloReactView() {
   useEffect(() => {
     HelloReactEndpoint.getOfflineNodes().then(ton => setTotalOfflineNodes(ton));
   });
-  
+
   return (
     <>
-    <div>{totalOfflineNodes}</div>
+      <div>{totalOfflineNodes}</div>
+      <Details summary="Contact information" opened>
+        <VerticalLayout>
+          <span>Sophia Williams<Icon icon="vaadin:check" /></span>
+          <span>sophia.williams@company.com</span>
+          <span>(501) 555-9128</span>
+        </VerticalLayout>
+      </Details>
         <section className="flex p-m gap-m items-end">
         {/*
         <TextField

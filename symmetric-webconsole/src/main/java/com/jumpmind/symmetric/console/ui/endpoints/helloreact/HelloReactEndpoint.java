@@ -79,6 +79,21 @@ public class HelloReactEndpoint {
         List<ISymmetricEngine> list = new ArrayList<>(AbstractSymmetricEngine.findEngines());
         ISymmetricEngine engine = list.get(0);        
         HealthInfo healthInfo = new HealthInfo();
+
+        // 
+        List<IncomingBatch> incomingErrors = engine.getIncomingBatchService().findIncomingBatchErrors(-1);
+        List<IncomingBatch> systemIncomingErrors = new ArrayList<>();
+  
+        for (IncomingBatch batch : incomingErrors) {
+           if (sysChannels.contains(batch.getChannelId())) {
+              systemIncomingErrors.add(batch);
+           }
+        }
+  
+        incomingErrors.removeAll(systemIncomingErrors);
+        healthInfo.totalIncomingErrors = incomingErrors.size(); // to check Incoming Batches OK
+
+
         OutgoingBatches outgoingErrors = engine.getOutgoingBatchService().getOutgoingBatchErrors(-1);
         outgoingErrors.filterBatchesForChannels(sysChannels);
         healthInfo.totalOutgoingErrors = outgoingErrors.countBatches(true);
@@ -112,19 +127,7 @@ public class HelloReactEndpoint {
         // if offlineNodesList.size() == 0, then all nodes are online; All Nodes Online
 
 
-        // 
-        List<IncomingBatch> incomingErrors = engine.getIncomingBatchService().findIncomingBatchErrors(-1);
-        List<IncomingBatch> systemIncomingErrors = new ArrayList<>();
-  
-        Set<String> sysChannels = new HashSet<>(Arrays.asList("heartbeat", "config", "monitor", "dynamic"));
-        for (IncomingBatch batch : incomingErrors) {
-           if (sysChannels.contains(batch.getChannelId())) {
-              systemIncomingErrors.add(batch);
-           }
-        }
-  
-        incomingErrors.removeAll(systemIncomingErrors);
-        // incomingErrors.size(); to check Incoming Batches OK
+
 
       // to check Outgoing Batches OK
 
