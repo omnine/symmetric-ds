@@ -81,7 +81,7 @@ public class HelloReactEndpoint {
         HealthInfo healthInfo = new HealthInfo();
         OutgoingBatches outgoingErrors = engine.getOutgoingBatchService().getOutgoingBatchErrors(-1);
         outgoingErrors.filterBatchesForChannels(sysChannels);
-        healthInfo.setOutgoingErrors(outgoingErrors.countBatches(true));
+        healthInfo.totalOutgoingErrors = outgoingErrors.countBatches(true);
 
         return healthInfo;
     }
