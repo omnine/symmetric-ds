@@ -9,6 +9,8 @@ import { useState, useEffect } from 'react';
 import VNNode from 'Frontend/generated/com/jumpmind/symmetric/console/ui/data/VNNode';
 import { Details } from '@vaadin/react-components/Details.js';
 import { VerticalLayout } from '@vaadin/react-components/VerticalLayout.js';
+
+import '@vaadin/icons';
 import { Icon } from '@vaadin/react-components/Icon.js';
 
 export default function HelloReactView() {
