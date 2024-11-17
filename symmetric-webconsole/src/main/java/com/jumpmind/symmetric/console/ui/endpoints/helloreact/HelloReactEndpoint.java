@@ -233,8 +233,8 @@ public class HelloReactEndpoint {
         //
         List<Router> routers = engine.getTriggerRouterService().getRouters();
         // return vnNodes;
-        return (ArrayList<NodeStatus>) mapNode2Status.values();
 
+        return new ArrayList<>(mapNode2Status.values());
     }
 
     private void useChannelMinMax(Channel curChannel, NodeStatus ns) {
