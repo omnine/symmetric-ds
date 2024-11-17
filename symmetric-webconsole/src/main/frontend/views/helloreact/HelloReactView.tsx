@@ -6,7 +6,8 @@ import {GridColumn} from '@vaadin/react-components/GridColumn';
 import {GridSelectionColumn} from '@vaadin/react-components/GridSelectionColumn';
 import { HelloReactEndpoint } from 'Frontend/generated/endpoints.js';
 import { useState, useEffect } from 'react';
-import VNNode from 'Frontend/generated/com/jumpmind/symmetric/console/ui/data/VNNode';
+
+import NodeStatus from 'Frontend/generated/com/jumpmind/symmetric/console/model/NodeStatus';
 import { Details } from '@vaadin/react-components/Details.js';
 import { VerticalLayout } from '@vaadin/react-components/VerticalLayout.js';
 
@@ -18,10 +19,10 @@ export default function HelloReactView() {
   const [name, setName] = useState('');
   const [healthInfo, setHealthInfo] = useState<HealthInfo | null>(null);
 //  const nodes = useSignal<VNNode[]>([]);
-  const [nodes, setNodes] = useState<(VNNode | undefined)[]>([]);
+  const [nodes, setNodes] = useState<(NodeStatus | undefined)[]>([]);
   useEffect(() => {
     HelloReactEndpoint.checkHealth().then(healthInfo => setHealthInfo(healthInfo));
-  });
+  }, []);
 
   const renderHealthInfo = (hi: HealthInfo) => {
     return (<Details summary="Health" opened>
@@ -65,8 +66,8 @@ export default function HelloReactView() {
       </section>
       <Grid items={nodes} columnReorderingAllowed>
         <GridSelectionColumn />
-        <GridColumn path="name" resizable />
-        <GridColumn path="syncUrl" resizable />
+        <GridColumn path="nodeId" resizable />
+        <GridColumn path="status" resizable />
       </Grid>
 
     </>

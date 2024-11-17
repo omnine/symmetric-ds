@@ -108,7 +108,7 @@ public class HelloReactEndpoint {
    
 
     @Nonnull
-    public ArrayList<VNNode> listNodes() {
+    public ArrayList<NodeStatus> listNodes() {
 
         // ISymmetricEngine engine = AbstractSymmetricEngine.findEngineByName(engineName);
         List<ISymmetricEngine> list = new ArrayList<>(AbstractSymmetricEngine.findEngines());
@@ -197,7 +197,9 @@ public class HelloReactEndpoint {
 
         //int errorNodeCount = getStatus() == 1
         // int processingNodeCount, getStatus() == 2 or 3
-        
+
+
+
 
         ArrayList<VNNode> vnNodes = new ArrayList<>();
         for (Node node : engine.getNodeService().findAllNodes()) {
@@ -230,8 +232,9 @@ public class HelloReactEndpoint {
 
         //
         List<Router> routers = engine.getTriggerRouterService().getRouters();
+        // return vnNodes;
+        return (ArrayList<NodeStatus>) mapNode2Status.values();
 
-        return vnNodes;
     }
 
     private void useChannelMinMax(Channel curChannel, NodeStatus ns) {
