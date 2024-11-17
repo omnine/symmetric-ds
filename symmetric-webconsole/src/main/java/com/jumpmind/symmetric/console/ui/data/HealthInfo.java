@@ -5,4 +5,6 @@ public class HealthInfo {
     public int totalIncomingErrors = 0;
     public int totalOutgoingErrors = 0;
 
+    public long unroutedDataCount = 0;
+
 }
