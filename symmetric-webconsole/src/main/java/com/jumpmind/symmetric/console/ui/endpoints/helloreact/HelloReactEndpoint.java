@@ -72,6 +72,8 @@ public class HelloReactEndpoint {
         ISymmetricEngine engine = list.get(0);        
         HealthInfo healthInfo = new HealthInfo();
 
+        healthInfo.engineNodeId = engine.getNodeId();
+
         List<Node> offlineNodesList = engine.getNodeService()
         .findOfflineNodes((long)engine.getParameterService().getInt("console.report.as.offline.minutes", 1440));
         if (offlineNodesList.size() == 1

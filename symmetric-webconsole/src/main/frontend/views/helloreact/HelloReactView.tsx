@@ -3,6 +3,7 @@ import { Notification } from '@vaadin/react-components/Notification.js';
 import { TextField } from '@vaadin/react-components/TextField.js';
 import {Grid} from '@vaadin/react-components/Grid';
 import {GridColumn} from '@vaadin/react-components/GridColumn';
+import {GridColumnGroup} from '@vaadin/react-components/GridColumnGroup';
 import {GridSelectionColumn} from '@vaadin/react-components/GridSelectionColumn';
 import { HelloReactEndpoint } from 'Frontend/generated/endpoints.js';
 import { useState, useEffect } from 'react';
@@ -32,6 +33,31 @@ export default function HelloReactView() {
         {hi["totalOutgoingErrors"]==0? <span>Outgoing Batches OK<Icon icon="vaadin:check" /></span>:<span>{hi["totalOutgoingErrors"]}  Outgoing Error <Icon icon="vaadin:warning" /></span>}
       </VerticalLayout>
     </Details>);
+  }
+
+  const statusRenderer = (ns: NodeStatus) => {
+    if (ns.status === '1') {
+      return <Icon icon="vaadin:warning" />;
+    }
+    else if (ns.status === '4') {
+      return <Icon icon="vaadin:check" />;
+    }
+    return <Icon icon="vaadin:unlink" />;
+
+  }
+
+  const outRowRenderer = (ns: NodeStatus) => {
+    if (healthInfo && ns.nodeId === healthInfo.engineNodeId) {
+      return "N/A";
+    }
+    return <>{ns.outgoingDataCountRemaining}</>;
+  }
+
+  const outBatchRenderer = (ns: NodeStatus) => {
+    if (healthInfo && ns.nodeId === healthInfo.engineNodeId) {
+      return "N/A";
+    }
+    return <>{ns.outgoingBatchCountRemaining}</>;
   }
 
   return (
@@ -66,8 +92,25 @@ export default function HelloReactView() {
       </section>
       <Grid items={nodes} columnReorderingAllowed>
         <GridSelectionColumn />
-        <GridColumn path="nodeId" resizable />
-        <GridColumn path="status" resizable />
+        <GridColumn path="nodeId" header="Node" resizable />
+        <GridColumn path="status" header="Status" resizable>
+          {({ item }) => statusRenderer(item)}
+        </GridColumn>
+
+        <GridColumnGroup header="Outgoing">
+          <GridColumn path="outgoingDataCountRemaining" header="Rows">
+            {({ item }) => outRowRenderer(item)}
+          </GridColumn>
+          <GridColumn path="outgoingBatchCountRemaining" header="Batches">
+            {({ item }) => outBatchRenderer(item)}            
+          </GridColumn>
+          <GridColumn path="lastOutgoingTime" header="Last"/>
+        </GridColumnGroup>
+        <GridColumnGroup header="Incoming">
+          <GridColumn path="incomingDataCountRemaining" header="Rows"/>
+          <GridColumn path="incomingBatchCountRemaining" header="Batches"/>
+          <GridColumn path="lastIncomingTime" header="Last"/>
+        </GridColumnGroup>
       </Grid>
 
     </>

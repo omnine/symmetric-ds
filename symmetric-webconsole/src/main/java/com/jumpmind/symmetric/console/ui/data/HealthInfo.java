@@ -7,4 +7,6 @@ public class HealthInfo {
 
     public long unroutedDataCount = 0;
 
+    public String engineNodeId;
+
 }
