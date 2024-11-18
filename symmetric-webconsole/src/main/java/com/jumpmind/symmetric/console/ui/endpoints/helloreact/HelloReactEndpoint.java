@@ -1,5 +1,6 @@
 package com.jumpmind.symmetric.console.ui.endpoints.helloreact;
 
+import com.jumpmind.symmetric.console.model.RecentActivity;
 import com.jumpmind.symmetric.console.ui.data.VNNode;
 import com.jumpmind.symmetric.console.ui.data.HealthInfo;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
@@ -16,9 +17,9 @@ import java.util.Set;
 
 import org.jumpmind.symmetric.AbstractSymmetricEngine;
 import org.jumpmind.symmetric.ISymmetricEngine;
-import org.jumpmind.symmetric.ClientSymmetricEngine;
 import org.jumpmind.symmetric.model.*;
 import org.jumpmind.symmetric.model.AbstractBatch.Status;
+import org.jumpmind.symmetric.model.ProcessInfo.ProcessStatus;
 
 import org.jumpmind.symmetric.route.IDataRouter;
 import org.jumpmind.symmetric.service.IIncomingBatchService;
@@ -314,5 +315,129 @@ public class HelloReactEndpoint {
 
         return message;
     }
+
+    public ArrayList<RecentActivity> getRecentActivities() {
+        List<ISymmetricEngine> list = new ArrayList<>(AbstractSymmetricEngine.findEngines());
+        ISymmetricEngine engine = list.get(0);
+        Set<String> setChannels = Set.of();
+        /*
+        this.i = new HashSet<>(
+                com.jumpmind.symmetric.console.ui.common.am.getConsoleDisplayChannelIds(
+                        this.b.getSymmetricEngine(), com.jumpmind.symmetric.console.ui.common.am.a.BOTH
+                )
+        );
+*/
+        Map<String, RecentActivity> mapRAs = new HashMap<>();
+
+        for (ProcessInfo p : engine.getStatisticManager().getProcessInfosThatHaveDoneWork()) {
+            if (setChannels.contains(p.getCurrentChannelId())) {
+                ProcessType pt = p.getProcessType();
+                RecentActivity recentActivity = null;
+                StringBuilder message = new StringBuilder();
+                boolean running = !p.getStatus().equals(ProcessStatus.OK);
+                String type = null;
+                String sourceNodeId = p.getSourceNodeId() == null ? "registration node" : p.getSourceNodeId();
+                if (pt.equals(ProcessType.ROUTER_JOB) || pt.equals(ProcessType.ROUTER_READER)) {
+                    recentActivity = mapRAs.get(ProcessType.ROUTER_JOB.name());
+                    if (p.getTotalDataCount() > 0L) {
+                        message.append(running ? "Routing " : "Routed ").append(p.getCurrentDataCount()).append(" rows");
+                        type = ProcessType.ROUTER_JOB.name();
+                    }
+                } else if (pt.equals(ProcessType.PULL_HANDLER_TRANSFER)) {
+                    recentActivity = mapRAs.get(ProcessType.PULL_HANDLER_TRANSFER.name() + p.getTargetNodeId());
+                    if (p.getTotalDataCount() > 0L) {
+                        message.append(running ? "Sending " : "Sent ")
+                                .append(p.getTotalDataCount())
+                                .append(" rows to ")
+                                .append(p.getTargetNodeId())
+                                .append(" (pull)");
+                        type = ProcessType.PULL_HANDLER_TRANSFER.name() + p.getTargetNodeId();
+                    }
+                } else if (pt.equals(ProcessType.PULL_JOB_LOAD)) {
+                    recentActivity = mapRAs.get(ProcessType.PULL_JOB_LOAD.name() + p.getTargetNodeId());
+                    if (p.getTotalDataCount() > 0L) {
+                        message.append(running ? "Loading " : "Loaded ").append(p.getCurrentDataCount()).append(" rows from ").append(sourceNodeId).append(" (pull)");
+                        type = ProcessType.PULL_JOB_LOAD.name() + p.getTargetNodeId();
+                    }
+                } else if (pt.equals(ProcessType.PUSH_HANDLER_LOAD)) {
+                    recentActivity = mapRAs.get(ProcessType.PUSH_HANDLER_LOAD.name() + p.getSourceNodeId());
+                    if (p.getTotalDataCount() > 0L) {
+                        message.append(running ? "Loading " : "Loaded ").append(p.getTotalDataCount()).append(" rows from ").append(sourceNodeId).append(" (push)");
+                        type = ProcessType.PUSH_HANDLER_LOAD.name() + p.getSourceNodeId();
+                    }
+                } else if (pt.equals(ProcessType.PULL_JOB_TRANSFER)) {
+                    recentActivity = mapRAs.get(ProcessType.PULL_JOB_TRANSFER.name() + p.getSourceNodeId());
+                    if (p.getTotalDataCount() > 0L) {
+                        message.append(running ? "Receiving " : "Received ")
+                                .append(p.getTotalDataCount())
+                                .append(" rows from ")
+                                .append(sourceNodeId)
+                                .append(" (pull)");
+                        type = ProcessType.PULL_JOB_TRANSFER.name() + p.getSourceNodeId();
+                    }
+                } else if (pt.equals(ProcessType.PUSH_JOB_EXTRACT)) {
+                    recentActivity = mapRAs.get(ProcessType.PUSH_JOB_EXTRACT.name() + p.getTargetNodeId());
+                    if (p.getTotalDataCount() > 0L) {
+                        message.append(running ? "Extracting " : "Extracted ")
+                                .append(p.getTotalDataCount())
+                                .append(" rows for ")
+                                .append(p.getTargetNodeId())
+                                .append(" (push)");
+                        type = ProcessType.PUSH_JOB_EXTRACT.name() + p.getTargetNodeId();
+                    }
+                } else if (pt.equals(ProcessType.PULL_HANDLER_EXTRACT)) {
+                    recentActivity = mapRAs.get(ProcessType.PULL_HANDLER_EXTRACT.name() + p.getTargetNodeId());
+                    if (p.getTotalDataCount() > 0L) {
+                        message.append(running ? "Extracting " : "Extracted ")
+                                .append(p.getTotalDataCount())
+                                .append(" rows for ")
+                                .append(p.getTargetNodeId())
+                                .append(" (pull)");
+                        type = ProcessType.PULL_HANDLER_EXTRACT.name() + p.getTargetNodeId();
+                    }
+                } else if (pt.equals(ProcessType.PUSH_JOB_TRANSFER)) {
+                    recentActivity = mapRAs.get(ProcessType.PUSH_JOB_TRANSFER.name() + p.getTargetNodeId());
+                    if (p.getTotalDataCount() > 0L) {
+                        message.append(running ? "Sending " : "Sent ")
+                                .append(p.getCurrentDataCount())
+                                .append(" rows to ")
+                                .append(p.getTargetNodeId())
+                                .append(" (push)");
+                        type = ProcessType.PUSH_JOB_TRANSFER.name() + p.getTargetNodeId();
+                    }
+                } else if (pt.equals(ProcessType.INITIAL_LOAD_EXTRACT_JOB)) {
+                    type = ProcessType.INITIAL_LOAD_EXTRACT_JOB.name() + p.getTargetNodeId();
+                    recentActivity = mapRAs.get(ProcessType.INITIAL_LOAD_EXTRACT_JOB.name() + p.getTargetNodeId());
+                    message.append(running ? "Extracting " : "Extracted ")
+                            .append(p.getCurrentDataCount())
+                            .append(" reload rows in background for ")
+                            .append(p.getTargetNodeId());
+                }
+
+                if (recentActivity == null && message.length() > 0) {
+                    recentActivity = new RecentActivity(message.toString(), running, p.getTotalDataCount(), p.getStartTime(), p.getEndTime());
+                    mapRAs.put(type, recentActivity);
+                } else if (message.length() > 0) {
+                    recentActivity.setMessage(message.toString());
+                    if (p.getTotalDataCount() > 0L) {
+                        recentActivity.setStartTime(p.getStartTime());
+                    }
+                }
+
+                if (recentActivity != null) {
+                    recentActivity.setRunning(running);
+                    if (running) {
+                        recentActivity.setEndTime(null);
+                    } else {
+                        recentActivity.setEndTime(p.getEndTime());
+                    }
+                }
+            }
+        }
+        return new ArrayList<>(mapRAs.values());
+    }
+
+
+    
 
 }

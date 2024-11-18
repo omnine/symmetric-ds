@@ -9,12 +9,15 @@ import { HelloReactEndpoint } from 'Frontend/generated/endpoints.js';
 import { useState, useEffect } from 'react';
 
 import NodeStatus from 'Frontend/generated/com/jumpmind/symmetric/console/model/NodeStatus';
+import RecentActivity from 'Frontend/generated/com/jumpmind/symmetric/console/model/RecentActivity';
 import { Details } from '@vaadin/react-components/Details.js';
 import { VerticalLayout } from '@vaadin/react-components/VerticalLayout.js';
 
 import '@vaadin/icons';
 import { Icon } from '@vaadin/react-components/Icon.js';
 import HealthInfo from 'Frontend/generated/com/jumpmind/symmetric/console/ui/data/HealthInfo';
+
+import { Circles } from 'react-loader-spinner'
 
 export default function HelloReactView() {
   const [name, setName] = useState('');
@@ -59,6 +62,27 @@ export default function HelloReactView() {
     }
     return <>{ns.outgoingBatchCountRemaining}</>;
   }
+
+  const drawRecentActivities = (activities: RecentActivity[]) => {
+    return (<Grid items={activities} columnReorderingAllowed>
+      <GridColumn path="running" header="Status" resizable>
+        {({ item }) => item.running ? (<Circles
+                      height="40"
+                      width="40"
+                      color="#4fa94d"
+                      ariaLabel="circles-loading"
+                      wrapperStyle={{}}
+                      wrapperClass=""
+                      visible={true}
+                      />) : <Icon icon="vaadin:check" />}
+      </GridColumn>
+      <GridColumn path="message" header="Activity" resizable />
+      <GridColumn path="endTime" header="When" resizable>
+        {({ item }) => statusRenderer(item)}
+      </GridColumn>
+    </Grid>);
+  }
+
 
   return (
     <>
