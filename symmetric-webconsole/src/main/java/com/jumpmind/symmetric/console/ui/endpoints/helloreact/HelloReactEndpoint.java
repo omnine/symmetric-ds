@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.Collections;
 
 import org.jumpmind.symmetric.AbstractSymmetricEngine;
 import org.jumpmind.symmetric.ISymmetricEngine;
@@ -52,12 +53,12 @@ public class HelloReactEndpoint {
 
         Set<String> failedEngineNames = new HashSet<>(failedEngineMap.keySet());
 
-        String errorMessage = "";
+        StringBuilder errorMessage = new StringBuilder();
         for (String key : failedEngineMap.keySet()) {
-            errorMessage += ((FailedEngineInfo)failedEngineMap.get(key)).getErrorMessage();
+            errorMessage.append(((FailedEngineInfo) failedEngineMap.get(key)).getErrorMessage());
         } 
 
-        return errorMessage;
+        return errorMessage.toString();
         /*
          * For checking Monitors, need to implement interface IMonitorService extends IBuiltInExtensionPoint
          * 
@@ -127,21 +128,19 @@ public class HelloReactEndpoint {
 
         IOutgoingBatchService outgoingService = engine.getOutgoingBatchService();
         IIncomingBatchService incomingService = engine.getIncomingBatchService();
-        /*
-        List<String> channels = com.jumpmind.symmetric.console.ui.common.am.getConsoleDisplayChannelIds(
-                engine, com.jumpmind.symmetric.console.ui.common.am.a.BOTH
+        
+        List<String> channels = getConsoleDisplayChannelIds(
+                engine, ChannelType.BOTH
         );
-*/
-        List<String> channels = List.of();
+
 
         List<OutgoingBatchSummary> outgoingSummary = outgoingService.findOutgoingBatchSummaryByChannel(
-                new Status[]{Status.RQ, Status.NE, Status.ER, Status.LD, Status.QY, Status.RS, Status.RT, Status.SE}
-        );
+                Status.RQ, Status.NE, Status.ER, Status.LD, Status.QY, Status.RS, Status.RT, Status.SE);
         List<IncomingBatchSummary> incomingSummary = incomingService.findIncomingBatchSummaryByChannel(new Status[]{Status.ER, Status.LD, Status.RS});
 
         Map<String, NodeStatus> mapNode2Status = new HashMap<>();
 //        this.k = new LinkedHashMap<>();
-        Set<String> setNodeKeys = new HashSet<String>();
+        Set<String> setNodeKeys = new HashSet<>();
         //f.clear();
         setNodeKeys.addAll(getNodesKeySet(engine));
   
@@ -437,7 +436,88 @@ public class HelloReactEndpoint {
         return new ArrayList<>(mapRAs.values());
     }
 
+    public static enum ChannelType {
+        OUTGOING,
+        INCOMING,
+        BOTH
+     }
 
+    public static List<String> getConsoleDisplayChannelIds(ISymmetricEngine engine, ChannelType type) {
+        List<String> channels;
+        if (engine.getParameterService().is("console.web.hide.system.info")) {  // this is generally true
+           Set<String> channelList = new HashSet<>();
+           /* we don't care the file sync
+           if (engine.getParameterService().is("file.sync.enable")) {
+              for (FileTriggerRouter ftr : engine.getFileSyncService().getFileTriggerRoutersForCurrentNode(false)) {
+                 String channel = ftr.getFileTrigger() != null ? ftr.getFileTrigger().getChannelId() : "";
+                 String reloadChannel = ftr.getFileTrigger() != null ? ftr.getFileTrigger().getReloadChannelId() : "";
+                 if (channel.length() > 0 && !isHidableChannel(channel, engine)) {
+                    channelList.add(channel);
+                 }
+  
+                 if (reloadChannel.length() > 0 && !isHidableChannel(reloadChannel, engine)) {
+                    channelList.add(reloadChannel);
+                 }
+              }
+           }
+           */
+  
+           for (TriggerRouter tr : engine.getTriggerRouterService().getTriggerRouters(false)) {
+              String trSourceGroup = tr.getRouter().getNodeGroupLink().getSourceNodeGroupId();
+              String trTargetGroup = tr.getRouter().getNodeGroupLink().getTargetNodeGroupId();
+              String nodeGroup = engine.getParameterService().getNodeGroupId();
+              Trigger t = engine.getTriggerRouterService().getTriggerById(tr.getTriggerId(), false);
+              String curChannel = t != null ? t.getChannelId() : "";
+              String curReloadChannel = t != null ? t.getReloadChannelId() : "";
+              if (ChannelType.OUTGOING.equals(type) && nodeGroup.equals(trSourceGroup)) {
+                 if (curChannel.length() > 0 && !isHidableChannel(curChannel, engine)) {
+                    channelList.add(curChannel);
+                 }
+  
+                 if (curReloadChannel.length() > 0 && !isHidableChannel(curReloadChannel, engine)) {
+                    channelList.add(curReloadChannel);
+                 }
+              } else if (ChannelType.INCOMING.equals(type) && nodeGroup.equals(trTargetGroup)) {
+                 if (curChannel.length() > 0 && !isHidableChannel(curChannel, engine)) {
+                    channelList.add(curChannel);
+                 }
+  
+                 if (curReloadChannel.length() > 0 && !isHidableChannel(curReloadChannel, engine)) {
+                    channelList.add(curReloadChannel);
+                 }
+              } else if (ChannelType.BOTH.equals(type)) {
+                 if (curChannel.length() > 0 && !isHidableChannel(curChannel, engine)) {
+                    channelList.add(curChannel);
+                 }
+  
+                 if (curReloadChannel.length() > 0 && !isHidableChannel(curReloadChannel, engine)) {
+                    channelList.add(curReloadChannel);
+                 }
+              }
+           }
+  
+           channelList.add("config");
+           channels = new ArrayList<>(channelList);
+        } else {
+           channels = toChannelIdList(engine.getConfigurationService().getNodeChannels(false));
+        }
+  
+        Collections.sort(channels);
+        return channels;
+     }
     
+     public static boolean isHidableChannel(String channelId, ISymmetricEngine engine) {
+        return engine.getParameterService().is("console.web.hide.system.info")
+           && (channelId == null || channelId.equals("heartbeat") || channelId.equals("dynamic") || channelId.equals("0"));
+     }
 
+     public static List<String> toChannelIdList(List<NodeChannel> channels) {
+        List<String> channelIds = new ArrayList<>(channels.size());
+  
+        for (NodeChannel nodeChannel : channels) {
+           channelIds.add(nodeChannel.getChannelId());
+        }
+  
+        return channelIds;
+     }     
 }
