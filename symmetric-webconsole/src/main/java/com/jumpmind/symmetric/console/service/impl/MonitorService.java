@@ -27,32 +27,44 @@ import com.jumpmind.symmetric.console.impl.Recommendations;
 
 import com.jumpmind.symmetric.console.impl.UnknownCaMonitor;
 import com.jumpmind.symmetric.console.impl.LOBMonitor;
+import com.jumpmind.symmetric.console.impl.ConnectionResetMonitor;
+import com.jumpmind.symmetric.console.impl.NextDataInGapMonitor;
+import com.jumpmind.symmetric.console.impl.MySqlModeMonitor;
+import com.jumpmind.symmetric.console.impl.MissingPrimaryKeyMonitor;
+import com.jumpmind.symmetric.console.impl.MaxDataToRouteMonitor;
+import com.jumpmind.symmetric.console.impl.MaxChannelsMonitor;
+import com.jumpmind.symmetric.console.impl.MaxBatchToSendMonitor;
+import com.jumpmind.symmetric.console.impl.MaxBatchSizeMonitor;
+import com.jumpmind.symmetric.console.impl.JVMThreadsMonitor;
+import com.jumpmind.symmetric.console.impl.JVMOutOfMemoryMonitor;
+import com.jumpmind.symmetric.console.impl.JVMCrashMonitor;
+import com.jumpmind.symmetric.console.impl.JVM64BitMonitor;
+import com.jumpmind.symmetric.console.impl.JobTrendingMonitor;
+import com.jumpmind.symmetric.console.impl.ConnectionPoolMonitor;
+import com.jumpmind.symmetric.console.impl.ChannelsForeignKeyMonitor;
+import com.jumpmind.symmetric.console.impl.ChannelsDisabledMonitor;
+import com.jumpmind.symmetric.console.impl.ChannelSuspendMonitor;
+import com.jumpmind.symmetric.console.impl.BlockMonitor;
+import com.jumpmind.symmetric.console.impl.CPUMonitor;
+
 /*
 import com.jumpmind.symmetric.console.impl.G;
 
 
 
-import com.jumpmind.symmetric.console.impl.fG;
 
-import com.jumpmind.symmetric.console.impl.fh;
-import com.jumpmind.symmetric.console.impl.fi;
-import com.jumpmind.symmetric.console.impl.fj;
-import com.jumpmind.symmetric.console.impl.fk;
-import com.jumpmind.symmetric.console.impl.fl;
-import com.jumpmind.symmetric.console.impl.fm;
-import com.jumpmind.symmetric.console.impl.fn;
-import com.jumpmind.symmetric.console.impl.fo;
-import com.jumpmind.symmetric.console.impl.fp;
-import com.jumpmind.symmetric.console.impl.fq;
-import com.jumpmind.symmetric.console.impl.fr;
 
-import com.jumpmind.symmetric.console.impl.ft;
-import com.jumpmind.symmetric.console.impl.fu;
-import com.jumpmind.symmetric.console.impl.fv;
-import com.jumpmind.symmetric.console.impl.fw;
-import com.jumpmind.symmetric.console.impl.fx;
-import com.jumpmind.symmetric.console.impl.fy;
-import com.jumpmind.symmetric.console.impl.fz;
+
+
+
+
+
+
+
+
+
+
+
 
  */
 import com.jumpmind.symmetric.console.model.Monitor;
@@ -61,9 +73,9 @@ import com.jumpmind.symmetric.console.model.Notification;
 import com.jumpmind.symmetric.console.service.IBackgroundNoHangupService;
 import com.jumpmind.symmetric.console.service.IMonitorService;
 import com.jumpmind.symmetric.console.ui.common.am;
-import com.jumpmind.symmetric.notification.a;
-import com.jumpmind.symmetric.notification.b;
-import com.jumpmind.symmetric.notification.c;
+import com.jumpmind.symmetric.notification.INotificationExtension;
+import com.jumpmind.symmetric.notification.EmailNotification;
+import com.jumpmind.symmetric.notification.LoggerNotification;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
@@ -129,7 +141,7 @@ public class MonitorService extends AbstractService implements IMonitorService, 
          new BatchErrorMonitor(),
          new BatchUnsentMonitor(),
          new BatchUnsentOfflineMonitor(),
-         new fG(),
+         new CPUMonitor(),
          new DataGapMonitor(),
          new DiskMonitor(),
          new MemoryMonitor(),
@@ -142,24 +154,24 @@ public class MonitorService extends AbstractService implements IMonitorService, 
          new LicenseExpireMonitor(),
          new CertExpireMonitor(),
          new LicenseRowsMonitor(),
-         new fo(),
-         new fp(),
-         new fq(),
-         new fr(),
-         new fh(),
-         new fy(),
-         new fz(),
-         new fj(),
-         new ft(),
-         new fw(),
-         new fu(),
-         new fv(),
-         new fi(),
-         new fx(),
-         new fk(),
-         new fn(),
-         new fl(),
-         new fm(),
+         new JVM64BitMonitor(),
+         new JVMCrashMonitor(),
+         new JVMOutOfMemoryMonitor(),
+         new JVMThreadsMonitor(),
+         new BlockMonitor(),
+         new MySqlModeMonitor(),
+         new NextDataInGapMonitor(),
+         new ChannelsDisabledMonitor(),
+         new MaxBatchSizeMonitor(),
+         new MaxDataToRouteMonitor(),
+         new MaxBatchToSendMonitor(),
+         new MaxChannelsMonitor(),
+         new ChannelSuspendMonitor(),
+         new MissingPrimaryKeyMonitor(),
+         new ChannelsForeignKeyMonitor(),
+         new JobTrendingMonitor(),
+         new ConnectionPoolMonitor(),
+         new ConnectionResetMonitor(),
          new LOBMonitor(),
          new StrandedOrExpiredDataMonitor(),
          new UnknownCaMonitor()
@@ -169,9 +181,9 @@ public class MonitorService extends AbstractService implements IMonitorService, 
          this.extensionService.addExtensionPoint(ext.b(), ext);
       }
 
-      a[] notificationExtensions = new a[]{new c(), new b()};
+      INotificationExtension[] notificationExtensions = new INotificationExtension[]{new LoggerNotification(), new EmailNotification()};
 
-      for (a ext : notificationExtensions) {
+      for (INotificationExtension ext : notificationExtensions) {
          this.extensionService.addExtensionPoint(ext.a(), ext);
       }
    }
@@ -249,7 +261,7 @@ public class MonitorService extends AbstractService implements IMonitorService, 
                      }
                   }
 
-                  Map<String, a> notificationTypes = this.extensionService.getExtensionPointMap(a.class);
+                  Map<String, INotificationExtension> notificationTypes = this.extensionService.getExtensionPointMap(INotificationExtension.class);
                   List<MonitorEvent> allMonitorEvents = this.getMonitorEventsForNotification(minSeverityLevel);
 
                   for (Notification notificationx : notifications) {
@@ -262,7 +274,7 @@ public class MonitorService extends AbstractService implements IMonitorService, 
                      }
 
                      if (monitorEvents.size() > 0) {
-                        a notificationType = notificationTypes.get(notificationx.getType());
+                        INotificationExtension notificationType = notificationTypes.get(notificationx.getType());
                         if (notificationType != null) {
                            notificationType.a(notificationx, monitorEvents);
                            this.updateMonitorEventAsNotified(monitorEvents);
