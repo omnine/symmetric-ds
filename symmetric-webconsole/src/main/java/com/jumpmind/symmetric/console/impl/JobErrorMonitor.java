@@ -10,7 +10,7 @@ import org.jumpmind.symmetric.statistic.JobStats;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JobErrorMonitor extends InsightMonitor implements IBuiltInExtensionPoint {
+public class JobErrorMonitor extends StackMonitor implements IBuiltInExtensionPoint {
    protected final Logger d = LoggerFactory.getLogger(this.getClass());
 
    @Override

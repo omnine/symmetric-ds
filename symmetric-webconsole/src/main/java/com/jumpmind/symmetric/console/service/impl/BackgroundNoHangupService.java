@@ -1,6 +1,6 @@
 package com.jumpmind.symmetric.console.service.impl;
 
-import com.jumpmind.symmetric.console.impl.G;
+import com.jumpmind.symmetric.console.impl.IRefresh;
 import com.jumpmind.symmetric.console.service.IBackgroundNoHangupService;
 import com.vaadin.flow.component.UI;
 import java.util.concurrent.TimeUnit;
@@ -18,16 +18,16 @@ public class BackgroundNoHangupService implements IBackgroundNoHangupService, IB
    private transient ThreadPoolTaskScheduler taskScheduler;
 
    @Override
-   public void queueWork(final G<? extends Object> refreshing, final com.jumpmind.symmetric.console.ui.common.G controller) {
+   public void queueWork(final IRefresh<? extends Object> refreshing, final com.jumpmind.symmetric.console.ui.common.IConsoleController controller) {
       this.taskScheduler.getScheduledExecutor().schedule(new Runnable() {
          @Override
          public void run() {
-            BackgroundNoHangupService.this.refresh(refreshing, controller);
+            refresh((IRefresh<Object>) refreshing, controller);
          }
       }, 0L, TimeUnit.MILLISECONDS);
    }
 
-   protected void refresh(G<Object> refreshing, com.jumpmind.symmetric.console.ui.common.G controller) {
+   protected void refresh(IRefresh<Object> refreshing, com.jumpmind.symmetric.console.ui.common.IConsoleController controller) {
       try {
          String engineName = "not available";
          if (this.engine != null) {
@@ -41,7 +41,7 @@ public class BackgroundNoHangupService implements IBackgroundNoHangupService, IB
          if (timeItTookInMs > 10000L) {
             this.log.info("refreshing data for {} for engine: {} took {}ms", new Object[]{refreshing.getClass().getSimpleName(), engineName, timeItTookInMs});
          }
-
+/*
          if (controller != null) {
             UI ui = controller.getUI().orElse(null);
             if (ui != null && ui.getElement().getNode().isAttached()) {
@@ -60,6 +60,7 @@ public class BackgroundNoHangupService implements IBackgroundNoHangupService, IB
                });
             }
          }
+         */
       } catch (Throwable var10) {
          this.log.error("Exception while refreshing " + refreshing.getClass(), var10);
       }

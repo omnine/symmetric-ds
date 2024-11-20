@@ -11,7 +11,7 @@ import org.jumpmind.extension.IBuiltInExtensionPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MemoryMonitor extends InsightMonitor implements IBuiltInExtensionPoint {
+public class MemoryMonitor extends StackMonitor implements IBuiltInExtensionPoint {
    protected final Logger d = LoggerFactory.getLogger(this.getClass());
    protected MemoryPoolMXBean e;
 

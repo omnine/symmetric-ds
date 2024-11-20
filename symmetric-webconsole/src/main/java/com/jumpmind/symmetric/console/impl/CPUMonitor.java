@@ -28,7 +28,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CPUMonitor extends StackMonitor implements IBuiltInExtensionPoint {
-   protected final Logger d = LoggerFactory.getLogger(new ge(new long[]{-8805100097329059219L, 460257445400826471L, 6752041828116098195L}).toString());
+   protected final Logger d = LoggerFactory.getLogger(this.getClass());
+
+//   protected final Logger d = LoggerFactory.getLogger(new ge(new long[]{-8805100097329059219L, 460257445400826471L, 6752041828116098195L}).toString());
    protected OperatingSystemMXBean e;
    protected RuntimeMXBean f;
    protected List<StackTraceElement> g;
