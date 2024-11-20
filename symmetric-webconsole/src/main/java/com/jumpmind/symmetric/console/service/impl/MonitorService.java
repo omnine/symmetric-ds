@@ -46,33 +46,14 @@ import com.jumpmind.symmetric.console.impl.ChannelsDisabledMonitor;
 import com.jumpmind.symmetric.console.impl.ChannelSuspendMonitor;
 import com.jumpmind.symmetric.console.impl.BlockMonitor;
 import com.jumpmind.symmetric.console.impl.CPUMonitor;
+import com.jumpmind.symmetric.console.impl.IRefresh;
 
-/*
-import com.jumpmind.symmetric.console.impl.G;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- */
 import com.jumpmind.symmetric.console.model.Monitor;
 import com.jumpmind.symmetric.console.model.MonitorEvent;
 import com.jumpmind.symmetric.console.model.Notification;
 import com.jumpmind.symmetric.console.service.IBackgroundNoHangupService;
 import com.jumpmind.symmetric.console.service.IMonitorService;
-import com.jumpmind.symmetric.console.ui.common.am;
+import com.jumpmind.symmetric.console.ui.common.Helper;
 import com.jumpmind.symmetric.notification.INotificationExtension;
 import com.jumpmind.symmetric.notification.EmailNotification;
 import com.jumpmind.symmetric.notification.LoggerNotification;
@@ -387,7 +368,7 @@ public class MonitorService extends AbstractService implements IMonitorService, 
    }
 
    private boolean isLogMonitorEventResolved(Monitor monitor, MonitorEvent eventValue, String nodeId) {
-      Gson gson = am.getMonitorEventGson();
+      Gson gson = Helper.getMonitorEventGson();
       List<LogSummary> eventLogSummaries = (List<LogSummary>)gson.fromJson(eventValue.getDetails(), (new TypeToken<List<LogSummary>>() {
       }).getType());
       if (eventLogSummaries == null) {
@@ -449,9 +430,9 @@ public class MonitorService extends AbstractService implements IMonitorService, 
       this.saveMonitorEvent(event);
       event.setLastUpdateTime(new Date(System.currentTimeMillis() / 1000L * 1000L));
       this.updateMonitorEventAsResolved(event);
-      this.backgroundNoHangupService.queueWork(new G<Void>() {
+      this.backgroundNoHangupService.queueWork(new IRefresh<Void>() {
          public Void onBackgroundDataRefresh(ISymmetricEngine engine) {
-            if (!insightType.a(event, MonitorService.this.deserializeRecommendation(event))) {
+            if (!insightType.a(event, deserializeRecommendation(event))) {
                for (MonitorEvent existingEvent : MonitorService.this.getMonitorEventsByMonitorId(event.getMonitorId())) {
                   if (existingEvent.getNodeId().equals(event.getNodeId()) && existingEvent.getEventTime().equals(event.getEventTime())) {
                      existingEvent.setApprovalProcessed(false);
@@ -787,42 +768,21 @@ public class MonitorService extends AbstractService implements IMonitorService, 
       return recommendations;
    }
 
-   private Recommendation deserializeRecommendation(MonitorEvent event) {
-      try {
-         Gson gson = am.getMonitorEventGson();
-         Recommendation recommendation = (Recommendation)gson.fromJson(event.getDetails(), Recommendation.class);
-         recommendation.d(event.getMonitorId());
-         recommendation.e(event.getType());
-         recommendation.a(event.getNodeId(), event.getEventTime());
-         recommendation.c(event.getSeverityLevel());
-         return recommendation;
-      } catch (Exception var4) {
-         this.log.error("Failed to convert monitor event details from JSON to recommendation", var4);
-         return null;
-      }
-   }
 
+
+
+
+
+
+
+
+
+*/
    @Override
-   public Map<String, Object> getRecommendationDetails(String monitorId, String nodeId, Date eventTime) {
+   public void undoDismissalForRecommendation(String monitorId, String nodeId, Date eventTime) {
       for (MonitorEvent event : this.getMonitorEventsByMonitorId(monitorId)) {
          if (event.getNodeId().equals(nodeId) && event.getEventTime().equals(eventTime)) {
-            Recommendation recommendation = this.deserializeRecommendation(event);
-            if (recommendation != null) {
-               return recommendation.c();
-            }
-         }
-      }
-
-      return null;
-   }
-
-   @Override
-   public void approveRecommendation(String monitorId, String nodeId, Date eventTime, int optionId, String userId) {
-      for (MonitorEvent event : this.getMonitorEventsByMonitorId(monitorId)) {
-         if (event.getNodeId().equals(nodeId) && event.getEventTime().equals(eventTime)) {
-            event.setApprovedOption(optionId);
-            event.setApprovedBy(userId);
-            event.setApprovalProcessed(false);
+            event.setNotBefore(null);
             event.setLastUpdateTime(new Date(System.currentTimeMillis() / 1000L * 1000L));
             this.saveMonitorEvent(event);
             return;
@@ -849,17 +809,48 @@ public class MonitorService extends AbstractService implements IMonitorService, 
    }
 
    @Override
-   public void undoDismissalForRecommendation(String monitorId, String nodeId, Date eventTime) {
+   public void approveRecommendation(String monitorId, String nodeId, Date eventTime, int optionId, String userId) {
       for (MonitorEvent event : this.getMonitorEventsByMonitorId(monitorId)) {
          if (event.getNodeId().equals(nodeId) && event.getEventTime().equals(eventTime)) {
-            event.setNotBefore(null);
+            event.setApprovedOption(optionId);
+            event.setApprovedBy(userId);
+            event.setApprovalProcessed(false);
             event.setLastUpdateTime(new Date(System.currentTimeMillis() / 1000L * 1000L));
             this.saveMonitorEvent(event);
             return;
          }
       }
    }
-*/
+
+   @Override
+   public Map<String, Object> getRecommendationDetails(String monitorId, String nodeId, Date eventTime) {
+      for (MonitorEvent event : this.getMonitorEventsByMonitorId(monitorId)) {
+         if (event.getNodeId().equals(nodeId) && event.getEventTime().equals(eventTime)) {
+            Recommendation recommendation = this.deserializeRecommendation(event);
+            if (recommendation != null) {
+               return recommendation.c();
+            }
+         }
+      }
+
+      return null;
+   }
+
+   private Recommendation deserializeRecommendation(MonitorEvent event) {
+   try {
+      Gson gson =Helper.getMonitorEventGson();
+      Recommendation recommendation = (Recommendation)gson.fromJson(event.getDetails(), Recommendation.class);
+      recommendation.d(event.getMonitorId());
+      recommendation.e(event.getType());
+      recommendation.a(event.getNodeId(), event.getEventTime());
+      recommendation.c(event.getSeverityLevel());
+      return recommendation;
+   } catch (Exception var4) {
+      this.log.error("Failed to convert monitor event details from JSON to recommendation", var4);
+      return null;
+   }
+}
+
    @Override
    public List<Notification> getNotifications() {
       return this.sqlTemplate.query(this.getSql(new String[]{"selectNotificationSql"}), new MonitorService.NotificationRowMapper(), new Object[0]);
