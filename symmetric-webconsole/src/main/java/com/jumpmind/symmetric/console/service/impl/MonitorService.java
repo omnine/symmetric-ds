@@ -381,7 +381,7 @@ public class MonitorService extends AbstractService implements IMonitorService, 
 
             for (MonitorEvent resolvedEvent : resolvedEvents) {
                if (resolvedEvent.getLastUpdateTime() != null && eventLogSummary.getMostRecentTime() <= resolvedEvent.getLastUpdateTime().getTime()) {
-                  for (LogSummary resolvedLogSummary : (List)gson.fromJson(resolvedEvent.getDetails(), (new TypeToken<List<LogSummary>>() {
+                  for (LogSummary resolvedLogSummary : (List<LogSummary>)gson.fromJson(resolvedEvent.getDetails(), (new TypeToken<List<LogSummary>>() {
                   }).getType())) {
                      if (eventLogSummary.getMessage() != null && eventLogSummary.getMessage().equals(resolvedLogSummary.getMessage())) {
                         logMessageResolved = true;
@@ -403,6 +403,7 @@ public class MonitorService extends AbstractService implements IMonitorService, 
          return true;
       }
    }
+
 
    private boolean processInsight(String insightId, InsightMonitor insightType, Map<String, MonitorEvent> unresolved, Map<String, List<MonitorEvent>> resolved) {
       boolean processed = false;
