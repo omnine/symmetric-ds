@@ -51,21 +51,21 @@ public class JVMOutOfMemoryMonitor implements InsightMonitor, IBuiltInExtensionP
          }
 
          String actionDescription = "Increase maximum memory by editing the wrapper.java.maxmemory property in conf/sym_service.conf and restarting SymmetricDS.";
-         fT recommendation = new fT(problemDescription, actionDescription, true);
-         List<fT.a> options = new ArrayList<>();
+         Recommendation recommendation = new Recommendation(problemDescription, actionDescription, true);
+         List<Recommendation.a> options = new ArrayList<>();
          options.add(recommendation.new a(1, "Increase by 0.5 GB", 512L));
          options.add(recommendation.new a(2, "Increase by 1 GB", 1024L));
          options.add(recommendation.new a(3, "Increase by 1.5 GB", 1532L));
          options.add(recommendation.new a(4, "Increase by 2 GB", 2048L));
          recommendation.a(options);
-         event.setDetails(com.jumpmind.symmetric.console.ui.common.am.getMonitorEventGson().toJson(recommendation));
+         event.setDetails(com.jumpmind.symmetric.console.ui.common.Helper.getMonitorEventGson().toJson(recommendation));
       }
 
       return event;
    }
 
    @Override
-   public boolean a(MonitorEvent event, fT recommendation) {
+   public boolean a(MonitorEvent event, Recommendation recommendation) {
       long increaseAmount = 512L;
       if (event.getApprovedOption() > 1) {
          increaseAmount = recommendation.a(event.getApprovedOption());

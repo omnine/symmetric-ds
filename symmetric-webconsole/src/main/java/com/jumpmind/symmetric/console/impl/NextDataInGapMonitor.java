@@ -38,11 +38,11 @@ public class NextDataInGapMonitor implements InsightMonitor, IBuiltInExtensionPo
                + ".  In an emergency, stop the service, clear "
                + dataGapTableName
                + ", and restart.";
-            fT recommendation = new fT(problemDescription, actionDescription, true);
-            List<fT.a> options = new ArrayList<>();
+            Recommendation recommendation = new Recommendation(problemDescription, actionDescription, true);
+            List<Recommendation.a> options = new ArrayList<>();
             options.add(recommendation.new a(1, "Repair " + dataGapTableName));
             recommendation.a(options);
-            event.setDetails(com.jumpmind.symmetric.console.ui.common.am.getMonitorEventGson().toJson(recommendation));
+            event.setDetails(com.jumpmind.symmetric.console.ui.common.Helper.getMonitorEventGson().toJson(recommendation));
          } else {
             event.setValue(0L);
          }
@@ -67,7 +67,7 @@ public class NextDataInGapMonitor implements InsightMonitor, IBuiltInExtensionPo
    }
 
    @Override
-   public boolean a(MonitorEvent event, fT recommendation) {
+   public boolean a(MonitorEvent event, Recommendation recommendation) {
       if (this.a.getClusterService().lock("Routing")) {
          this.a.getDataService().fixLastDataGap();
          return true;

@@ -42,14 +42,14 @@ public class JVMCrashMonitor implements InsightMonitor, IBuiltInExtensionPoint {
          }
 
          String actionDescription = "Update Java to the latest patch release.";
-         event.setDetails(com.jumpmind.symmetric.console.ui.common.am.getMonitorEventGson().toJson(new fT(problemDescription, actionDescription, false)));
+         event.setDetails(com.jumpmind.symmetric.console.ui.common.Helper.getMonitorEventGson().toJson(new Recommendation(problemDescription, actionDescription, false)));
       }
 
       return event;
    }
 
    @Override
-   public boolean a(MonitorEvent event, fT recommendation) {
+   public boolean a(MonitorEvent event, Recommendation recommendation) {
       return true;
    }
 

@@ -14,7 +14,7 @@ public class JVM64BitMonitor implements InsightMonitor, IBuiltInExtensionPoint {
          event.setValue(1L);
          String problemDescription = "The operating system is 64-bit but the JVM is 32-bit.";
          String actionDescription = "Install a 64-bit JVM to access more memory.";
-         event.setDetails(com.jumpmind.symmetric.console.ui.common.am.getMonitorEventGson().toJson(new fT(problemDescription, actionDescription, false)));
+         event.setDetails(com.jumpmind.symmetric.console.ui.common.Helper.getMonitorEventGson().toJson(new Recommendation(problemDescription, actionDescription, false)));
       } else {
          event.setValue(0L);
       }
@@ -23,7 +23,7 @@ public class JVM64BitMonitor implements InsightMonitor, IBuiltInExtensionPoint {
    }
 
    @Override
-   public boolean a(MonitorEvent event, fT recommendation) {
+   public boolean a(MonitorEvent event, Recommendation recommendation) {
       return true;
    }
 

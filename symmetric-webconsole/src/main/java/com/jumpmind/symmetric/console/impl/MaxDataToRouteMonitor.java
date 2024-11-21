@@ -46,9 +46,9 @@ public class MaxDataToRouteMonitor implements InsightMonitor, IBuiltInExtensionP
                   + maxDataToRoute
                   + ".  This can make routing less efficient and slower in some cases.  It is usually set to 100,000 or higher.";
                String actionDescription = "Increase the max data to route to 100,000 or more.";
-               fT recommendation = new fT(problemDescription, actionDescription, true);
+               Recommendation recommendation = new Recommendation(problemDescription, actionDescription, true);
                recommendation.a("channelId", channelId);
-               List<fT.a> options = new ArrayList<>();
+               List<Recommendation.a> options = new ArrayList<>();
                options.add(
                   recommendation.new a(1, "Increase the max data to route to " + (threshold + 1L) + " for the '" + channelId + "' channel", threshold + 1L)
                );
@@ -69,18 +69,18 @@ public class MaxDataToRouteMonitor implements InsightMonitor, IBuiltInExtensionP
 
          problemDescription = problemDescription + ".  This can make routing less efficient and slower in some cases.";
          String actionDescription = "Increase the max data to route to " + (threshold + 1L) + " or more.";
-         fT recommendation = new fT(problemDescription, actionDescription, true);
-         List<fT.a> options = new ArrayList<>();
+         Recommendation recommendation = new Recommendation(problemDescription, actionDescription, true);
+         List<Recommendation.a> options = new ArrayList<>();
          options.add(recommendation.new a(1, "Increase the max data to route to a minimum of " + (threshold + 1L) + " for all channels", threshold + 1L));
          recommendation.a(options);
-         event.setDetails(com.jumpmind.symmetric.console.ui.common.am.getMonitorEventGson().toJson(recommendation));
+         event.setDetails(com.jumpmind.symmetric.console.ui.common.Helper.getMonitorEventGson().toJson(recommendation));
       }
 
       return event;
    }
 
    @Override
-   public boolean a(MonitorEvent event, fT recommendation) {
+   public boolean a(MonitorEvent event, Recommendation recommendation) {
       int minMaxDataToRoute = (int)event.getThreshold() + 1;
       if (event.getApprovedOption() == 1) {
          minMaxDataToRoute = (int)recommendation.a(1);

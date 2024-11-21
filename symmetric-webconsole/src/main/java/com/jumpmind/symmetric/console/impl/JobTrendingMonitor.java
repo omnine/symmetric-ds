@@ -53,12 +53,12 @@ public class JobTrendingMonitor implements InsightMonitor, IBuiltInExtensionPoin
          IMonitorService monitorService = (IMonitorService)this.a.getExtensionService().getExtensionPoint(IMonitorService.class);
          Date now = new Date();
          List<fn.a> unresolvedJobDetailsList = null;
-         Gson gson = com.jumpmind.symmetric.console.ui.common.am.getMonitorEventGson();
+         Gson gson = com.jumpmind.symmetric.console.ui.common.Helper.getMonitorEventGson();
 
          for (MonitorEvent existingEvent : monitorService.getMonitorEventsByMonitorId(monitor.getMonitorId())) {
             Date notBefore = existingEvent.getNotBefore();
             if (!existingEvent.isResolved() && (notBefore == null || !notBefore.after(now)) && existingEvent.getNodeId().equals(this.a.getNodeId())) {
-               fT recommendation = (fT)gson.fromJson(existingEvent.getDetails(), fT.class);
+               Recommendation recommendation = (Recommendation)gson.fromJson(existingEvent.getDetails(), Recommendation.class);
                List<LinkedTreeMap<String, String>> linkedTreeMapList = (List<LinkedTreeMap<String, String>>)recommendation.c("jobDetailsList");
                Type jobDetailsListType = (new TypeToken<List<fn.a>>() {
                }).getType();
@@ -103,9 +103,9 @@ public class JobTrendingMonitor implements InsightMonitor, IBuiltInExtensionPoin
                   }
 
                   if (problemDescription != null) {
-                     fT recommendation = new fT(problemDescription.trim(), null, false);
+                     Recommendation recommendation = new Recommendation(problemDescription.trim(), null, false);
                      recommendation.a("jobDetailsList", jobDetailsList);
-                     event.setDetails(com.jumpmind.symmetric.console.ui.common.am.getMonitorEventGson().toJson(recommendation));
+                     event.setDetails(com.jumpmind.symmetric.console.ui.common.Helper.getMonitorEventGson().toJson(recommendation));
                   }
 
                   return event;
@@ -212,7 +212,7 @@ public class JobTrendingMonitor implements InsightMonitor, IBuiltInExtensionPoin
    }
 
    @Override
-   public boolean a(MonitorEvent event, fT recommendation) {
+   public boolean a(MonitorEvent event, Recommendation recommendation) {
       return true;
    }
 

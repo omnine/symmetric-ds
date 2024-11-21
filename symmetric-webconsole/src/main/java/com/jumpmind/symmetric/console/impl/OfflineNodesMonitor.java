@@ -45,7 +45,7 @@ public class OfflineNodesMonitor implements MonitorExtension, IBuiltInExtensionP
       String result = null;
 
       try {
-         result = com.jumpmind.symmetric.console.ui.common.am.getMonitorEventGson().toJson(offlineNodes);
+         result = com.jumpmind.symmetric.console.ui.common.Helper.getMonitorEventGson().toJson(offlineNodes);
       } catch (Exception var4) {
          this.a.warn("Unable to convert list of offline nodes to JSON", var4);
       }

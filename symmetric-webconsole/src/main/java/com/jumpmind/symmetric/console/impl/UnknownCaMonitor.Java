@@ -81,19 +81,19 @@ public class UnknownCaMonitor implements InsightMonitor, IBuiltInExtensionPoint,
          }
 
          String actionDescription = "Import the missing certificates and restart SymmetricDS.";
-         fT recommendation = new fT(problemDescription, actionDescription, true);
-         List<fT.a> options = new ArrayList<>();
+         Recommendation recommendation = new Recommendation(problemDescription, actionDescription, true);
+         List<Recommendation.a> options = new ArrayList<>();
          options.add(recommendation.new a(1, optionDescription));
          recommendation.a(options);
          recommendation.a("nodeIdSet", nodeIdSet);
-         event.setDetails(com.jumpmind.symmetric.console.ui.common.am.getMonitorEventGson().toJson(recommendation));
+         event.setDetails(com.jumpmind.symmetric.console.ui.common.Helper.getMonitorEventGson().toJson(recommendation));
       }
 
       return event;
    }
 
    @Override
-   public boolean a(MonitorEvent event, fT recommendation) {
+   public boolean a(MonitorEvent event, Recommendation recommendation) {
       Collection<String> nodeIdSet = (Collection<String>)recommendation.c("nodeIdSet");
       if (nodeIdSet == null) {
          this.b.error("Failed to approve Unknown Certificate Authority insight because node ID set was null.");

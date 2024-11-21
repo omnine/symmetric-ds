@@ -1,11 +1,11 @@
 package com.jumpmind.symmetric.notification;
 
 import com.google.gson.reflect.TypeToken;
-import com.jumpmind.symmetric.console.impl.fe;
+import com.jumpmind.symmetric.console.impl.BatchErrors;
 import com.jumpmind.symmetric.console.model.MonitorEvent;
 import com.jumpmind.symmetric.console.model.Notification;
 import com.jumpmind.symmetric.console.service.IMailService;
-import com.jumpmind.symmetric.console.ui.common.am;
+import com.jumpmind.symmetric.console.ui.common.Helper;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +27,7 @@ public class EmailNotification implements INotificationExtension, IBuiltInExtens
 
    @Override
    public void a(Notification notification, List<MonitorEvent> monitorEvents) {
-      Map<String, String> eventListReplacements = e.a(this.a, monitorEvents);
+      Map<String, String> eventListReplacements = NotificationTemplate.a(this.a, monitorEvents);
       Notification.EmailExpression expression = notification.getEmailExpression();
       String subject = FormatUtils.replaceTokens(expression.getSubject(), eventListReplacements, true);
       Map<String, String> templateMap = expression.getTemplateMap();
@@ -38,7 +38,7 @@ public class EmailNotification implements INotificationExtension, IBuiltInExtens
 
       for (MonitorEvent event : monitorEvents) {
          try {
-            Map<String, String> eventReplacements = e.a(this.a, event);
+            Map<String, String> eventReplacements = NotificationTemplate.a(this.a, event);
             if (event.getType().equals("log")) {
                eventReplacements.put("eventDetails", c(event));
             } else if (event.getType().equals("batchError")) {
@@ -95,7 +95,7 @@ public class EmailNotification implements INotificationExtension, IBuiltInExtens
 
    protected static String b(MonitorEvent event) throws IOException {
       StringBuilder stackTrace = new StringBuilder();
-      fe errors = e(event);
+      BatchErrors errors = e(event);
       if (errors != null) {
          for (OutgoingBatch b : errors.a()) {
             stackTrace.append("The outgoing batch ").append(b.getNodeBatchId());
@@ -137,7 +137,7 @@ public class EmailNotification implements INotificationExtension, IBuiltInExtens
    protected static List<String> d(MonitorEvent event) throws IOException {
       List<String> nodes = null;
       if (event.getDetails() != null) {
-         nodes = (List<String>)am.getMonitorEventGson().fromJson(event.getDetails(), (new TypeToken<List<String>>() {
+         nodes = (List<String>)Helper.getMonitorEventGson().fromJson(event.getDetails(), (new TypeToken<List<String>>() {
          }).getType());
       }
 
@@ -148,10 +148,10 @@ public class EmailNotification implements INotificationExtension, IBuiltInExtens
       return nodes;
    }
 
-   protected static fe e(MonitorEvent event) {
-      fe batches = null;
+   protected static BatchErrors e(MonitorEvent event) {
+      BatchErrors batches = null;
       if (event.getDetails() != null) {
-         batches = (fe)am.getMonitorEventGson().fromJson(event.getDetails(), fe.class);
+         batches = (BatchErrors)Helper.getMonitorEventGson().fromJson(event.getDetails(), BatchErrors.class);
       }
 
       return batches;
@@ -160,7 +160,7 @@ public class EmailNotification implements INotificationExtension, IBuiltInExtens
    protected static List<LogSummary> f(MonitorEvent event) throws IOException {
       List<LogSummary> summaries = null;
       if (event.getDetails() != null) {
-         summaries = (List<LogSummary>)am.getMonitorEventGson().fromJson(event.getDetails(), (new TypeToken<List<LogSummary>>() {
+         summaries = (List<LogSummary>)Helper.getMonitorEventGson().fromJson(event.getDetails(), (new TypeToken<List<LogSummary>>() {
          }).getType());
       }
 

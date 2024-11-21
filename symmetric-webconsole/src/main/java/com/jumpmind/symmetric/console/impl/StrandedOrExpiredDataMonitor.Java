@@ -56,7 +56,7 @@ public class StrandedOrExpiredDataMonitor implements InsightMonitor, IBuiltInExt
          List<Recommendation.a> options = new ArrayList<>();
          options.add(recommendation.new a(1, "Increase the routing.stale.dataid.gap.time.ms parameter by 20 minutes"));
          recommendation.a(options);
-         event.setDetails(com.jumpmind.symmetric.console.ui.common.am.getMonitorEventGson().toJson(recommendation));
+         event.setDetails(com.jumpmind.symmetric.console.ui.common.Helper.getMonitorEventGson().toJson(recommendation));
       }
 
       return event;

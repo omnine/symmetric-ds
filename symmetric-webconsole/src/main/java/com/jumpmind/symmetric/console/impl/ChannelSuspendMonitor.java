@@ -42,18 +42,18 @@ public class ChannelSuspendMonitor implements InsightMonitor, IBuiltInExtensionP
             actionDescription = "Unflag the channels in the " + this.a.getParameterService().getTablePrefix() + "_node_channel_ctl table.";
          }
 
-         fT recommendation = new fT(problemDescription, actionDescription, true);
-         List<fT.a> options = new ArrayList<>();
+         Recommendation recommendation = new Recommendation(problemDescription, actionDescription, true);
+         List<Recommendation.a> options = new ArrayList<>();
          options.add(recommendation.new a(1, "Unsuspend and unignore all channels"));
          recommendation.a(options);
-         event.setDetails(com.jumpmind.symmetric.console.ui.common.am.getMonitorEventGson().toJson(recommendation));
+         event.setDetails(com.jumpmind.symmetric.console.ui.common.Helper.getMonitorEventGson().toJson(recommendation));
       }
 
       return event;
    }
 
    @Override
-   public boolean a(MonitorEvent event, fT recommendation) {
+   public boolean a(MonitorEvent event, Recommendation recommendation) {
       List<String> modifiedNodeChannelList = new ArrayList<>();
       IConfigurationService configService = this.a.getConfigurationService();
       String nodeId = this.a.getNodeId();

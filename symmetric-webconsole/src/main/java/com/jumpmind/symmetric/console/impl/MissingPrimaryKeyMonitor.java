@@ -37,12 +37,12 @@ public class MissingPrimaryKeyMonitor implements InsightMonitor, IBuiltInExtensi
                + tablesMissingPkSet.iterator().next()
                + " table is missing a primary key or unique index, which can cause slow updates and duplicate rows.";
             String actionDescription = "Add a primary key or unique index to the table and rebuild triggers.";
-            event.setDetails(com.jumpmind.symmetric.console.ui.common.am.getMonitorEventGson().toJson(new fT(problemDescription, actionDescription, false)));
+            event.setDetails(com.jumpmind.symmetric.console.ui.common.Helper.getMonitorEventGson().toJson(new Recommendation(problemDescription, actionDescription, false)));
          } else {
             String problemDescription = "The following tables are missing a primary key or unique index, which can cause slow updates and duplicate rows: "
                + tablesMissingPkSet;
             String actionDescription = "Add a primary key or unique index to the tables and rebuild triggers.";
-            event.setDetails(com.jumpmind.symmetric.console.ui.common.am.getMonitorEventGson().toJson(new fT(problemDescription, actionDescription, false)));
+            event.setDetails(com.jumpmind.symmetric.console.ui.common.Helper.getMonitorEventGson().toJson(new Recommendation(problemDescription, actionDescription, false)));
          }
       }
 
@@ -50,7 +50,7 @@ public class MissingPrimaryKeyMonitor implements InsightMonitor, IBuiltInExtensi
    }
 
    @Override
-   public boolean a(MonitorEvent event, fT recommendation) {
+   public boolean a(MonitorEvent event, Recommendation recommendation) {
       return true;
    }
 

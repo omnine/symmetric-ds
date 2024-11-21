@@ -47,18 +47,18 @@ public class MaxBatchToSendMonitor implements InsightMonitor, IBuiltInExtensionP
 
          problemDescription = problemDescription + ".  This can slow down status updates and may result in lost acks in some environments.";
          String actionDescription = "Reduce the max batch to send to " + (threshold - 1L) + " or less.";
-         fT recommendation = new fT(problemDescription, actionDescription, true);
-         List<fT.a> options = new ArrayList<>();
+         Recommendation recommendation = new Recommendation(problemDescription, actionDescription, true);
+         List<Recommendation.a> options = new ArrayList<>();
          options.add(recommendation.new a(1, "Reduce the max batch to send to a maximum of " + (threshold - 1L) + " for all channels", threshold - 1L));
          recommendation.a(options);
-         event.setDetails(com.jumpmind.symmetric.console.ui.common.am.getMonitorEventGson().toJson(recommendation));
+         event.setDetails(com.jumpmind.symmetric.console.ui.common.Helper.getMonitorEventGson().toJson(recommendation));
       }
 
       return event;
    }
 
    @Override
-   public boolean a(MonitorEvent event, fT recommendation) {
+   public boolean a(MonitorEvent event, Recommendation recommendation) {
       int maxMaxBatchToSend = (int)event.getThreshold() - 1;
       if (event.getApprovedOption() == 1) {
          maxMaxBatchToSend = (int)recommendation.a(event.getApprovedOption());

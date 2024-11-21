@@ -62,7 +62,7 @@ public class JVMThreadsMonitor implements InsightMonitor, IBuiltInExtensionPoint
          }
       }
 
-      fT recommendation = null;
+      Recommendation recommendation = null;
       if (blockedCount <= highestCount && (blockedCount != 1 || highestCount != 1)) {
          if (highestCount > 1) {
             event.setValue((long)highestCount);
@@ -82,7 +82,7 @@ public class JVMThreadsMonitor implements InsightMonitor, IBuiltInExtensionPoint
             }
 
             String actionDescription = "Take a support snapshot and send it to support@jumpmind.com.";
-            recommendation = new fT(problemDescription, actionDescription, true);
+            recommendation = new Recommendation(problemDescription, actionDescription, true);
          } else {
             event.setValue(0L);
          }
@@ -90,21 +90,21 @@ public class JVMThreadsMonitor implements InsightMonitor, IBuiltInExtensionPoint
          event.setValue((long)blockedCount);
          String problemDescription = "There are " + blockedCount + " threads that are blocked waiting for a lock.  This may suggest a bottleneck.";
          String actionDescription = "Use the Manage -> JVM Threads screen to find blocked threads.";
-         recommendation = new fT(problemDescription, actionDescription, true);
+         recommendation = new Recommendation(problemDescription, actionDescription, true);
       }
 
       if (recommendation != null) {
-         List<fT.a> options = new ArrayList<>();
+         List<Recommendation.a> options = new ArrayList<>();
          options.add(recommendation.new a(1, "Take a support snapshot and restart SymmetricDS"));
          recommendation.a(options);
-         event.setDetails(com.jumpmind.symmetric.console.ui.common.am.getMonitorEventGson().toJson(recommendation));
+         event.setDetails(com.jumpmind.symmetric.console.ui.common.Helper.getMonitorEventGson().toJson(recommendation));
       }
 
       return event;
    }
 
    @Override
-   public boolean a(MonitorEvent event, fT recommendation) {
+   public boolean a(MonitorEvent event, Recommendation recommendation) {
       String snapshotName = this.a.snapshot(null).toString();
       IConsoleEventService consoleEventService = (IConsoleEventService)this.a.getExtensionService().getExtensionPoint(IConsoleEventService.class);
       String nodeId = this.a.getNodeId();

@@ -64,8 +64,8 @@ public class MaxChannelsMonitor implements InsightMonitor, IBuiltInExtensionPoin
 
          problemDescription = problemDescription + ".  A large number of channels can slow down routing.";
          String actionDescription = "Consolidate triggers to a smaller number of channels.";
-         fT recommendation = new fT(problemDescription, actionDescription, true);
-         List<fT.a> options = new ArrayList<>();
+         Recommendation recommendation = new Recommendation(problemDescription, actionDescription, true);
+         List<Recommendation.a> options = new ArrayList<>();
          String optionDescription = "";
          if (tooManyDataChannels) {
             List<String> dataChannelIdsToReplaceList = new ArrayList<>();
@@ -122,14 +122,14 @@ public class MaxChannelsMonitor implements InsightMonitor, IBuiltInExtensionPoin
 
          options.add(recommendation.new a(1, optionDescription.trim()));
          recommendation.a(options);
-         event.setDetails(com.jumpmind.symmetric.console.ui.common.am.getMonitorEventGson().toJson(recommendation));
+         event.setDetails(com.jumpmind.symmetric.console.ui.common.Helper.getMonitorEventGson().toJson(recommendation));
       }
 
       return event;
    }
 
    @Override
-   public boolean a(MonitorEvent event, fT recommendation) {
+   public boolean a(MonitorEvent event, Recommendation recommendation) {
       List<String> dataChannelIdsToReplaceList = (List<String>)recommendation.c("dataChannelIds");
       List<String> dataReloadChannelIdsToReplaceList = (List<String>)recommendation.c("dataReloadChannelIds");
       List<String> fileSyncChannelIdsToReplaceList = (List<String>)recommendation.c("fileSyncChannelIds");

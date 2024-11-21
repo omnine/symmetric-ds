@@ -39,18 +39,18 @@ public class ChannelsDisabledMonitor implements InsightMonitor, IBuiltInExtensio
          }
 
          String actionDescription = "Enable all channels.";
-         fT recommendation = new fT(problemDescription, actionDescription, true);
-         List<fT.a> options = new ArrayList<>();
+         Recommendation recommendation = new Recommendation(problemDescription, actionDescription, true);
+         List<Recommendation.a> options = new ArrayList<>();
          options.add(recommendation.new a(1, actionDescription.substring(0, actionDescription.length() - 1)));
          recommendation.a(options);
-         event.setDetails(com.jumpmind.symmetric.console.ui.common.am.getMonitorEventGson().toJson(recommendation));
+         event.setDetails(com.jumpmind.symmetric.console.ui.common.Helper.getMonitorEventGson().toJson(recommendation));
       }
 
       return event;
    }
 
    @Override
-   public boolean a(MonitorEvent event, fT recommendation) {
+   public boolean a(MonitorEvent event, Recommendation recommendation) {
       List<String> modifiedChannelIdList = new ArrayList<>();
       IConfigurationService configService = this.a.getConfigurationService();
 

@@ -188,8 +188,8 @@ public class LOBMonitor implements InsightMonitor, IBuiltInExtensionPoint, ISymm
          }
 
          String actionDescription = "Adjust your configuration to account for wide rows.";
-         fT recommendation = new fT(problemDescription, actionDescription, true);
-         List<fT.a> options = new ArrayList<>();
+         Recommendation recommendation = new Recommendation(problemDescription, actionDescription, true);
+         List<Recommendation.a> options = new ArrayList<>();
          options.add(recommendation.new a(1, optionDescription.trim()));
          recommendation.a(options);
          if (wideTableCount > 0) {
@@ -200,7 +200,7 @@ public class LOBMonitor implements InsightMonitor, IBuiltInExtensionPoint, ISymm
             recommendation.a("lobTriggerIdSet", lobTriggerIdSet);
          }
 
-         event.setDetails(com.jumpmind.symmetric.console.ui.common.am.getMonitorEventGson().toJson(recommendation));
+         event.setDetails(com.jumpmind.symmetric.console.ui.common.Helper.getMonitorEventGson().toJson(recommendation));
       }
 
       return event;
@@ -223,7 +223,7 @@ public class LOBMonitor implements InsightMonitor, IBuiltInExtensionPoint, ISymm
    }
 
    @Override
-   public boolean a(MonitorEvent event, fT recommendation) {
+   public boolean a(MonitorEvent event, Recommendation recommendation) {
       ISymmetricDialect dialect = this.a.getTargetDialect();
       boolean isContainsBigLobSupported = dialect instanceof OracleSymmetricDialect
          || dialect instanceof FirebirdSymmetricDialect

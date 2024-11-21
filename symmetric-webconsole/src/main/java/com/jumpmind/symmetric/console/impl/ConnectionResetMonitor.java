@@ -75,19 +75,19 @@ public class ConnectionResetMonitor implements InsightMonitor, IBuiltInExtension
          }
 
          String actionDescription = "Reduce the max batch to send by 50%.";
-         fT recommendation = new fT(problemDescription, actionDescription, true);
-         List<fT.a> options = new ArrayList<>();
+         Recommendation recommendation = new Recommendation(problemDescription, actionDescription, true);
+         List<Recommendation.a> options = new ArrayList<>();
          options.add(recommendation.new a(1, optionDescription));
          recommendation.a(options);
          recommendation.a("channelIdMap", channelIdMap);
-         event.setDetails(com.jumpmind.symmetric.console.ui.common.am.getMonitorEventGson().toJson(recommendation));
+         event.setDetails(com.jumpmind.symmetric.console.ui.common.Helper.getMonitorEventGson().toJson(recommendation));
       }
 
       return event;
    }
 
    @Override
-   public boolean a(MonitorEvent event, fT recommendation) {
+   public boolean a(MonitorEvent event, Recommendation recommendation) {
       Map<String, String> channelIdMap = (Map<String, String>)recommendation.c("channelIdMap");
       if (channelIdMap != null) {
          IConfigurationService configService = this.a.getConfigurationService();

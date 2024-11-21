@@ -16,22 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class BlockMonitor implements InsightMonitor, IBuiltInExtensionPoint, ISymmetricEngineAware {
-   private final Logger a = LoggerFactory.getLogger(
-      new ge(
-            new long[]{
-               6153412712315247243L,
-               -6348623684102535553L,
-               3909780065137416991L,
-               6087296959336269442L,
-               -2148750679028070869L,
-               -2869448436738399951L,
-               3018127492706261409L,
-               -5901248536200439031L,
-               -4028198908276114537L
-            }
-         )
-         .toString()
-   );
+   private final Logger a = LoggerFactory.getLogger(this.getClass());
    private ISymmetricEngine b;
    private boolean c = true;
 
@@ -77,9 +62,9 @@ public class BlockMonitor implements InsightMonitor, IBuiltInExtensionPoint, ISy
          if (secondsBlocked > 0L) {
             String problemDescription = "A transaction has been blocked for " + secondsBlocked + " seconds.";
             String actionDescription = "Ask the user of blocking transactions to commit or rollback, or ask the database administrator to kill the transactions.";
-            fT recommendation = new fT(problemDescription, actionDescription, false);
-            recommendation.a("transactionList", com.jumpmind.symmetric.console.ui.common.am.getMonitorEventGson().toJson(transactions));
-            event.setDetails(com.jumpmind.symmetric.console.ui.common.am.getMonitorEventGson().toJson(recommendation));
+            Recommendation recommendation = new Recommendation(problemDescription, actionDescription, false);
+            recommendation.a("transactionList", com.jumpmind.symmetric.console.ui.common.Helper.getMonitorEventGson().toJson(transactions));
+            event.setDetails(com.jumpmind.symmetric.console.ui.common.Helper.getMonitorEventGson().toJson(recommendation));
          }
       } else {
          event.setValue(0L);
@@ -89,7 +74,7 @@ public class BlockMonitor implements InsightMonitor, IBuiltInExtensionPoint, ISy
    }
 
    @Override
-   public boolean a(MonitorEvent event, fT recommendation) {
+   public boolean a(MonitorEvent event, Recommendation recommendation) {
       return true;
    }
 

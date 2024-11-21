@@ -83,8 +83,8 @@ public class ChannelsForeignKeyMonitor implements InsightMonitor, IBuiltInExtens
       if (!tableNamesToMoveByChannelIdMap.isEmpty()) {
          String problemDescription = "There are tables with foreign key dependencies on " + affectedChannelIdSet.size() + " different channels.";
          String actionDescription = "We recommend moving the tables to the same channel to avoid constraint errors.";
-         fT recommendation = new fT(problemDescription, actionDescription, true);
-         List<fT.a> options = new ArrayList<>();
+         Recommendation recommendation = new Recommendation(problemDescription, actionDescription, true);
+         List<Recommendation.a> options = new ArrayList<>();
          String optionDescription = "";
 
          for (Entry<String, List<String>> tableNamesToMoveByChannelIdEntry : tableNamesToMoveByChannelIdMap.entrySet()) {
@@ -107,14 +107,14 @@ public class ChannelsForeignKeyMonitor implements InsightMonitor, IBuiltInExtens
          options.add(recommendation.new a(1, optionDescription.trim()));
          recommendation.a(options);
          recommendation.a("tableNamesToMoveByChannelId", tableNamesToMoveByChannelIdMap);
-         event.setDetails(com.jumpmind.symmetric.console.ui.common.am.getMonitorEventGson().toJson(recommendation));
+         event.setDetails(com.jumpmind.symmetric.console.ui.common.Helper.getMonitorEventGson().toJson(recommendation));
       }
 
       return event;
    }
 
    @Override
-   public boolean a(MonitorEvent event, fT recommendation) {
+   public boolean a(MonitorEvent event, Recommendation recommendation) {
       ITriggerRouterService triggerRouterService = this.a.getTriggerRouterService();
       IConsoleEventService consoleEventService = (IConsoleEventService)this.a.getExtensionService().getExtensionPoint(IConsoleEventService.class);
       String nodeId = this.a.getNodeId();
