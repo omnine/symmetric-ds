@@ -27,7 +27,7 @@ public class ConnectionPoolMonitor implements InsightMonitor, IBuiltInExtensionP
    public MonitorEvent a(Monitor monitor) {
       MonitorEvent event = new MonitorEvent();
       ISymmetricDialect dialect = this.a.getSymmetricDialect();
-      BasicDataSource dataSource = (BasicDataSource)dialect.getTargetPlatform().getDataSource();
+      BasicDataSource dataSource = dialect.getTargetPlatform().getDataSource();
       boolean allConnectionsInUse = dataSource != null && dataSource.getNumActive() == dataSource.getMaxTotal();
       event.setValue(allConnectionsInUse ? 1L : 0L);
       if (allConnectionsInUse) {
@@ -73,7 +73,7 @@ public class ConnectionPoolMonitor implements InsightMonitor, IBuiltInExtensionP
             int currentValue = Integer.parseInt(prop.get(parameterName, "50"));
             prop.put(parameterName, String.valueOf(currentValue + 10));
             typedPropertiesFactory.save(prop, propFile, "Updated by SymmetricDS");
-            IConsoleEventService consoleEventService = (IConsoleEventService)this.a.getExtensionService().getExtensionPoint(IConsoleEventService.class);
+            IConsoleEventService consoleEventService = this.a.getExtensionService().getExtensionPoint(IConsoleEventService.class);
             String nodeId = this.a.getNodeId();
             consoleEventService.addEvent(new ConsoleEvent(event.getApprovedBy(), "Edit Parameter", nodeId, nodeId, null, parameterName));
          } catch (IOException var12) {

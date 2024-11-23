@@ -59,8 +59,8 @@ public class CPUMonitor extends StackMonitor implements IBuiltInExtensionPoint {
       MonitorEvent event = new MonitorEvent();
       int cpuUsage = this.c();
       this.d.debug("CPU usage is {}", cpuUsage);
-      event.setValue((long)cpuUsage);
-      event.setDetails(this.a((long)cpuUsage, 0L, 0L));
+      event.setValue(cpuUsage);
+      event.setDetails(this.a(cpuUsage, 0L, 0L));
       return event;
    }
 
@@ -109,8 +109,7 @@ public class CPUMonitor extends StackMonitor implements IBuiltInExtensionPoint {
             this.d
                .info(
                   "Cannot parse native command line output because \"{}: {}\".  Output was: \"{}\"",
-                  new Object[]{var15.getClass().getName(), var15.getMessage(), line}
-               );
+                       var15.getClass().getName(), var15.getMessage(), line);
             this.h = false;
          }
 
@@ -172,7 +171,7 @@ public class CPUMonitor extends StackMonitor implements IBuiltInExtensionPoint {
          ArrayList<String> cmdOutput = new ArrayList<>();
 
          try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-            String line = null;
+            String line;
 
             while ((line = reader.readLine()) != null) {
                cmdOutput.add(line);

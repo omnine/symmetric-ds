@@ -30,7 +30,7 @@ public class JVMCrashMonitor implements InsightMonitor, IBuiltInExtensionPoint {
          }
       }
 
-      event.setValue((long)crashFileCount);
+      event.setValue(crashFileCount);
       if (crashFile != null) {
          String problemDescription = "Java crashed on "
             + this.b.format(new Date(crashFile.lastModified()))

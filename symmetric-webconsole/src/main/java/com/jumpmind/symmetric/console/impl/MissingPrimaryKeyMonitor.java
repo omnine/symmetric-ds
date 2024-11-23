@@ -30,7 +30,7 @@ public class MissingPrimaryKeyMonitor implements InsightMonitor, IBuiltInExtensi
          }
       }
 
-      event.setValue((long)tablesMissingPkSet.size());
+      event.setValue(tablesMissingPkSet.size());
       if (tablesMissingPkSet.size() > 0) {
          if (tablesMissingPkSet.size() == 1) {
             String problemDescription = "The "

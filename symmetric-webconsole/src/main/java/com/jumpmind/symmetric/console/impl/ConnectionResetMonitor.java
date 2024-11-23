@@ -23,14 +23,14 @@ import org.slf4j.LoggerFactory;
 
 public class ConnectionResetMonitor implements InsightMonitor, IBuiltInExtensionPoint, ISymmetricEngineAware {
    private ISymmetricEngine a;
-   private Logger b = LoggerFactory.getLogger(this.getClass());
+   private final Logger b = LoggerFactory.getLogger(this.getClass());
 
    @Override
    public MonitorEvent a(Monitor monitor) {
       MonitorEvent event = new MonitorEvent();
       Date notBefore = new Date(0L);
 
-      for (MonitorEvent resolvedEvent : ((IMonitorService)this.a.getExtensionService().getExtensionPoint(IMonitorService.class))
+      for (MonitorEvent resolvedEvent : this.a.getExtensionService().getExtensionPoint(IMonitorService.class)
          .getMonitorEventsFiltered(Integer.MAX_VALUE, this.b(), 0, this.a.getNodeId(), true)) {
          Date lastUpdateTime = resolvedEvent.getLastUpdateTime();
          if (resolvedEvent.getMonitorId().equals(monitor.getMonitorId()) && resolvedEvent.getApprovedOption() > 0 && notBefore.before(lastUpdateTime)) {
@@ -61,7 +61,7 @@ public class ConnectionResetMonitor implements InsightMonitor, IBuiltInExtension
       }
 
       int channelIdCount = channelIdMap.size();
-      event.setValue((long)channelIdCount);
+      event.setValue(channelIdCount);
       if (channelIdCount > 0) {
          String problemDescription;
          String optionDescription;
@@ -95,12 +95,12 @@ public class ConnectionResetMonitor implements InsightMonitor, IBuiltInExtension
          for (String channelId : channelIdMap.keySet()) {
             Channel channel = configService.getChannel(channelId);
             if (channel != null) {
-               channel.setMaxBatchToSend(Integer.valueOf(channelIdMap.get(channelId)));
+               channel.setMaxBatchToSend(Integer.parseInt(channelIdMap.get(channelId)));
                configService.saveChannel(channel, true);
             }
          }
 
-         IConsoleEventService consoleEventService = (IConsoleEventService)this.a.getExtensionService().getExtensionPoint(IConsoleEventService.class);
+         IConsoleEventService consoleEventService = this.a.getExtensionService().getExtensionPoint(IConsoleEventService.class);
          String nodeId = this.a.getNodeId();
          consoleEventService.addEvent(new ConsoleEvent(event.getApprovedBy(), "Channel Modified", nodeId, nodeId, null, channelIdMap.keySet().toString()));
          return true;

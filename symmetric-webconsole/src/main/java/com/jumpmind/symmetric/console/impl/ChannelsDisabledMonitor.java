@@ -29,7 +29,7 @@ public class ChannelsDisabledMonitor implements InsightMonitor, IBuiltInExtensio
       }
 
       int disabledChannelCount = disabledChannelIdList.size();
-      event.setValue((long)disabledChannelCount);
+      event.setValue(disabledChannelCount);
       if (disabledChannelCount > 0) {
          String problemDescription;
          if (disabledChannelCount == 1) {
@@ -62,7 +62,7 @@ public class ChannelsDisabledMonitor implements InsightMonitor, IBuiltInExtensio
          }
       }
 
-      IConsoleEventService consoleEventService = (IConsoleEventService)this.a.getExtensionService().getExtensionPoint(IConsoleEventService.class);
+      IConsoleEventService consoleEventService = this.a.getExtensionService().getExtensionPoint(IConsoleEventService.class);
       String nodeId = this.a.getNodeId();
       consoleEventService.addEvent(new ConsoleEvent(event.getApprovedBy(), "Channel Modified", nodeId, nodeId, null, modifiedChannelIdList.toString()));
       return true;

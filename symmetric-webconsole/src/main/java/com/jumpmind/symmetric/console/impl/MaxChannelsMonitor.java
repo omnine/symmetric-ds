@@ -216,7 +216,7 @@ public class MaxChannelsMonitor implements InsightMonitor, IBuiltInExtensionPoin
             }
          }
 
-         IConsoleEventService consoleEventService = (IConsoleEventService)this.a.getExtensionService().getExtensionPoint(IConsoleEventService.class);
+         IConsoleEventService consoleEventService = this.a.getExtensionService().getExtensionPoint(IConsoleEventService.class);
          String nodeId = this.a.getNodeId();
          if (!modifiedConflictIdList.isEmpty()) {
             consoleEventService.addEvent(new ConsoleEvent(userId, "Conflict Modified", nodeId, nodeId, null, modifiedConflictIdList.toString()));

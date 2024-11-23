@@ -31,7 +31,7 @@ public class StrandedOrExpiredDataMonitor implements InsightMonitor, IBuiltInExt
       }
 
       int totalCount = strandedDataCount + expiredDataCount;
-      event.setValue((long)totalCount);
+      event.setValue(totalCount);
       if (totalCount > 0) {
          String problemDescription = "The Purge Outgoing job detected ";
          if (strandedDataCount == 1) {
@@ -69,7 +69,7 @@ public class StrandedOrExpiredDataMonitor implements InsightMonitor, IBuiltInExt
       int currentValue = parameterService.getInt("routing.stale.dataid.gap.time.ms", 1200000);
       String userId = event.getApprovedBy();
       parameterService.saveParameter(identity.getExternalId(), identity.getNodeGroupId(), "routing.stale.dataid.gap.time.ms", currentValue + 1200000, userId);
-      IConsoleEventService consoleEventService = (IConsoleEventService)this.a.getExtensionService().getExtensionPoint(IConsoleEventService.class);
+      IConsoleEventService consoleEventService = this.a.getExtensionService().getExtensionPoint(IConsoleEventService.class);
       String nodeId = this.a.getNodeId();
       consoleEventService.addEvent(new ConsoleEvent(userId, "Edit Parameter", nodeId, nodeId, null, "routing.stale.dataid.gap.time.ms"));
       return true;

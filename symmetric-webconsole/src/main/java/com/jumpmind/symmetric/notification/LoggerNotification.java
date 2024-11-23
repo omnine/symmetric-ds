@@ -20,7 +20,7 @@ public class LoggerNotification implements INotificationExtension, IBuiltInExten
       Notification.LogExpression expression = notification.getLogExpression();
 
       for (MonitorEvent monitorEvent : monitorEvents) {
-         Map<String, String> replacements = e.a(this.a, monitorEvent);
+         Map<String, String> replacements = NotificationTemplate.a(this.a, monitorEvent);
          String message;
          if (monitorEvent.isResolved()) {
             message = FormatUtils.replaceTokens(expression.getResolved(), replacements, true);

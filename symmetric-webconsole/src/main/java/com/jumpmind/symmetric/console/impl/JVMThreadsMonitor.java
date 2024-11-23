@@ -65,7 +65,7 @@ public class JVMThreadsMonitor implements InsightMonitor, IBuiltInExtensionPoint
       Recommendation recommendation = null;
       if (blockedCount <= highestCount && (blockedCount != 1 || highestCount != 1)) {
          if (highestCount > 1) {
-            event.setValue((long)highestCount);
+            event.setValue(highestCount);
             String problemDescription;
             if (blockedCount >= highestCount - 1) {
                problemDescription = "There are "
@@ -87,7 +87,7 @@ public class JVMThreadsMonitor implements InsightMonitor, IBuiltInExtensionPoint
             event.setValue(0L);
          }
       } else {
-         event.setValue((long)blockedCount);
+         event.setValue(blockedCount);
          String problemDescription = "There are " + blockedCount + " threads that are blocked waiting for a lock.  This may suggest a bottleneck.";
          String actionDescription = "Use the Manage -> JVM Threads screen to find blocked threads.";
          recommendation = new Recommendation(problemDescription, actionDescription, true);
@@ -106,7 +106,7 @@ public class JVMThreadsMonitor implements InsightMonitor, IBuiltInExtensionPoint
    @Override
    public boolean a(MonitorEvent event, Recommendation recommendation) {
       String snapshotName = this.a.snapshot(null).toString();
-      IConsoleEventService consoleEventService = (IConsoleEventService)this.a.getExtensionService().getExtensionPoint(IConsoleEventService.class);
+      IConsoleEventService consoleEventService = this.a.getExtensionService().getExtensionPoint(IConsoleEventService.class);
       String nodeId = this.a.getNodeId();
       consoleEventService.addEvent(new ConsoleEvent(event.getApprovedBy(), "Take Snapshot", nodeId, nodeId, null, snapshotName));
       System.exit(0);

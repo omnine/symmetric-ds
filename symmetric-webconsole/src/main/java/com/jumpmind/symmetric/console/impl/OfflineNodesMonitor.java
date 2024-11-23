@@ -25,8 +25,8 @@ public class OfflineNodesMonitor implements MonitorExtension, IBuiltInExtensionP
    public MonitorEvent a(Monitor monitor) {
       int minutesBeforeNodeIsOffline = this.c.getInt("console.report.as.offline.minutes", 1440);
       MonitorEvent event = new MonitorEvent();
-      List<String> offlineNodes = this.b.findOfflineNodeIds((long)minutesBeforeNodeIsOffline);
-      event.setValue((long)offlineNodes.size());
+      List<String> offlineNodes = this.b.findOfflineNodeIds(minutesBeforeNodeIsOffline);
+      event.setValue(offlineNodes.size());
       event.setDetails(this.a(offlineNodes));
       return event;
    }

@@ -40,7 +40,7 @@ public class LogMonitor implements MonitorExtension, IBuiltInExtensionPoint, ISy
          count += logSummary.getCount();
       }
 
-      event.setValue((long)all.size());
+      event.setValue(all.size());
       event.setCount(count);
       String details = this.a(all);
       if ("interbase".equals(this.b.getDatabasePlatform().getName())) {

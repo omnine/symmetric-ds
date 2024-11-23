@@ -117,7 +117,7 @@ public class LOBMonitor implements InsightMonitor, IBuiltInExtensionPoint, ISymm
       int lobTableCount = lobTableNameSet.size();
       int tableCount = wideTableCount + lobTableCount;
       MonitorEvent event = new MonitorEvent();
-      event.setValue((long)tableCount);
+      event.setValue(tableCount);
       if (tableCount > 0) {
          String problemDescription = "";
          String optionDescription = "";
@@ -230,7 +230,7 @@ public class LOBMonitor implements InsightMonitor, IBuiltInExtensionPoint, ISymm
          || dialect instanceof InterbaseSymmetricDialect;
       ITriggerRouterService triggerRouterService = this.a.getTriggerRouterService();
       IConfigurationService configService = this.a.getConfigurationService();
-      IConsoleEventService consoleEventService = (IConsoleEventService)this.a.getExtensionService().getExtensionPoint(IConsoleEventService.class);
+      IConsoleEventService consoleEventService = this.a.getExtensionService().getExtensionPoint(IConsoleEventService.class);
       String nodeId = this.a.getNodeId();
       Set<String> modifiedTriggerIdSet = new HashSet<>();
       Collection<String> wideTriggerIdSet = (Collection<String>)recommendation.c("wideTriggerIdSet");
@@ -260,7 +260,7 @@ public class LOBMonitor implements InsightMonitor, IBuiltInExtensionPoint, ISymm
 
          if (!modifiedChannelIdSet.isEmpty()) {
             consoleEventService.addEvent(
-               new ConsoleEvent(event.getApprovedBy(), "Channel Modified", nodeId, nodeId, null, modifiedChannelIdSet.toString().toString())
+               new ConsoleEvent(event.getApprovedBy(), "Channel Modified", nodeId, nodeId, null, modifiedChannelIdSet.toString())
             );
          }
       }

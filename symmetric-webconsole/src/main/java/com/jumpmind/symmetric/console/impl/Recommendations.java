@@ -21,7 +21,7 @@ public class Recommendations extends ArrayList<Recommendation> {
       }
    }
 
-   public void a(fS nodeRecommendation) {
+   public void a(NodeRecommendation nodeRecommendation) {
       if (nodeRecommendation != null) {
          Recommendation parentRecommendation = nodeRecommendation.a();
 
@@ -36,7 +36,7 @@ public class Recommendations extends ArrayList<Recommendation> {
       }
    }
 
-   public void b(fS nodeRecommendation) {
+   public void b(NodeRecommendation nodeRecommendation) {
       if (nodeRecommendation != null) {
          Recommendation parentRecommendation = nodeRecommendation.a();
          Recommendation recommendationToRemove = null;

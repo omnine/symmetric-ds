@@ -15,7 +15,7 @@ public class CertExpireMonitor extends StackMonitor implements IBuiltInExtension
       if (notBefore != -1L && notAfter != -1L) {
          long percentage = (System.currentTimeMillis() - notBefore) * 100L / (notAfter - notBefore);
          event.setValue(percentage);
-         event.setDetails("Certificate expires in " + com.jumpmind.symmetric.console.ui.common.am.formatDurationFull(notAfter - System.currentTimeMillis()));
+         event.setDetails("Certificate expires in " + com.jumpmind.symmetric.console.ui.common.Helper.formatDurationFull(notAfter - System.currentTimeMillis()));
       } else {
          event.setValue(0L);
       }

@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 
 public class UnknownCaMonitor implements InsightMonitor, IBuiltInExtensionPoint, ISymmetricEngineAware {
    private ISymmetricEngine a;
-   private Logger b = LoggerFactory.getLogger(this.getClass());
+   private final Logger b = LoggerFactory.getLogger(this.getClass());
 
    @Override
    public MonitorEvent a(Monitor monitor) {
@@ -65,7 +65,7 @@ public class UnknownCaMonitor implements InsightMonitor, IBuiltInExtensionPoint,
       }
 
       int nodeIdCount = nodeIdSet.size();
-      event.setValue((long)nodeIdCount);
+      event.setValue(nodeIdCount);
       if (nodeIdCount > 0) {
          String problemDescription;
          String optionDescription;
@@ -160,7 +160,7 @@ public class UnknownCaMonitor implements InsightMonitor, IBuiltInExtensionPoint,
 
             connection.setSslSocketFactory(sslContext.getSocketFactory());
             ISecurityService securityService = this.a.getSecurityService();
-            IConsoleEventService consoleEventService = (IConsoleEventService)this.a.getExtensionService().getExtensionPoint(IConsoleEventService.class);
+            IConsoleEventService consoleEventService = this.a.getExtensionService().getExtensionPoint(IConsoleEventService.class);
 
             for (Certificate cert : connection.getServerCertificates()) {
                if (cert instanceof X509Certificate) {

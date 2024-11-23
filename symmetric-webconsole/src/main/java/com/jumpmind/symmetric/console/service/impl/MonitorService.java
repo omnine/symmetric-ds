@@ -3,50 +3,12 @@ package com.jumpmind.symmetric.console.service.impl;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import com.jumpmind.symmetric.console.impl.MonitorExtension;
-import com.jumpmind.symmetric.console.impl.InsightMonitor;
-import com.jumpmind.symmetric.console.impl.BatchErrorMonitor;
-import com.jumpmind.symmetric.console.impl.BatchUnsentMonitor;
-import com.jumpmind.symmetric.console.impl.BatchUnsentOfflineMonitor;
-import com.jumpmind.symmetric.console.impl.DataGapMonitor;
-import com.jumpmind.symmetric.console.impl.DiskMonitor;
-import com.jumpmind.symmetric.console.impl.MemoryMonitor;
-import com.jumpmind.symmetric.console.impl.DataUnroutedMonitor;
-import com.jumpmind.symmetric.console.impl.LogMonitor;
-import com.jumpmind.symmetric.console.impl.OfflineNodesMonitor;
-import com.jumpmind.symmetric.console.impl.LoadAverageMonitor;
-import com.jumpmind.symmetric.console.impl.FileHandlesMonitor;
-import com.jumpmind.symmetric.console.impl.JobErrorMonitor;
-import com.jumpmind.symmetric.console.impl.LicenseExpireMonitor;
-import com.jumpmind.symmetric.console.impl.CertExpireMonitor;
-import com.jumpmind.symmetric.console.impl.LicenseRowsMonitor;
-import com.jumpmind.symmetric.console.impl.StrandedOrExpiredDataMonitor;
+import com.jumpmind.symmetric.console.impl.*;
+//import com.jumpmind.symmetric.console.impl.LicenseExpireMonitor;
+//import com.jumpmind.symmetric.console.impl.LicenseRowsMonitor;
+//import com.jumpmind.symmetric.console.impl.UnknownCaMonitor;
 
-import com.jumpmind.symmetric.console.impl.Recommendation;
-import com.jumpmind.symmetric.console.impl.Recommendations;
-
-import com.jumpmind.symmetric.console.impl.UnknownCaMonitor;
-import com.jumpmind.symmetric.console.impl.LOBMonitor;
-import com.jumpmind.symmetric.console.impl.ConnectionResetMonitor;
-import com.jumpmind.symmetric.console.impl.NextDataInGapMonitor;
-import com.jumpmind.symmetric.console.impl.MySqlModeMonitor;
-import com.jumpmind.symmetric.console.impl.MissingPrimaryKeyMonitor;
-import com.jumpmind.symmetric.console.impl.MaxDataToRouteMonitor;
-import com.jumpmind.symmetric.console.impl.MaxChannelsMonitor;
-import com.jumpmind.symmetric.console.impl.MaxBatchToSendMonitor;
-import com.jumpmind.symmetric.console.impl.MaxBatchSizeMonitor;
-import com.jumpmind.symmetric.console.impl.JVMThreadsMonitor;
-import com.jumpmind.symmetric.console.impl.JVMOutOfMemoryMonitor;
-import com.jumpmind.symmetric.console.impl.JVMCrashMonitor;
-import com.jumpmind.symmetric.console.impl.JVM64BitMonitor;
-import com.jumpmind.symmetric.console.impl.JobTrendingMonitor;
-import com.jumpmind.symmetric.console.impl.ConnectionPoolMonitor;
-import com.jumpmind.symmetric.console.impl.ChannelsForeignKeyMonitor;
-import com.jumpmind.symmetric.console.impl.ChannelsDisabledMonitor;
-import com.jumpmind.symmetric.console.impl.ChannelSuspendMonitor;
-import com.jumpmind.symmetric.console.impl.BlockMonitor;
-import com.jumpmind.symmetric.console.impl.CPUMonitor;
-import com.jumpmind.symmetric.console.impl.IRefresh;
+//import com.jumpmind.symmetric.console.impl.ChannelsForeignKeyMonitor;
 
 import com.jumpmind.symmetric.console.model.Monitor;
 import com.jumpmind.symmetric.console.model.MonitorEvent;
@@ -132,9 +94,9 @@ public class MonitorService extends AbstractService implements IMonitorService, 
          new LoadAverageMonitor(),
          new FileHandlesMonitor(),
          new JobErrorMonitor(),
-         new LicenseExpireMonitor(),
+//         new LicenseExpireMonitor(),
          new CertExpireMonitor(),
-         new LicenseRowsMonitor(),
+//         new LicenseRowsMonitor(),
          new JVM64BitMonitor(),
          new JVMCrashMonitor(),
          new JVMOutOfMemoryMonitor(),
@@ -149,13 +111,13 @@ public class MonitorService extends AbstractService implements IMonitorService, 
          new MaxChannelsMonitor(),
          new ChannelSuspendMonitor(),
          new MissingPrimaryKeyMonitor(),
-         new ChannelsForeignKeyMonitor(),
+//         new ChannelsForeignKeyMonitor(),
          new JobTrendingMonitor(),
          new ConnectionPoolMonitor(),
          new ConnectionResetMonitor(),
          new LOBMonitor(),
-         new StrandedOrExpiredDataMonitor(),
-         new UnknownCaMonitor()
+//         new StrandedOrExpiredDataMonitor(),
+//         new UnknownCaMonitor(),
       };
 
       for (MonitorExtension ext : monitorExtensions) {

@@ -23,7 +23,7 @@ public class FileHandlesMonitor implements MonitorExtension, IBuiltInExtensionPo
          int openFiles = Integer.parseInt(mbeanServer.getAttribute(oName, "OpenFileDescriptorCount").toString());
          int maxCount = Integer.parseInt(mbeanServer.getAttribute(oName, "MaxFileDescriptorCount").toString());
          int percent = (int)((float)openFiles * 100.0F / (float)maxCount);
-         event.setValue((long)percent);
+         event.setValue(percent);
          return event;
       } catch (Exception var8) {
          event.setValue(0L);

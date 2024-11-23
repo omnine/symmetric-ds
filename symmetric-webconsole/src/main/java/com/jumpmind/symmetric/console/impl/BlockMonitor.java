@@ -46,15 +46,15 @@ public class BlockMonitor implements InsightMonitor, IBuiltInExtensionPoint, ISy
          List<Transaction> filteredTransactions = new ArrayList<>();
          String dbUser = this.b.getParameterService().getString("db.user");
 
-         for (Transaction transactionx : transactions) {
-            SymmetricUtils.filterTransactions(transactionx, transactionMap, filteredTransactions, dbUser, false, false);
+         for (Transaction transaction : transactions) {
+            SymmetricUtils.filterTransactions(transaction, transactionMap, filteredTransactions, dbUser, false, false);
          }
 
          long secondsBlocked = 0L;
 
-         for (Transaction transactionx : filteredTransactions) {
-            if (StringUtils.equals(transactionx.getUsername(), dbUser) && transactionMap.get(transactionx.getBlockingId()) != null) {
-               secondsBlocked = Math.max(secondsBlocked, transactionx.getDuration() / 1000L);
+         for (Transaction transaction : filteredTransactions) {
+            if (StringUtils.equals(transaction.getUsername(), dbUser) && transactionMap.get(transaction.getBlockingId()) != null) {
+               secondsBlocked = Math.max(secondsBlocked, transaction.getDuration() / 1000L);
             }
          }
 

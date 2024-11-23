@@ -22,11 +22,11 @@ public class BatchUnsentOfflineMonitor implements MonitorExtension, IBuiltInExte
       int unsentBatchCount = 0;
       int minutesBeforeOffline = this.a.getParameterService().getInt("console.report.as.offline.minutes");
 
-      for (String offlineNodeId : this.a.getNodeService().findOfflineNodeIds((long)minutesBeforeOffline)) {
+      for (String offlineNodeId : this.a.getNodeService().findOfflineNodeIds(minutesBeforeOffline)) {
          unsentBatchCount += outgoingBatchService.countUnsentBatchesByTargetNode(offlineNodeId, true);
       }
 
-      event.setValue((long)unsentBatchCount);
+      event.setValue(unsentBatchCount);
       return event;
    }
 

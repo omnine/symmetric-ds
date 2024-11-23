@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 public class NextDataInGapMonitor implements InsightMonitor, IBuiltInExtensionPoint, ISymmetricEngineAware {
    private ISymmetricEngine a;
-   private Logger b = LoggerFactory.getLogger(this.getClass());
+   private final Logger b = LoggerFactory.getLogger(this.getClass());
 
    @Override
    public MonitorEvent a(Monitor monitor) {

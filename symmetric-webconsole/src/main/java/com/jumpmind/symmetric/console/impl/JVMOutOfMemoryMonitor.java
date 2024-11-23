@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 
 public class JVMOutOfMemoryMonitor implements InsightMonitor, IBuiltInExtensionPoint {
    protected static final long a = 86400000L;
-   private Logger c = LoggerFactory.getLogger(this.getClass());
+   private final Logger c = LoggerFactory.getLogger(this.getClass());
    protected final SimpleDateFormat b = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
    @Override
@@ -24,7 +24,7 @@ public class JVMOutOfMemoryMonitor implements InsightMonitor, IBuiltInExtensionP
       MonitorEvent event = new MonitorEvent();
       String oomDateTime = null;
       int oomCount = 0;
-      String recentDateTime = this.b.format(Long.valueOf(System.currentTimeMillis() - 86400000L));
+      String recentDateTime = this.b.format(System.currentTimeMillis() - 86400000L);
 
       try (BufferedReader reader = new BufferedReader(new FileReader("log/wrapper.log"))) {
          String line = null;
@@ -43,7 +43,7 @@ public class JVMOutOfMemoryMonitor implements InsightMonitor, IBuiltInExtensionP
       } catch (Exception var12) {
       }
 
-      event.setValue((long)oomCount);
+      event.setValue(oomCount);
       if (oomDateTime != null) {
          String problemDescription = "Out of memory error on " + oomDateTime + ".";
          if (oomCount > 1) {

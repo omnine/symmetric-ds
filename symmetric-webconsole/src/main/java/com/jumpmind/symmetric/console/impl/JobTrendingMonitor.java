@@ -50,25 +50,25 @@ public class JobTrendingMonitor implements InsightMonitor, IBuiltInExtensionPoin
             ratesByJobMap.put(jobName, rateList);
          }
 
-         IMonitorService monitorService = (IMonitorService)this.a.getExtensionService().getExtensionPoint(IMonitorService.class);
+         IMonitorService monitorService = this.a.getExtensionService().getExtensionPoint(IMonitorService.class);
          Date now = new Date();
-         List<fn.a> unresolvedJobDetailsList = null;
+         List<JobTrendingMonitor.a> unresolvedJobDetailsList = null;
          Gson gson = com.jumpmind.symmetric.console.ui.common.Helper.getMonitorEventGson();
 
          for (MonitorEvent existingEvent : monitorService.getMonitorEventsByMonitorId(monitor.getMonitorId())) {
             Date notBefore = existingEvent.getNotBefore();
             if (!existingEvent.isResolved() && (notBefore == null || !notBefore.after(now)) && existingEvent.getNodeId().equals(this.a.getNodeId())) {
-               Recommendation recommendation = (Recommendation)gson.fromJson(existingEvent.getDetails(), Recommendation.class);
+               Recommendation recommendation = gson.fromJson(existingEvent.getDetails(), Recommendation.class);
                List<LinkedTreeMap<String, String>> linkedTreeMapList = (List<LinkedTreeMap<String, String>>)recommendation.c("jobDetailsList");
-               Type jobDetailsListType = (new TypeToken<List<fn.a>>() {
+               Type jobDetailsListType = (new TypeToken<List<JobTrendingMonitor.a>>() {
                }).getType();
-               unresolvedJobDetailsList = (List<fn.a>)gson.fromJson(gson.toJson(linkedTreeMapList, jobDetailsListType), jobDetailsListType);
+               unresolvedJobDetailsList = (List<JobTrendingMonitor.a>)gson.fromJson(gson.toJson(linkedTreeMapList, jobDetailsListType), jobDetailsListType);
                break;
             }
          }
 
          long largestPeakRuntimePercentIncrease = 0L;
-         List<fn.a> jobDetailsList = new ArrayList<>();
+         List<JobTrendingMonitor.a> jobDetailsList = new ArrayList<>();
          Iterator var43 = runtimesByJobMap.entrySet().iterator();
 
          while (true) {
@@ -81,7 +81,7 @@ public class JobTrendingMonitor implements InsightMonitor, IBuiltInExtensionPoin
                   event.setValue(largestPeakRuntimePercentIncrease);
                   String problemDescription = "";
 
-                  for (fn.a details : jobDetailsList) {
+                  for (JobTrendingMonitor.a details : jobDetailsList) {
                      String var45 = problemDescription
                         + "The "
                         + details.a()
@@ -121,9 +121,9 @@ public class JobTrendingMonitor implements InsightMonitor, IBuiltInExtensionPoin
                      break;
                   }
 
-                  fn.a detailsToAdd = null;
+                  JobTrendingMonitor.a detailsToAdd = null;
 
-                  for (fn.a detailsx : unresolvedJobDetailsList) {
+                  for (JobTrendingMonitor.a detailsx : unresolvedJobDetailsList) {
                      if (detailsx.a().equals(jobNamex)) {
                         long peakRuntime = detailsx.b();
                         long peakRuntimePercentIncrease = (latestRuntime - peakRuntime) * 100L / peakRuntime;
@@ -168,7 +168,7 @@ public class JobTrendingMonitor implements InsightMonitor, IBuiltInExtensionPoin
             if (peakRuntime != 0L) {
                long peakRuntimePercentIncrease = (latestRuntime - peakRuntime) * 100L / peakRuntime;
                if (peakRuntimePercentIncrease > monitor.getThreshold()) {
-                  averageRuntimex /= (long)(runtimeListx.size() - 1);
+                  averageRuntimex /= runtimeListx.size() - 1;
                   long averageRuntimePercentIncrease = (latestRuntime - averageRuntimex) * 100L / averageRuntimex;
                   List<Long> rateList = ratesByJobMap.get(jobNamex);
                   int validRateCount = 0;
@@ -184,12 +184,12 @@ public class JobTrendingMonitor implements InsightMonitor, IBuiltInExtensionPoin
 
                   Long averageRatePercentIncrease = null;
                   if (validRateCount > 0 && averageRatex / (long)validRateCount > 0L) {
-                     averageRatex /= (long)validRateCount;
+                     averageRatex /= validRateCount;
                      averageRatePercentIncrease = (rateList.get(0) - averageRatex) * 100L / averageRatex;
                   }
 
                   jobDetailsList.add(
-                     new fn.a(
+                     new JobTrendingMonitor.a(
                         jobNamex,
                         peakRuntime,
                         averageRuntimex,

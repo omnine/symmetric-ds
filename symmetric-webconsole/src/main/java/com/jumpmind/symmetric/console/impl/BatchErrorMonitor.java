@@ -50,7 +50,7 @@ public class BatchErrorMonitor implements MonitorExtension, IBuiltInExtensionPoi
          incomingErrors.add(batch);
       }
 
-      event.setValue((long)(outgoingErrorCount + incomingErrorCount));
+      event.setValue(outgoingErrorCount + incomingErrorCount);
       BatchErrors wrapper = new BatchErrors();
       if (outgoingErrors.size() > 0) {
          wrapper.a(outgoingErrors);

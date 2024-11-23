@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MySqlModeMonitor implements InsightMonitor, IBuiltInExtensionPoint, ISymmetricEngineAware {
-   private Logger a = LoggerFactory.getLogger(this.getClass());
+   private final Logger a = LoggerFactory.getLogger(this.getClass());
    private ISymmetricEngine b;
 
    @Override

@@ -29,7 +29,7 @@ public class ChannelSuspendMonitor implements InsightMonitor, IBuiltInExtensionP
       }
 
       int channelCount = suspendedOrIgnoredChannelIdList.size();
-      event.setValue((long)channelCount);
+      event.setValue(channelCount);
       if (channelCount > 0) {
          String problemDescription;
          String actionDescription;
@@ -67,7 +67,7 @@ public class ChannelSuspendMonitor implements InsightMonitor, IBuiltInExtensionP
          }
       }
 
-      IConsoleEventService consoleEventService = (IConsoleEventService)this.a.getExtensionService().getExtensionPoint(IConsoleEventService.class);
+      IConsoleEventService consoleEventService = this.a.getExtensionService().getExtensionPoint(IConsoleEventService.class);
       consoleEventService.addEvent(new ConsoleEvent(event.getApprovedBy(), "Node Channel Modified", nodeId, nodeId, null, modifiedNodeChannelList.toString()));
       return true;
    }

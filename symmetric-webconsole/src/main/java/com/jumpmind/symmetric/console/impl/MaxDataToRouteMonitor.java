@@ -57,7 +57,7 @@ public class MaxDataToRouteMonitor implements InsightMonitor, IBuiltInExtensionP
          }
       }
 
-      event.setValue((long)minMaxDataToRoute);
+      event.setValue(minMaxDataToRoute);
       int channelIdCount = channelIdList.size();
       if (channelIdCount > 0) {
          String problemDescription;
@@ -97,7 +97,7 @@ public class MaxDataToRouteMonitor implements InsightMonitor, IBuiltInExtensionP
          }
       }
 
-      IConsoleEventService consoleEventService = (IConsoleEventService)this.a.getExtensionService().getExtensionPoint(IConsoleEventService.class);
+      IConsoleEventService consoleEventService = this.a.getExtensionService().getExtensionPoint(IConsoleEventService.class);
       String nodeId = this.a.getNodeId();
       consoleEventService.addEvent(new ConsoleEvent(event.getApprovedBy(), "Channel Modified", nodeId, nodeId, null, modifiedChannelIdList.toString()));
       return true;

@@ -35,7 +35,7 @@ public class MaxBatchSizeMonitor implements InsightMonitor, IBuiltInExtensionPoi
          }
       }
 
-      event.setValue((long)maxMaxBatchSize);
+      event.setValue(maxMaxBatchSize);
       int channelIdCount = channelIdList.size();
       if (channelIdCount > 0) {
          String problemDescription;
@@ -75,7 +75,7 @@ public class MaxBatchSizeMonitor implements InsightMonitor, IBuiltInExtensionPoi
          }
       }
 
-      IConsoleEventService consoleEventService = (IConsoleEventService)this.a.getExtensionService().getExtensionPoint(IConsoleEventService.class);
+      IConsoleEventService consoleEventService = this.a.getExtensionService().getExtensionPoint(IConsoleEventService.class);
       String nodeId = this.a.getNodeId();
       consoleEventService.addEvent(new ConsoleEvent(event.getApprovedBy(), "Channel Modified", nodeId, nodeId, null, modifiedChannelIdList.toString()));
       return true;
