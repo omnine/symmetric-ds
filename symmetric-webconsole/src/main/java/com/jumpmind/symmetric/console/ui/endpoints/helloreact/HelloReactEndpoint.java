@@ -1,6 +1,8 @@
 package com.jumpmind.symmetric.console.ui.endpoints.helloreact;
 
+import com.jumpmind.symmetric.console.model.MonitorEvent;
 import com.jumpmind.symmetric.console.model.RecentActivity;
+import com.jumpmind.symmetric.console.service.IMonitorService;
 import com.jumpmind.symmetric.console.ui.data.VNNode;
 import com.jumpmind.symmetric.console.ui.data.HealthInfo;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
@@ -15,6 +17,7 @@ import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 import org.jumpmind.symmetric.AbstractSymmetricEngine;
 import org.jumpmind.symmetric.ISymmetricEngine;
@@ -104,7 +107,21 @@ public class HelloReactEndpoint {
         OutgoingBatches outgoingErrors = engine.getOutgoingBatchService().getOutgoingBatchErrors(-1);
         outgoingErrors.filterBatchesForChannels(sysChannels);
         healthInfo.totalOutgoingErrors = outgoingErrors.countBatches(true);
+/*
+        IMonitorService ims = (IMonitorService)engine.getExtensionService().getExtensionPoint(IMonitorService.class);
 
+        List<MonitorEvent> monitorEvents = ims.getMonitorEventsFiltered(-1, null, 0, engine.getNodeId(), false);
+        monitorEvents = monitorEvents.stream().filter(event -> !event.isInsight()).collect(Collectors.toList());
+
+        List<Monitor> monitors = this.b
+                .getMonitorService()
+                .getActiveMonitorsForNode(engine.getParameterService().getString("group.id"), engine.getParameterService().getString("external.id"));
+        monitors = monitors.stream().filter(monitor -> !monitor.isInsight()).collect(Collectors.toList());
+
+
+
+        healthInfo.totalFailedMonitors = monitorEvents.size();
+*/
         this.unroutedDataCount = healthInfo.unroutedDataCount = engine.getRouterService().getUnroutedDataCount();
 
         return healthInfo;
@@ -436,13 +453,13 @@ public class HelloReactEndpoint {
         return new ArrayList<>(mapRAs.values());
     }
 
-    public static enum ChannelType {
+    private enum ChannelType {
         OUTGOING,
         INCOMING,
         BOTH
      }
 
-    public static List<String> getConsoleDisplayChannelIds(ISymmetricEngine engine, ChannelType type) {
+    private List<String> getConsoleDisplayChannelIds(ISymmetricEngine engine, ChannelType type) {
         List<String> channels;
         if (engine.getParameterService().is("console.web.hide.system.info")) {  // this is generally true
            Set<String> channelList = new HashSet<>();
@@ -506,12 +523,12 @@ public class HelloReactEndpoint {
         return channels;
      }
     
-     public static boolean isHidableChannel(String channelId, ISymmetricEngine engine) {
+     private boolean isHidableChannel(String channelId, ISymmetricEngine engine) {
         return engine.getParameterService().is("console.web.hide.system.info")
            && (channelId == null || channelId.equals("heartbeat") || channelId.equals("dynamic") || channelId.equals("0"));
      }
 
-     public static List<String> toChannelIdList(List<NodeChannel> channels) {
+    private List<String> toChannelIdList(List<NodeChannel> channels) {
         List<String> channelIds = new ArrayList<>(channels.size());
   
         for (NodeChannel nodeChannel : channels) {
