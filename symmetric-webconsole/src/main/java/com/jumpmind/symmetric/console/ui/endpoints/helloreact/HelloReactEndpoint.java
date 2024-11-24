@@ -453,6 +453,7 @@ public class HelloReactEndpoint {
         return new ArrayList<>(mapRAs.values());
     }
 
+    //do not define any static method, otherwise Hilla will try to generate all variables inside it into typescript.
     private enum ChannelType {
         OUTGOING,
         INCOMING,

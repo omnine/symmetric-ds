@@ -6,7 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import com.jumpmind.symmetric.console.impl.*;
 //import com.jumpmind.symmetric.console.impl.LicenseExpireMonitor;
 //import com.jumpmind.symmetric.console.impl.LicenseRowsMonitor;
-//import com.jumpmind.symmetric.console.impl.UnknownCaMonitor;
+
 
 //import com.jumpmind.symmetric.console.impl.ChannelsForeignKeyMonitor;
 
@@ -116,8 +116,8 @@ public class MonitorService extends AbstractService implements IMonitorService, 
          new ConnectionPoolMonitor(),
          new ConnectionResetMonitor(),
          new LOBMonitor(),
-//         new StrandedOrExpiredDataMonitor(),
-//         new UnknownCaMonitor(),
+         new StrandedOrExpiredDataMonitor(),
+         new UnknownCaMonitor(),
       };
 
       for (MonitorExtension ext : monitorExtensions) {
