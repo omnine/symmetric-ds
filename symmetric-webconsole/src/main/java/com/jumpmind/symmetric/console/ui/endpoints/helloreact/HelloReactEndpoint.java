@@ -1,6 +1,8 @@
 package com.jumpmind.symmetric.console.ui.endpoints.helloreact;
 
+import com.jumpmind.symmetric.console.model.Monitor;
 import com.jumpmind.symmetric.console.model.MonitorEvent;
+import com.jumpmind.symmetric.console.model.NodeMonitors;
 import com.jumpmind.symmetric.console.model.RecentActivity;
 import com.jumpmind.symmetric.console.service.IMonitorService;
 import com.jumpmind.symmetric.console.ui.data.VNNode;
@@ -18,6 +20,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.Collections;
 import java.util.stream.Collectors;
+import java.util.Comparator;
 
 import org.jumpmind.symmetric.AbstractSymmetricEngine;
 import org.jumpmind.symmetric.ISymmetricEngine;
@@ -255,6 +258,36 @@ public class HelloReactEndpoint {
 
         return new ArrayList<>(mapNode2Status.values());
     }
+
+    @Nonnull
+    public MultiResult getMonitorEvents() {
+        List<ISymmetricEngine> list = new ArrayList<>(AbstractSymmetricEngine.findEngines());
+        ISymmetricEngine engine = list.get(0);
+       Map<String, NodeMonitors> h = new HashMap<>();
+       engine.getNodeService().findAllNodes().forEach(node -> h.put(node.getNodeId(), new NodeMonitors(node.getNodeId())));
+       engine.getExtensionService().getExtensionPoint(IMonitorService.class).getMonitorEvents().forEach(monitorEvent -> {
+          if (!monitorEvent.isResolved() && !monitorEvent.isInsight()) {
+             if (h.get(monitorEvent.getNodeId()) == null) {
+                h.put(monitorEvent.getNodeId(), new NodeMonitors(monitorEvent.getNodeId()));
+             }
+ 
+             h.get(monitorEvent.getNodeId()).getMonitorEvents().put(monitorEvent.getType(), monitorEvent);
+          }
+       });
+       ArrayList<Monitor> monitors = (ArrayList<Monitor>) engine.getExtensionService().getExtensionPoint(IMonitorService.class)
+       .getMonitors()
+       .stream()
+       .filter(monitor -> !monitor.isInsight())
+       .sorted(Comparator.comparing(Monitor::getLastUpdateTime).reversed())
+       .collect(Collectors.toList());
+
+        MultiResult mr = new MultiResult();
+        mr.monitors = monitors;
+        mr.nodeMonitors = new ArrayList<>(h.values());
+        return mr;
+
+    }
+
 
     private void useChannelMinMax(Channel curChannel, NodeStatus ns) {
         if (ns.getMinMaxBatchToSend() == 0 || ns.getMinMaxBatchToSend() > curChannel.getMaxBatchToSend() && curChannel.getMaxBatchToSend() > 0) {
