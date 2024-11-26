@@ -1,0 +1,296 @@
+<?xml version="1.0"?>
+<!DOCTYPE database SYSTEM "http://db.apache.org/torque/dtd/database.dtd">
+
+<database name="symmetric">
+
+    <table name="console_user" description="A console specific table that is used to store console users">
+        <column name="user_id" type="VARCHAR" size="50" required="true" primaryKey="true" description="" />
+        <column name="first_name" type="VARCHAR" size="50" required="true" description="" />
+        <column name="last_name" type="VARCHAR" size="50" required="true" description="" />
+        <column name="email" type="VARCHAR" size="50" required="false" description="" />
+        <column name="hashed_password" type="VARCHAR" size="255" required="false" description="" />
+        <column name="salt" type="VARCHAR" size="50" required="false" description="Salt used in encryption, null if no salt" />
+        <column name="encrypt_meth" type="VARCHAR" size="50" required="false" description="Encryption method for password, i.e. SHA-1 or SHA-512" />
+        <column name="failed_logins" type="TINYINT" default="0" description="Number of failed login attempts" />
+        <column name="auth_meth" type="VARCHAR" size="50" default="INTERNAL" description="" />
+        <column name="user_role" type="VARCHAR" size="50" default="ADMIN" description="" />
+        <column name="create_time" type="TIMESTAMP" description="Timestamp when this entry was created." />
+        <column name="last_login_time" type="TIMESTAMP" required="false" description="Timestamp when user last logged in." />
+        <column name="last_login_ip_addr" type="VARCHAR" size="39" required="false" description="The IP from which the user last logged in." />
+        <column name="last_login_node_id" type="VARCHAR" size="50" required="false" description="The node where the user last logged in." />
+        <column name="last_update_by" type="VARCHAR" size="50"  description="The user who last updated this entry." />
+        <column name="last_update_time" type="TIMESTAMP" description="Timestamp when a user last updated this entry." />
+        <column name="last_password_time" type="TIMESTAMP" description="Timestamp when a user last updated their password." />
+        <column name="otp_key" type="VARCHAR" size="32" required="false" description="Two Factor Authentication Key." />
+        <column name="is_reset_required" type="BOOLEANINT" size="1" required="true" default="0" description="Indicates if a password reset is required." />
+        <column name="confirm_code" type="VARCHAR" size="32" required="false" description="Confirmation code for email verification and forgot password" />
+        <column name="confirm_create_time" type="TIMESTAMP" required="false" description="Create time for a confirmation code" />
+        <column name="is_glass_break_required" type="BOOLEANINT" size="1" required="true" default="0" description="Indicates if a glass break is required to login as the user." />
+        <column name="break_glass_start_time" type="TIMESTAMP" required="false" description="Timestamp when the glass was last broken." />
+        <column name="break_glass_end_time" type="TIMESTAMP" required="false" description="Timestamp when the glass break expires." />
+        <column name="break_glass_user_id" type="VARCHAR" size="50" required="false" description="ID of the user who last broke the glass for this user." />
+        <column name="enabled" type="BOOLEANINT" size="1" required="true" default="1" description="" />
+    </table>
+    
+    <table name="console_user_hist" description="A console specific table that is used to store console users login history">
+        <column name="hist_id" type="INTEGER" required="true" primaryKey="true" description="ID for a users history, lower ID's represent earlier passwords" />
+        <column name="user_id" type="VARCHAR" size="50" required="true" primaryKey="true" description="" />
+        <column name="hashed_password" type="VARCHAR" size="255" required="false" description="" />
+        <column name="salt" type="VARCHAR" size="50" required="false" description="Salt used in encryption, null if no salt" />
+        <column name="encrypt_meth" type="VARCHAR" size="50" required="false" description="Encryption method for password, i.e. SHA-1 or SHA-512" />
+        <column name="auth_meth" type="VARCHAR" size="50" default="INTERNAL" description="" />      
+    </table>
+    
+    <table name="console_event" description="Events triggered by console users">
+        <column name="user_id" type="VARCHAR" size="50" required="true" primaryKey="true" description="The user who last updated this entry." />
+        <column name="event_code" type="VARCHAR" size="50" required="true" primaryKey="true" description="" />
+        <column name="create_time" type="TIMESTAMP" required="true" primaryKey="true" description="Timestamp when this entry was created." />
+        <column name="event_node_id" type="VARCHAR" size="50"  description="Node the event occurred on" />
+        <column name="source_node_id" type="VARCHAR" size="50"  description="Source node of the event" />
+        <column name="target_node_id" type="VARCHAR" size="50"  description="Target node of the event" />
+        <column name="event_value" type="LONGVARCHAR" description="Placeholder for additional information about the event" />
+    </table>
+    
+    <table name="console_role" description="Role for users to assign privileges to use screens">
+        <column name="role_id" type="VARCHAR" size="50" required="true" primaryKey="true" description="" />
+        <column name="parent_role_id" type="VARCHAR" size="50" required="false" description=""/>
+    	<column name="role_description" type="VARCHAR" size="255" description="" />
+        <column name="create_time" type="TIMESTAMP" description="Timestamp when this entry was created." />
+        <column name="last_update_by" type="VARCHAR" size="50" description="The user who last updated this entry." />
+        <column name="last_update_time" type="TIMESTAMP" description="Timestamp when a user last updated this entry." />
+        <foreign-key name="fk_conrole_conrole" foreignTable="console_role">
+			<reference local="parent_role_id" foreign="role_id"></reference>
+		</foreign-key>
+    </table>
+
+    <table name="console_role_privilege" description="List of privileges for a role">
+        <column name="role_id" type="VARCHAR" size="50" required="true" primaryKey="true" description="" />
+        <column name="privilege_name" type="VARCHAR" size="80" required="true" primaryKey="true" description="" />
+        <column name="is_read" type="BOOLEANINT" size="1" required="true" default="0" description="Indicates that this privilege is read only."/>
+        <column name="is_write" type="BOOLEANINT" size="1" required="true" default="0" description="Indicates that this privilege is read/write."/>
+        <foreign-key foreignTable="console_role" name="fk_conrolepriv_conrole">
+            <reference local="role_id" foreign="role_id" />
+        </foreign-key>
+    </table>
+
+	<table name="console_table_stats" description="Statistics for all tables replicating">
+        <column name="table_name" type="VARCHAR" size="255" required="true" primaryKey="true" description="The table name representing the statistics" />
+        <column name="event_type" type="CHAR" size="1" required="true" primaryKey="true" description="The type of event representing this entry. Valid values are 'I' for insert, 'U' for update, or 'D' for delete." />
+        <column name="start_time" type="TIMESTAMP" required="true" primaryKey="true" description="The start time for the period which this row represents." />
+        <column name="end_time" type="TIMESTAMP" required="true" primaryKey="true" description="The start time for the period which this row represents." />
+        <column name="loaded_rows" type="BIGINT" default="0" required="true" description="The rows loaded for this table during this period." />
+        <column name="extracted_rows" type="BIGINT" default="0" description="The rows extracted for this table during this period." />
+    </table>
+
+    <table name="design_diagram" description="">
+        <column name="id" type="VARCHAR" size="36" required="true" primaryKey="true" description="A unique identifier" />
+        <column name="row_id" type="VARCHAR" size="36" required="true" description="A unique identifier for this row across different versions" />
+        <column name="name" type="VARCHAR" size="255" description="" />
+        <column name="create_time" type="TIMESTAMP" description="Timestamp when this entry was created." />
+        <column name="create_by" type="VARCHAR" size="50" description="The user who last updated this entry." />
+        <column name="last_update_by" type="VARCHAR" size="50" description="The user who created this entry." />
+        <column name="last_update_time" type="TIMESTAMP" description="Timestamp when a user last updated this entry." />
+    </table>
+    
+    <table name="diagram_group" description="">
+        <column name="id" type="VARCHAR" size="36" required="true" primaryKey="true" description="A unique identifier" />
+        <column name="diagram_id" type="VARCHAR" size="36" required="true" primaryKey="true" description="A unique identifier" />
+        <column name="name" type="VARCHAR" size="50" description="The name to be displayed"/>
+        <column name="x" type="INTEGER" default="10" required="true" />
+        <column name="y" type="INTEGER" default="10" required="true" />
+        <column name="database_type" type="VARCHAR" size="50" description="The database type this node group represents."/>
+        <column name="approximate_order" type="INTEGER" default="0" required="true" />
+        <column name="create_time" type="TIMESTAMP" description="Timestamp when this entry was created." />
+        <column name="create_by" type="VARCHAR" size="50" description="The user who last updated this entry." />
+        <column name="last_update_by" type="VARCHAR" size="50" description="The user who created this entry." />
+        <column name="last_update_time" type="TIMESTAMP" description="Timestamp when a user last updated this entry." />
+        <foreign-key foreignTable="design_diagram" name="fk_cnfg_dgrm_2_dgrmv">
+            <reference local="diagram_id" foreign="id" />
+        </foreign-key>
+    </table>
+
+    <table name="monitor" description="Defines monitors that will run periodically to look for problems in the system.">
+        <column name="monitor_id" type="VARCHAR" size="128" required="true" primaryKey="true"  description="Unique identifier for a monitor." />
+        <column name="node_group_id" type="VARCHAR" size="50" required="true" default="ALL" description="Target a specific node group to run this monitor.  Target all groups, use a value of 'ALL'." />
+        <column name="external_id" type="VARCHAR" size="255" required="true" default="ALL" description="Target a specific node by its external ID to run this monitor.  Target all nodes, use a value of 'ALL'. "/>
+        <column name="type" type="VARCHAR" size="50" required="true" description="Monitor type to execute.  Built-in types are cpu, disk, memory, batchError, batchUnsent, dataGap, dataUnrouted, and log." />
+        <column name="expression" type="LONGVARCHAR" description="An expression used by the monitor to set options specific to the monitor type." />
+        <column name="threshold" type="BIGINT" required="true" default="0" description="The minimum value returned when the monitor runs that will cause a monitor event to be recorded." />
+        <column name="run_period" type="INTEGER" required="true" default="0" description="Run this monitor periodically every number of seconds." />        
+        <column name="run_count" type="INTEGER" required="true" default="0" description="Average the value across a number of runs before checking threshold." />
+        <column name="severity_level" type="INTEGER" required="true" default="0" description="" />
+        <column name="display_order" type="INTEGER" required="true" default="0" description="Numerical ascending order of monitors to display to user." />
+        <column name="is_insight" type="BOOLEANINT" size="1" required="true" default="0" description="Insights are optional recommendations for changing the system settings, while other monitors are for errors that must be resolved." />
+        <column name="is_pinned" type="BOOLEANINT" size="1" required="true" default="0" description="A pinned monitor will be displayed to the user even if there are no unresolved events for it." />
+        <column name="enabled" type="BOOLEANINT" size="1" required="true" default="0" description="Whether or not this monitor is enabled for execution." />
+        <column name="create_time" type="TIMESTAMP" description="Timestamp when this entry was created." />
+        <column name="last_update_by" type="VARCHAR" size="50" description="The user who last updated this entry." />
+        <column name="last_update_time" type="TIMESTAMP" description="Timestamp when a user last updated this entry." />
+    </table>
+
+    <table name="monitor_event" description="Records an event of when a system problem occurred.">
+        <column name="monitor_id" type="VARCHAR" size="128" required="true" primaryKey="true"  description="Unique identifier for a monitor that caused the event." />
+        <column name="node_id" type="VARCHAR" size="50" required="true" primaryKey="true" description="Unique identifier for the node that created the event." />
+        <column name="event_time" type="TIMESTAMP" required="true" primaryKey="true" description="Timestamp when the event was created." />
+        <column name="host_name" type="VARCHAR" size="60" description="Host name of the node that created the event." />
+        <column name="type" type="VARCHAR" size="50" required="true" description="Monitor type that detected the value recorded." />
+        <column name="threshold" type="BIGINT" required="true" default="0" description="Minimum value for the monitor to cause an event." />
+        <column name="event_value" type="BIGINT" required="true" default="0" description="Actual value detected by the monitor." />
+        <column name="event_count" type="INTEGER" required="true" default="0" description="Number of times this event has occurred and been updated." />
+        <column name="severity_level" type="INTEGER" required="true" default="0" description="Severity level configured for the monitor." />
+        <column name="is_resolved" type="BOOLEANINT" required="true" default="0" description="Whether an event is resolved because its value dropped below the threshold." />
+        <column name="is_notified" type="BOOLEANINT" required="true" default="0" description="Whether a notification was run." />
+        <column name="is_insight" type="BOOLEANINT" required="true" default="0" description="Insights are optional recommendations for changing the system settings, while other monitor events are for errors that must be resolved." />
+        <column name="not_before" type="TIMESTAMP" description="Timestamp before which the recommendation should not be displayed in the web console." />
+        <column name="approved_option" type="INTEGER" required="true" default="0" description="Identifier for the option that was selected when approving the recommendation." />
+        <column name="approved_by" type="VARCHAR" size="50" description="The user who approved the event." />
+        <column name="is_approval_processed" type="BOOLEANINT" required="true" default="0" description="Whether the recommendation's approval has been processed." />
+        <column name="details" type="LONGVARCHAR" description="JSON formatted details about the event" />
+        <column name="last_update_time" type="TIMESTAMP" description="Timestamp when the event was last updated." />
+    </table>
+
+    <table name="notification" description="Defines what notification to send when a monitor detects a problem in the system.">
+        <column name="notification_id" type="VARCHAR" size="128" required="true" primaryKey="true"  description="Unique identifier for a notification." />
+        <column name="node_group_id" type="VARCHAR" size="50" required="true" default="ALL" description="Target a specific node group to run this notification.  To target all groups, use a value of 'ALL'." />
+        <column name="external_id" type="VARCHAR" size="255" required="true" default="ALL" description="Target a specific node by its external ID to run this notification.  To target all nodes, use a value of 'ALL'. "/>
+        <column name="severity_level" type="INTEGER" required="true" default="0" description="Look for monitor events using this severity level or above.  To match all severity levels, use a value of 0." />
+        <column name="type" type="VARCHAR" size="50" required="true" description="Notification type that will send a message.  Built-in types are mail and log." />
+        <column name="expression" type="LONGVARCHAR" description="An expression used by the notification to set options specific to the notification type." />
+        <column name="enabled" type="BOOLEANINT" size="1" required="true" default="0" description="Whether or not this notication is enabled." />
+        <column name="create_time" type="TIMESTAMP" description="Timestamp when this entry was created." />
+        <column name="last_update_by" type="VARCHAR" size="50" description="The user who last updated this entry." />
+        <column name="last_update_time" type="TIMESTAMP" description="Timestamp when a user last updated this entry." />
+    </table>
+
+    <table name="table_group" description="Group of tables to sync together as a dependent unit">
+        <column name="id" type="VARCHAR" size="50" required="true" primaryKey="true" description="A unique identifier" />
+        <column name="source_node_group_id" type="VARCHAR" size="50" required="true" description="The node group where data changes are captured." />
+        <column name="target_node_group_id" type="VARCHAR" size="50" required="true" description="The node group where data changes will be sent." />
+        <column name="description" type="VARCHAR" size="255" description="Optional description" />
+        <column name="writer_type" type="CHAR" size="1" description="Type of writer: D=default, J=JSON" />
+        <column name="create_time" type="TIMESTAMP" description="Timestamp when this entry was created." />
+        <column name="create_by" type="VARCHAR" size="50" description="The user who last updated this entry." />
+        <column name="last_update_by" type="VARCHAR" size="50" description="The user who created this entry." />
+        <column name="last_update_time" type="TIMESTAMP" description="Timestamp when a user last updated this entry." />
+    </table>
+
+    <table name="table_group_hier" description="Relationships between tables for finding dependent data">
+        <column name="id" type="VARCHAR" size="50" required="true" primaryKey="true" description="A unique identifier" />
+        <column name="table_group_id" type="VARCHAR" size="50" required="true" description="Link to parent table_group" />
+        <column name="source_catalog_name" type="VARCHAR" size="255" description="Optional name for the catalog the configured table is in." />
+        <column name="source_schema_name" type="VARCHAR" size="255" description="Optional name for the schema a configured table is in." />
+        <column name="source_table_name" type="VARCHAR" size="255" required="true"  description="The name of the source table that will be grouped." />
+        <column name="parent_id" type="VARCHAR" size="50" description="A unique identifier of parent" />
+        <column name="relation_type" type="CHAR" size="1" description="When writer type is non-default, this defines the structure of data in hierarchy when writing output: O=object, A=array" />
+        <column name="primary_column_names" type="LONGVARCHAR" required="true" description="The primary key columns name on this table that uniquely identify a row, comma-separated" />
+        <column name="local_column_names" type="LONGVARCHAR" description="The local key columns name on this table that reference a parent table, comma-separated" />
+        <column name="parent_column_names" type="LONGVARCHAR" description="The parent column names on the parent that join with local columns, comma-separated" />
+        <column name="create_time" type="TIMESTAMP" description="Timestamp when this entry was created." />
+        <column name="create_by" type="VARCHAR" size="50" description="The user who last updated this entry." />
+        <column name="last_update_by" type="VARCHAR" size="50" description="The user who created this entry." />
+        <column name="last_update_time" type="TIMESTAMP" description="Timestamp when a user last updated this entry." />
+        <foreign-key foreignTable="table_group" name="fk_tgh_2_tg">
+            <reference local="table_group_id" foreign="id" />
+        </foreign-key>
+    </table>
+
+    <table name="compare_request" description="Compare one or more tables between source and target nodes with option to repair data">
+        <column name="source_node_id" type="VARCHAR" size="50" required="true" primaryKey="true" description="Unique identifier for the source node." />
+        <column name="target_node_id" type="VARCHAR" size="50" required="true" primaryKey="true" description="Unique identifier for the target node." />
+        <column name="trigger_id" type="VARCHAR" size="128" required="true" primaryKey="true" description="Unique identifier for a trigger associated with the request, or ALL for all tables." />
+        <column name="router_id" type="VARCHAR" size="50" required="true" primaryKey="true" description="Unique description of the router associated with the request, or ALL for all tables." />
+        <column name="create_time" type="TIMESTAMP" size="2" required="true" primaryKey="true" description="Timestamp when this entry was created." />
+        <column name="use_table_checksum" type="BOOLEANINT" size="1" required="true" default="0" description="Use a checksum on the table to detect changes, otherwise a simple row count is used for comparison." />
+        <column name="use_inflight" type="BOOLEANINT" size="1" required="true" default="0" description="Use inflight changes , which are changes in the process of syncing.  Currently, it assumes inflight changes will sync successfully, so they are ignored during comparisons.  Requires use_table_checksum = 1." />
+        <column name="use_row_level" type="BOOLEANINT" size="1" required="true" default="0" description="When a table count or checksum doesn't match, find the rows that are different, missing, and extra." />
+        <column name="use_chunking" type="BOOLEANINT" size="1" required="true" default="0" description="When finding row differences, use a chunking technique that performs a checksum on groups of rows.  Instead of sending all rows with their checksum for comparison, it will send chunks for efficient network communication.  The algorithm will limit the number of chunks to 100." />
+        <column name="use_script" type="BOOLEANINT" size="1" required="true" default="0" description="Generates a script of the differences as inserts, updates, and deletes, but does not apply the script.  The use_repair option will apply the script." />
+        <column name="use_repair" type="BOOLEANINT" size="1" required="true" default="0" description="Runs the repair script of inserts, updates, and deletes on the target so it matches the source." />
+        <column name="checksum_algorithm" type="VARCHAR" size="15" required="true" default="crc32" description="One of CRC32, PureJavaCrc32, Adler32, or XXHash32" />
+        <column name="decimal_scale" type="SMALLINT" default="-1" description="Number of digits to the right of the decimal point to use when comparing numbers." />
+        <column name="timestamp_scale" type="SMALLINT" default="-1" description="Number of digits to the right of the decimal point for fractional seconds to use when comparing timestamps." />
+        <column name="real_scale" type="SMALLINT" default="-1" description="Number of digits to use when comparing floating point numbers." />
+        <column name="not_before" type="TIMESTAMP" size="2" description="User requested start time." />
+        <column name="processed" type="BOOLEANINT" size="1" required="true" default="0"  description="System field indicates compare_table_status was created." />
+        <column name="completed" type="BOOLEANINT" size="1" required="true" default="0"  description="System field to indicate request is complete." />
+        <column name="cancelled" type="BOOLEANINT" size="1" required="true" default="0"  description="User can set this flag to interrupt and cancel." />
+        <column name="compare_id" type="BIGINT" description="System field with compare ID sequence." />
+		<column name="last_update_by" type="VARCHAR" size="50"  description="The user who last updated this entry." />
+        <column name="last_update_time" type="TIMESTAMP" size="2" required="true" description="Timestamp when a user or the system last updated this entry." />
+        <index name="idx_cr_snid_cid">
+			<index-column name="source_node_id" />
+            <index-column name="compare_id" />
+        </index>
+    </table>
+
+    <table name="compare_status" description="Compare one or more tables between source and target nodes with option to repair data">
+        <column name="compare_id" type="BIGINT" required="true" primaryKey="true" description="System field with compare ID sequence." />
+        <column name="source_node_id" type="VARCHAR" size="50" required="true" primaryKey="true" description="Unique identifier for the source node." />
+        <column name="target_node_id" type="VARCHAR" size="50" required="true" description="Unique identifier for the target node." />
+        <column name="start_time" type="TIMESTAMP" size="2" description="Timestamp when this entry was created." />
+        <column name="end_time" type="TIMESTAMP" size="2" description="Timestamp when this entry was created." />
+        <column name="tables_requested" type="INTEGER" required="true" default="0" description="The number of tables associated with this compare, which is generated by the system."/>
+        <column name="tables_compared" type="INTEGER" required="true" default="0" description="The number of tables completed for this compare, which is generated by the system."/>
+        <column name="completed" type="BOOLEANINT" size="1" required="true" default="0"  description="System field to indicate request is complete." />
+        <column name="cancelled" type="BOOLEANINT" size="1" required="true" default="0"  description="System field to indicate request was cancelled." />
+        <column name="error_flag"  type="BOOLEANINT" size="1" required="true" default="0" description="A flag that indicates that this request is in error during the last attempt to process." />
+        <column name="create_time" type="TIMESTAMP" size="2" required="true" primaryKey="true" description="Timestamp when this entry was created." />
+        <column name="last_update_time" type="TIMESTAMP" size="2" required="true" description="Timestamp when a user or the system last updated this entry." />
+    </table>
+
+    <table name="compare_table_status" description="Status by table of a compare_request to compare one or more tables.">
+        <column name="compare_id" type="BIGINT" required="true" primaryKey="true" description="Compare ID sequence." />
+        <column name="source_node_id" type="VARCHAR" size="50" required="true" primaryKey="true" description="Unique identifier for the source node." />
+        <column name="step_num" type="INTEGER" required="true" primaryKey="true" description="Step number for each table to compare." />
+        <column name="target_node_id" type="VARCHAR" size="50" required="true" description="Unique identifier for the target node." />
+        <column name="current_level" type="CHAR" size="1" required="true" default="T" description="Level of current comparision.  T=table, C=chunk, R=row" />
+        <column name="status" type="CHAR" size="2" required="true" default="RQ" description="Status of this table comparisons.  RQ=requested and queued, NE=new and processing, SE=sent payload for level, OK=complete" />
+        <column name="source_catalog_name" type="VARCHAR" size="255" description="The catalog name where the source table resides." />
+        <column name="source_schema_name" type="VARCHAR" size="255" description="The schema name where the source table resides." />
+        <column name="source_table_name" type="VARCHAR" size="255" required="true"  description="The name of the source table." />
+        <column name="source_row_count" type="BIGINT" required="true" default="0" description="The number of rows in the source table." />
+        <column name="source_row_count_millis" type="BIGINT" required="true" default="0" description="Time it took to count rows at source when use_table_checksum = 0." />
+        <column name="source_row_extract_millis" type="BIGINT" required="true" default="0" description="Time it took to extract all rows at source, either because use_table_checksum = 1 or because use_repair = 1 and the row count is different." />
+        <column name="source_row_extract_size" type="BIGINT" required="true" default="0" description="The number of bytes extracted to staging from the source table." />
+        <column name="source_row_sort_millis" type="BIGINT" required="true" default="0" description="Time it took to sort all rows at source, either because use_table_checksum = 1 or because use_repair = 1 and the row count is different" />
+        <column name="source_row_checksum_millis" type="BIGINT" required="true" default="0" description="Time it took to checksum all rows at source, either because use_table_checksum = 1 or because use_repair = 1 and the row count is different" />
+        <column name="source_row_filter_millis" type="BIGINT" required="true" default="0" description="Time it took to filter rows for chunks that didn't match at the source." />
+        <column name="source_table_checksum_millis" type="BIGINT" required="true" default="0" description="Time it took to checksum the table at source when use_table_checksum = 1" />
+        <column name="source_inflight_count" type="BIGINT" required="true" default="0" description="The number of inflight rows waiting to sync for the source table." />
+        <column name="source_inflight_millis" type="BIGINT" required="true" default="0" description="The number of millis to process inflight rows." />
+        <column name="source_chunk_millis" type="BIGINT" required="true" default="0" description="Time it took to process rows into chunks at source." />
+        <column name="target_catalog_name" type="VARCHAR" size="255" description="The catalog name where the target table resides." />
+        <column name="target_schema_name" type="VARCHAR" size="255" description="The schema name where the target table resides." />
+        <column name="target_table_name" type="VARCHAR" size="255" required="true"  description="The name of the target table." />
+        <column name="target_row_count" type="BIGINT" required="true" default="0" description="The number of rows in the target table." />
+        <column name="target_row_count_millis" type="BIGINT" required="true" default="0" description="Time it took to count rows at target when use_table_checksum = 0." />
+        <column name="target_row_extract_millis" type="BIGINT" required="true" default="0" description="Time it took to extract all rows at target, either because use_table_checksum = 1 or because use_repair = 1 and the row count is different." />
+        <column name="target_row_extract_size" type="BIGINT" required="true" default="0" description="The number of bytes extracted to staging from the target table." />
+        <column name="target_row_sort_millis" type="BIGINT" required="true" default="0" description="Time it took to sort all rows at target, either because use_table_checksum = 1 or because use_repair = 1 and the row count is different" />
+        <column name="target_row_checksum_millis" type="BIGINT" required="true" default="0" description="Time it took to checksum all rows at target, either because use_table_checksum = 1 or because use_repair = 1 and the row count is different" />
+        <column name="target_row_filter_millis" type="BIGINT" required="true" default="0" description="Time it took to filter rows for chunks that didn't match at the target." />
+        <column name="target_table_checksum_millis" type="BIGINT" required="true" default="0" description="Time it took to checksum the table at target when use_table_checksum = 1" />
+        <column name="target_inflight_count" type="BIGINT" required="true" default="0" description="The number of inflight rows waiting to sync for the target table." />
+        <column name="target_inflight_millis" type="BIGINT" required="true" default="0" description="The number of millis to process inflight rows." />
+        <column name="target_chunk_millis" type="BIGINT" required="true" default="0" description="Time it took to process rows into chunks at target." />
+        <column name="chunk_match_count" type="BIGINT" required="true" default="0" description="Number of chunks that matched, if chunk level is used." />
+        <column name="chunk_diff_count" type="BIGINT" required="true" default="0" description="Number of chunks that did not match, if chunk level is used." />
+        <column name="chunk_diff_list" type="VARCHAR" size="800" description="List of chunk numbers (up to 200) that are different and need row-level comparison." />
+        <column name="chunk_compare_millis" type="BIGINT" required="true" default="0" description="Time it took to compare chunks." />
+        <column name="row_match_count" type="BIGINT" required="true" default="0" description="Number of rows that matched." />
+        <column name="row_diff_count" type="BIGINT" required="true" default="0" description="Number of rows that did not match." />
+        <column name="row_missing_count" type="BIGINT" required="true" default="0" description="Number of rows missing on the target." />
+        <column name="row_extra_count" type="BIGINT" required="true" default="0" description="Number of rows that were extra on the target." />
+        <column name="row_compare_millis" type="BIGINT" required="true" default="0" description="Time it took to compare rows." />
+        <column name="repair_query_millis" type="BIGINT" required="true" default="0" description="Time it took to query and write repair script." />
+        <column name="repair_load_millis" type="BIGINT" required="true" default="0" description="Time it took to load repair script." />
+        <column name="repair_reject_count" type="INTEGER" required="true" default="0" description="The number of SQL statements that failed to apply from the repair SQL script." />
+        <column name="match_flag" type="BOOLEANINT" size="1" required="true" default="0"  description="After status is OK, whether or not source and target tables match." />
+        <column name="ignore_flag" type="BOOLEANINT" size="1" required="true" default="0"  description="Indicates this table was ignored by user cancelling request." />
+        <column name="error_flag" type="BOOLEANINT" size="1" required="true" default="0"  description="Indicates an error occurred." />
+        <column name="error_message" type="LONGVARCHAR" description="When error_flag is set, this contains details on the error." />
+        <column name="start_time" type="TIMESTAMP" size="2" description="When comparison for this table started." />
+        <column name="end_time" type="TIMESTAMP" size="2" description="When comparison for this table ended." />
+        <column name="last_update_time" type="TIMESTAMP" size="2" required="true" description="Timestamp when the system last updated this entry." />
+    </table>
+</database>

@@ -5,6 +5,7 @@ import com.jumpmind.symmetric.console.model.MonitorEvent;
 import com.jumpmind.symmetric.console.model.NodeMonitors;
 import com.jumpmind.symmetric.console.model.RecentActivity;
 import com.jumpmind.symmetric.console.service.IMonitorService;
+import com.jumpmind.symmetric.console.service.impl.MonitorService;
 import com.jumpmind.symmetric.console.ui.data.VNNode;
 import com.jumpmind.symmetric.console.ui.data.HealthInfo;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
@@ -263,9 +264,12 @@ public class HelloReactEndpoint {
     public MultiResult getMonitorEvents() {
         List<ISymmetricEngine> list = new ArrayList<>(AbstractSymmetricEngine.findEngines());
         ISymmetricEngine engine = list.get(0);
-       Map<String, NodeMonitors> h = new HashMap<>();
-       engine.getNodeService().findAllNodes().forEach(node -> h.put(node.getNodeId(), new NodeMonitors(node.getNodeId())));
-       engine.getExtensionService().getExtensionPoint(IMonitorService.class).getMonitorEvents().forEach(monitorEvent -> {
+        Map<String, NodeMonitors> h = new HashMap<>();
+        engine.getNodeService().findAllNodes().forEach(node -> h.put(node.getNodeId(), new NodeMonitors(node.getNodeId())));
+        IMonitorService monitorService = engine.getExtensionService().getExtensionPoint(IMonitorService.class);
+        ((MonitorService) monitorService).setSymmetricEngine(engine);
+
+        monitorService.getMonitorEvents().forEach(monitorEvent -> {
           if (!monitorEvent.isResolved() && !monitorEvent.isInsight()) {
              if (h.get(monitorEvent.getNodeId()) == null) {
                 h.put(monitorEvent.getNodeId(), new NodeMonitors(monitorEvent.getNodeId()));
@@ -274,7 +278,7 @@ public class HelloReactEndpoint {
              h.get(monitorEvent.getNodeId()).getMonitorEvents().put(monitorEvent.getType(), monitorEvent);
           }
        });
-       ArrayList<Monitor> monitors = (ArrayList<Monitor>) engine.getExtensionService().getExtensionPoint(IMonitorService.class)
+       ArrayList<Monitor> monitors = (ArrayList<Monitor>) monitorService
        .getMonitors()
        .stream()
        .filter(monitor -> !monitor.isInsight())
