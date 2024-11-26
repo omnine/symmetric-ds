@@ -19,7 +19,7 @@ export default function MonitorsView() {
     }, []);
 
     const drawItem = ({item, monitor}: {item: any, monitor: Monitor}) => {
-       const me:MonitorEvent = item.getMonitorEvents().get(monitor.type);
+       const me: MonitorEvent = monitor.type ? item.monitorEvents[monitor.type] : null;
 
       var iconColor = "#77DD76";
       if (me != null && !me.resolved) {
@@ -44,7 +44,7 @@ export default function MonitorsView() {
       return (<Grid items={multiResult.nodeMonitors} columnReorderingAllowed>
         <GridColumn path="nodeId" header="nodeId" resizable />
         {multiResult.monitors && multiResult.monitors.filter((monitor): monitor is Monitor => monitor !== undefined).map((monitor: Monitor) => (
-            <GridColumn>
+            <GridColumn header={monitor.monitorId}>
               {({ item }) => drawItem({item, monitor})}
             </GridColumn>
       ))}
