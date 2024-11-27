@@ -45,7 +45,7 @@ import org.jumpmind.symmetric.web.FailedEngineInfo;
 // The only difference is that @BrowserCallable doesn't support the value attribute.
 @Endpoint
 @AnonymousAllowed
-public class HelloReactEndpoint {
+public class ProAPIEndpoint {
     private long unroutedDataCount = 0;
     @Nonnull
     public String sayHello() {

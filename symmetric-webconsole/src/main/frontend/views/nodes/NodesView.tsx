@@ -2,7 +2,7 @@ import {Grid} from '@vaadin/react-components/Grid';
 import {GridColumn} from '@vaadin/react-components/GridColumn';
 import {GridColumnGroup} from '@vaadin/react-components/GridColumnGroup';
 import {GridSelectionColumn} from '@vaadin/react-components/GridSelectionColumn';
-import { HelloReactEndpoint } from 'Frontend/generated/endpoints.js';
+import { ProAPIEndpoint } from 'Frontend/generated/endpoints.js';
 import { useState, useEffect } from 'react';
 
 import NodeStatus from 'Frontend/generated/com/jumpmind/symmetric/console/model/NodeStatus';
@@ -16,8 +16,8 @@ export default function NodesView() {
   const [healthInfo, setHealthInfo] = useState<HealthInfo | null>(null);
   const [nodes, setNodes] = useState<(NodeStatus | undefined)[]>([]);
   useEffect(() => {
-    HelloReactEndpoint.checkHealth().then(healthInfo => setHealthInfo(healthInfo));
-    HelloReactEndpoint.listNodes().then(nodes => setNodes(nodes));
+    ProAPIEndpoint.checkHealth().then(healthInfo => setHealthInfo(healthInfo));
+    ProAPIEndpoint.listNodes().then(nodes => setNodes(nodes));
   }, []);
 
 

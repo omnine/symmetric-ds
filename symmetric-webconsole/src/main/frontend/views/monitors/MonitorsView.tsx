@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {HelloReactEndpoint} from "Frontend/generated/endpoints";
+import {ProAPIEndpoint} from "Frontend/generated/endpoints";
 
 
 import {Grid} from '@vaadin/react-components/Grid';
@@ -15,7 +15,7 @@ export default function MonitorsView() {
     const [multiResult, setMultiResult] = useState<MultiResult | null>(null);
 
     useEffect(() => {
-        HelloReactEndpoint.getMonitorEvents().then(mr => setMultiResult(mr));
+      ProAPIEndpoint.getMonitorEvents().then(mr => setMultiResult(mr));
     }, []);
 
     const drawItem = ({item, monitor}: {item: any, monitor: Monitor}) => {

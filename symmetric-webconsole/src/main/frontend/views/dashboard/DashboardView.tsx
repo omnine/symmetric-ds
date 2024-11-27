@@ -1,4 +1,4 @@
-import { HelloReactEndpoint } from 'Frontend/generated/endpoints.js';
+import { ProAPIEndpoint } from 'Frontend/generated/endpoints.js';
 import { useState, useEffect } from 'react';
 
 
@@ -17,7 +17,7 @@ export default function DashboardView() {
   const [healthInfo, setHealthInfo] = useState<HealthInfo | null>(null);
 
   useEffect(() => {
-    HelloReactEndpoint.checkHealth().then(healthInfo => setHealthInfo(healthInfo));
+    ProAPIEndpoint.checkHealth().then(healthInfo => setHealthInfo(healthInfo));
   }, []);
 
   const renderHealthInfo = (hi: HealthInfo) => {
