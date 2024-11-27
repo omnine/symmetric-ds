@@ -5,6 +5,7 @@ import { createBrowserRouter, IndexRouteObject, NonIndexRouteObject, useMatches 
 
 const AboutView = lazy(async () => import('Frontend/views/about/AboutView.js'));
 const MonitorsView = lazy(async () => import('Frontend/views/monitors/MonitorsView.js'));
+const NodesView = lazy(async () => import('Frontend/views/nodes/NodesView.js'));
 export type MenuProps = Readonly<{
   icon?: string;
   title?: string;
@@ -37,6 +38,7 @@ export const routes: readonly ViewRouteObject[] = [
       { path: '/', element: <HelloReactView />, handle: { icon: 'globe-solid', title: 'Server Nodes' } },
       { path: '/about', element: <AboutView />, handle: { icon: 'file', title: 'About' } },
       { path: '/monitors', element: <MonitorsView />, handle: { icon: 'file', title: 'Monitors' } },
+      { path: '/nodes', element: <NodesView />, handle: { icon: 'file', title: 'Nodes' } },
     ],
   },
 ];
