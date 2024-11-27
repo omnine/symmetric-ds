@@ -7,6 +7,7 @@ import { MenuProps, routes, useViewMatches, ViewRouteObject } from 'Frontend/rou
 import { Suspense } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import css from './MainLayout.module.css';
+import { Icon } from '@vaadin/react-components/Icon.js';
 
 type MenuRoute = ViewRouteObject &
   Readonly<{
@@ -23,6 +24,22 @@ export default function MenuOnLeftLayout() {
     (route) => route.path && route.handle && route.handle.icon && route.handle.title
   ) as readonly MenuRoute[];
 
+  /*
+  Don't know how to pack line-awesome in Hilla, let us use Vaadin icons instead
+
+                    <span
+                    className={css.navicon}
+                    style={
+                      {
+                        '--mask-image': `url('line-awesome/svg/${icon}.svg')`,
+                        'mask-image': 'var(--mask-image)',
+                        '-webkit-mask-image': 'var(--mask-image)'
+                      } as any
+                    }
+                    aria-hidden="true"
+                  ></span>
+  */
+
   return (
     <AppLayout className="block h-full" primarySection="drawer">
       <header slot="drawer">
@@ -38,17 +55,7 @@ export default function MenuOnLeftLayout() {
             >
               {({ isActive }) => (
                 <Item key={path} selected={isActive}>
-                  <span
-                    className={css.navicon}
-                    style={
-                      {
-                        '--mask-image': `url('line-awesome/svg/${icon}.svg')`,
-                        'mask-image': 'var(--mask-image)',
-                        '-webkit-mask-image': 'var(--mask-image)'
-                      } as any
-                    }
-                    aria-hidden="true"
-                  ></span>
+                  <Icon icon={`vaadin:${icon}`} />
                   {title}
                 </Item>
               )}
