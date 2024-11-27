@@ -12,7 +12,7 @@ import HealthInfo from 'Frontend/generated/com/jumpmind/symmetric/console/ui/dat
 
 import { Link } from 'react-router-dom';
 
-export default function HelloReactView() {
+export default function DashboardView() {
   const [name, setName] = useState('');
   const [healthInfo, setHealthInfo] = useState<HealthInfo | null>(null);
 

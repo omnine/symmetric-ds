@@ -1,4 +1,4 @@
-import HelloReactView from 'Frontend/views/helloreact/HelloReactView.js';
+import DashboardView from 'Frontend/views/dashboard/DashboardView.js';
 import MainLayout from 'Frontend/views/MainLayout.js';
 import { lazy } from 'react';
 import { createBrowserRouter, IndexRouteObject, NonIndexRouteObject, useMatches } from 'react-router-dom';
@@ -35,7 +35,7 @@ export const routes: readonly ViewRouteObject[] = [
     element: <MainLayout />,
     handle: { icon: 'null', title: 'Main' },
     children: [
-      { path: '/', element: <HelloReactView />, handle: { icon: 'globe-solid', title: 'Overview' } },
+      { path: '/', element: <DashboardView />, handle: { icon: 'globe-solid', title: 'Overview' } },
       { path: '/about', element: <AboutView />, handle: { icon: 'file', title: 'About' } },
       { path: '/monitors', element: <MonitorsView />, handle: { icon: 'file', title: 'Monitors' } },
       { path: '/nodes', element: <NodesView />, handle: { icon: 'file', title: 'Nodes' } },
