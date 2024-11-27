@@ -149,9 +149,7 @@ public class ProAPIEndpoint {
         IOutgoingBatchService outgoingService = engine.getOutgoingBatchService();
         IIncomingBatchService incomingService = engine.getIncomingBatchService();
         
-        List<String> channels = getConsoleDisplayChannelIds(
-                engine, ChannelType.BOTH
-        );
+        List<String> channels = getConsoleDisplayChannelIds(engine, ChannelType.BOTH);
 
 
         List<OutgoingBatchSummary> outgoingSummary = outgoingService.findOutgoingBatchSummaryByChannel(
@@ -371,14 +369,10 @@ public class ProAPIEndpoint {
     public ArrayList<RecentActivity> getRecentActivities() {
         List<ISymmetricEngine> list = new ArrayList<>(AbstractSymmetricEngine.findEngines());
         ISymmetricEngine engine = list.get(0);
-        Set<String> setChannels = Set.of();
-        /*
-        this.i = new HashSet<>(
-                com.jumpmind.symmetric.console.ui.common.am.getConsoleDisplayChannelIds(
-                        this.b.getSymmetricEngine(), com.jumpmind.symmetric.console.ui.common.am.a.BOTH
-                )
+        Set<String> setChannels = new HashSet<>(
+                getConsoleDisplayChannelIds(engine, ChannelType.BOTH)
         );
-*/
+
         Map<String, RecentActivity> mapRAs = new HashMap<>();
 
         for (ProcessInfo p : engine.getStatisticManager().getProcessInfosThatHaveDoneWork()) {
