@@ -9,7 +9,7 @@ import {GridSelectionColumn} from '@vaadin/react-components/GridSelectionColumn'
 import { Icon } from '@vaadin/react-components/Icon.js';
 import MonitorEvent from "Frontend/generated/com/jumpmind/symmetric/console/model/MonitorEvent";
 import Monitor from "Frontend/generated/com/jumpmind/symmetric/console/model/Monitor";
-import MultiResult from "Frontend/generated/com/jumpmind/symmetric/console/ui/endpoints/helloreact/MultiResult";
+import MultiResult from "Frontend/generated/com/jumpmind/symmetric/console/ui/endpoints/proapi/MultiResult";
 
 export default function MonitorsView() {
     const [multiResult, setMultiResult] = useState<MultiResult | null>(null);

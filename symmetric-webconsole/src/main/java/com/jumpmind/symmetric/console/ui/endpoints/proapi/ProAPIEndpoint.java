@@ -1,7 +1,6 @@
-package com.jumpmind.symmetric.console.ui.endpoints.helloreact;
+package com.jumpmind.symmetric.console.ui.endpoints.proapi;
 
 import com.jumpmind.symmetric.console.model.Monitor;
-import com.jumpmind.symmetric.console.model.MonitorEvent;
 import com.jumpmind.symmetric.console.model.NodeMonitors;
 import com.jumpmind.symmetric.console.model.RecentActivity;
 import com.jumpmind.symmetric.console.service.IMonitorService;
