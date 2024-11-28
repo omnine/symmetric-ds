@@ -3,6 +3,8 @@ package com.jumpmind.symmetric.console.ui.endpoints.proapi;
 import com.jumpmind.symmetric.console.model.Monitor;
 import com.jumpmind.symmetric.console.model.NodeMonitors;
 import com.jumpmind.symmetric.console.model.RecentActivity;
+import com.jumpmind.symmetric.console.remote.BatchStatus;
+import com.jumpmind.symmetric.console.remote.IBatchStatusService;
 import com.jumpmind.symmetric.console.service.IMonitorService;
 import com.jumpmind.symmetric.console.service.impl.MonitorService;
 import com.jumpmind.symmetric.console.ui.data.VNNode;
@@ -567,5 +569,77 @@ public class ProAPIEndpoint {
         }
   
         return channelIds;
+     }
+
+
+     private List<OutgoingBatch> listOutgoingBatch(ISymmetricEngine engine) {
+        IOutgoingBatchService service = engine.getOutgoingBatchService();
+        IBatchStatusService batchStatusService = engine
+           .getExtensionService()
+           .getExtensionPoint(IBatchStatusService.class);
+
+         List<String> channels = new ArrayList<>();
+
+         for (Channel channel : engine.getConfigurationService().getChannels(false).values()) {
+             if (!channel.getChannelId().equals("config") && !channel.getChannelId().equals("heartbeat")) {
+                 channels.add(channel.getChannelId());
+             }
+         }
+
+
+        List<OutgoingBatch> batchList = new ArrayList<>();
+
+        List<String> l = new ArrayList<>();
+        List<Status> p = new ArrayList<>();
+         List<Long> m = new ArrayList<>(0);
+         List<Status> o = new ArrayList<>();
+
+        List<OutgoingBatch> inProcessBatchList = service.listOutgoingBatches(l, channels, p, m, -1L, null, -1, true);
+        List<OutgoingBatch> tempErrorBatchList = service.listOutgoingBatches(l, channels, o, m, -1L, null, -1, false);
+        List<OutgoingBatch> errorBatchList = new ArrayList<>();
+  
+        for (OutgoingBatch b : tempErrorBatchList) {
+           if (b.getStatus().equals(Status.ER)
+              && (batchStatusService.getLatestStatus(b) == null || !batchStatusService.getLatestStatus(b).getStatus().equals(Status.OK.name()))) {
+              errorBatchList.add(b);
+           }
+        }
+  
+        Set<String> nodeChannelErrors = new HashSet<>();
+  
+        for (OutgoingBatch batch : errorBatchList) {
+           nodeChannelErrors.add(batch.getNodeId() + batch.getChannelId());
+        }
+  
+        for (OutgoingBatch batch : inProcessBatchList) {
+           if (!nodeChannelErrors.contains(batch.getNodeId() + batch.getChannelId())
+              && !batch.getNodeId().equals("-1")
+              && (batchStatusService.getLatestStatus(batch) == null || !batchStatusService.getLatestStatus(batch).getStatus().equals(Status.OK.name()))) {
+              batchList.add(batch);
+           }
+        }
+
+        List<OutgoingBatch> ob = new ArrayList<>();
+        Map<String, OutgoingBatch> obMap = new HashMap<>();
+
+        ob.addAll(batchList);
+  
+        for (OutgoingBatch bx : ob) {
+           BatchStatus latestStatus = batchStatusService.getLatestStatus(bx);
+           if (latestStatus == null) {
+               obMap.put(bx.getNodeBatchId(), bx);
+           } else {
+              if (!latestStatus.getStatus().equals(Status.OK.name())) {
+                  obMap.put(bx.getNodeBatchId(), bx);
+              }
+  
+              bx.setStatusFromString(latestStatus.getStatus());
+              bx.setProcessedRowCount(latestStatus.getProcessedRowCount());
+              bx.setSummary(bx.getSummary());
+           }
+        }
+  
+        batchList.addAll(errorBatchList);
+        return batchList;
      }     
 }
