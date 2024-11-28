@@ -1,4 +1,4 @@
-import {Grid} from '@vaadin/react-components/Grid';
+import {Grid, GridEventContext} from '@vaadin/react-components/Grid';
 import {GridColumn} from '@vaadin/react-components/GridColumn';
 import {GridColumnGroup} from '@vaadin/react-components/GridColumnGroup';
 import {GridSelectionColumn} from '@vaadin/react-components/GridSelectionColumn';
@@ -10,6 +10,7 @@ import NodeStatus from 'Frontend/generated/com/jumpmind/symmetric/console/model/
 
 import '@vaadin/icons';
 import { Icon } from '@vaadin/react-components/Icon.js';
+import { Tooltip } from '@vaadin/react-components/Tooltip.js';
 import HealthInfo from 'Frontend/generated/com/jumpmind/symmetric/console/ui/data/HealthInfo';
 
 export default function NodesView() {
@@ -47,9 +48,33 @@ export default function NodesView() {
   }
 
 
+  const tooltipGenerator = (context: GridEventContext<NodeStatus>): string => {
+    let text = '';
+  
+    const { column, item } = context;
+    if (column && item) {
+      switch (column.path) {
+        case 'status':
+          if(item.status === '4') {
+            text = 'OK';
+          }
+          else {
+            text = 'Warning';
+          }
+          break;
+        default:
+          break;
+      }
+    }
+  
+    return text;
+  };
+
+
   return (
     <>
       <Grid items={nodes} columnReorderingAllowed>
+        <Tooltip slot="tooltip" generator={tooltipGenerator} />
         <GridSelectionColumn />
         <GridColumn path="nodeId" header="Node" resizable />
         <GridColumn path="status" header="Status" resizable>
