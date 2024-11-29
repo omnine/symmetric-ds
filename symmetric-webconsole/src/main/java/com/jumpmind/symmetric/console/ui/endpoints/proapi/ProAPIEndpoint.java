@@ -7,6 +7,7 @@ import com.jumpmind.symmetric.console.remote.BatchStatus;
 import com.jumpmind.symmetric.console.remote.IBatchStatusService;
 import com.jumpmind.symmetric.console.service.IMonitorService;
 import com.jumpmind.symmetric.console.service.impl.MonitorService;
+import com.jumpmind.symmetric.console.ui.data.HillaOutgoingBatch;
 import com.jumpmind.symmetric.console.ui.data.VNNode;
 import com.jumpmind.symmetric.console.ui.data.HealthInfo;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
@@ -33,6 +34,11 @@ import org.jumpmind.symmetric.model.ProcessInfo.ProcessStatus;
 import org.jumpmind.symmetric.route.IDataRouter;
 import org.jumpmind.symmetric.service.IIncomingBatchService;
 import org.jumpmind.symmetric.service.INodeService;
+
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.server.VaadinServlet;
 
 import com.jumpmind.symmetric.console.model.NodeStatus;
@@ -571,8 +577,71 @@ public class ProAPIEndpoint {
         return channelIds;
      }
 
+     public List<HillaOutgoingBatch> getOutgoingBatches() {
+        Map<String, Long> blockedChannels = new HashMap<>();
 
-     private List<OutgoingBatch> listOutgoingBatch(ISymmetricEngine engine) {
+        List<ISymmetricEngine> list = new ArrayList<>(AbstractSymmetricEngine.findEngines());
+        ISymmetricEngine engine = list.get(0);
+        List<OutgoingBatch> outgoingBatches = listOutgoingBatches(engine);
+        List<HillaOutgoingBatch> hillaOutgoingBatches = new ArrayList<>();
+        for (OutgoingBatch outgoingBatch : outgoingBatches) {
+            HillaOutgoingBatch hillaOutgoingBatch = new HillaOutgoingBatch();
+            hillaOutgoingBatch.channelId = outgoingBatch.getChannelId();
+            hillaOutgoingBatch.nodeId = outgoingBatch.getNodeId();
+            hillaOutgoingBatch.batchId = Long.parseLong(outgoingBatch.getNodeBatchId());
+            hillaOutgoingBatch.summary = outgoingBatch.getSummary();
+            hillaOutgoingBatch.failedLineNumber = outgoingBatch.getFailedLineNumber();
+            hillaOutgoingBatch.bulkLoaderFlag = outgoingBatch.isBulkLoaderFlag();
+            hillaOutgoingBatch.errorFlag = outgoingBatch.isErrorFlag();
+            hillaOutgoingBatch.processedRowCount = outgoingBatch.getProcessedRowCount();
+            hillaOutgoingBatch.status = outgoingBatch.getStatus().toString();
+
+
+//                  AbstractBatch value = this.a(outgoingBatch.toString());
+                  long processedRowCount = outgoingBatch.getProcessedRowCount();
+                  double percent = (double)processedRowCount / (double)outgoingBatch.getDataRowCount() * 100.0;
+                  String status = outgoingBatch.getStatus().toString();
+                  if (status.equals(Status.OK.toString()) || status.equals(Status.IG.toString())) {
+                     Long blockedBatchId = blockedChannels.get(outgoingBatch.getNodeBatchId());
+                     if (blockedBatchId != null && outgoingBatch.getBatchId() > blockedBatchId) {
+                        blockedChannels.remove(outgoingBatch.getNodeId() + "-" + outgoingBatch.getChannelId());
+                     }
+
+                     hillaOutgoingBatch.percent = -1;
+
+
+                  } else if (outgoingBatch.isErrorFlag()) {
+                     String channel = outgoingBatch.getChannelId();
+                     Long batchId = outgoingBatch.getBatchId();
+                     String nodeId = outgoingBatch.getNodeId();
+                     blockedChannels.put(nodeId + "-" + channel, batchId);
+                     hillaOutgoingBatch.percent = -2;
+                  } else {
+                     Long batchId = outgoingBatch.getBatchId();
+                     String channel = outgoingBatch.getChannelId();
+                     String nodeId = outgoingBatch.getNodeId();
+                     Long blockedBatchId = blockedChannels.get(nodeId + "-" + channel);
+                     if (blockedBatchId != null && batchId > blockedBatchId) {
+                        hillaOutgoingBatch.percent = -3;
+                     } else if (processedRowCount == 0L) {
+                        hillaOutgoingBatch.percent = -4;
+                     } else {
+                        if (percent > 100.0) {
+                           percent = 100.0;
+//                           this.a.debug("Loading percent > 100: processedRowCount = %s / dataRowCount = %s", processedRowCount, item.getDataRowCount());
+                        }
+
+                     }
+                  }
+
+
+
+            hillaOutgoingBatches.add(hillaOutgoingBatch);
+        }
+        return hillaOutgoingBatches;
+     }
+
+     private List<OutgoingBatch> listOutgoingBatches(ISymmetricEngine engine) {
         IOutgoingBatchService service = engine.getOutgoingBatchService();
         IBatchStatusService batchStatusService = engine
            .getExtensionService()
@@ -589,13 +658,15 @@ public class ProAPIEndpoint {
 
         List<OutgoingBatch> batchList = new ArrayList<>();
 
-        List<String> l = new ArrayList<>();
-        List<Status> p = new ArrayList<>();
-         List<Long> m = new ArrayList<>(0);
-         List<Status> o = new ArrayList<>();
+        List<String> nodeIds = new ArrayList<>();
+        List<Status> statusQuery = new ArrayList<>();
+         List<Long> loads = new ArrayList<>(0);
+         List<Status> statusErrors = new ArrayList<>();
+         statusQuery.add(Status.QY);
+         statusErrors.add(Status.ER);
 
-        List<OutgoingBatch> inProcessBatchList = service.listOutgoingBatches(l, channels, p, m, -1L, null, -1, true);
-        List<OutgoingBatch> tempErrorBatchList = service.listOutgoingBatches(l, channels, o, m, -1L, null, -1, false);
+        List<OutgoingBatch> inProcessBatchList = service.listOutgoingBatches(nodeIds, channels, statusQuery, loads, -1L, null, -1, true);
+        List<OutgoingBatch> tempErrorBatchList = service.listOutgoingBatches(nodeIds, channels, statusErrors, loads, -1L, null, -1, false);
         List<OutgoingBatch> errorBatchList = new ArrayList<>();
   
         for (OutgoingBatch b : tempErrorBatchList) {
