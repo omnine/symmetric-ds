@@ -838,6 +838,184 @@ public class ProAPIEndpoint {
         return hillaOutgoingBatches;
     }
 
+    private Map<NodeGroupLink, Set<String>> getActiveConfiguration(ISymmetricEngine engine) {
+        List<TriggerRouter> triggerRouters = engine.getTriggerRouterService().getTriggerRouters(false);
+        Map<NodeGroupLink, Set<String>> activeConfiguration = new HashMap<>();
+        String groupId = engine.getParameterService().getString("group.id");
+  
+        for (TriggerRouter triggerRouter : triggerRouters) {
+           Set<String> activeTables = activeConfiguration.get(triggerRouter.getRouter().getNodeGroupLink());
+           if (activeTables == null) {
+              activeTables = new HashSet<>();
+           }
+  
+           String triggerRouterGroupId = triggerRouter.getRouter().getNodeGroupLink().getTargetNodeGroupId();
+           if (triggerRouterGroupId.equals(groupId)) {
+              activeTables.add(triggerRouter.getTrigger().getFullyQualifiedSourceTableName());
+              activeConfiguration.put(triggerRouter.getRouter().getNodeGroupLink(), activeTables);
+           }
+        }
+  
+        return activeConfiguration;
+     }
 
+     private String incomingBatchSummary(ISymmetricEngine engine, Map<NodeGroupLink, Set<String>> activeConfiguration) {
+        INodeService nodeService = engine.getNodeService();
+        int totalNodesReplicatingWithPush = nodeService.findNodesWhoPushToMe().size();
+        int totalTablesPush = 0;
+        int totalNodesReplicatingWithPull = nodeService.findNodesToPull().size();
+        int totalTablesPull = 0;
+  
+        for (Map.Entry<NodeGroupLink, Set<String>> entry : activeConfiguration.entrySet()) {
+           NodeGroupLink link = entry.getKey();
+           if (link.getTargetNodeGroupId().equals(engine.getParameterService().getNodeGroupId())) {
+              if (link.getDataEventAction() == NodeGroupLinkAction.P) {
+                 totalTablesPush += entry.getValue().size();
+              } else if (link.getDataEventAction() == NodeGroupLinkAction.W) {
+                 totalTablesPull += entry.getValue().size();
+              }
+           }
+        }
+  
+        StringBuilder groupLinkAction = new StringBuilder();
+        if (totalTablesPull > 0 || totalNodesReplicatingWithPull > 0) {
+           groupLinkAction.append(totalTablesPull);
+           if (totalTablesPull > 1) {
+              groupLinkAction.append(" tables pulled from ");
+           } else {
+              groupLinkAction.append(" table pulled from ");
+           }
+  
+           groupLinkAction.append(totalNodesReplicatingWithPull);
+           if (totalNodesReplicatingWithPull > 1) {
+              groupLinkAction.append(" nodes");
+           } else {
+              groupLinkAction.append(" node");
+           }
+  
+           int pullSeconds = 0;
+  
+           try {
+              pullSeconds = engine.getParameterService().getInt("job.pull.period.time.ms") / 1000;
+           } catch (Exception var10) {
+           }
+  
+           groupLinkAction.append(" every ").append(pullSeconds).append("s");
+        }
+  
+        if (totalTablesPush > 0 || totalNodesReplicatingWithPush > 0) {
+           groupLinkAction.append(totalTablesPush);
+           if (totalTablesPush > 1) {
+              groupLinkAction.append(" tables pushed to ");
+           } else {
+              groupLinkAction.append(" table pushed to ");
+           }
+  
+           groupLinkAction.append(" this node from ");
+           groupLinkAction.append(totalNodesReplicatingWithPush);
+           if (totalNodesReplicatingWithPush > 1) {
+              groupLinkAction.append(" nodes");
+           } else {
+              groupLinkAction.append(" node");
+           }
+  
+           int pushSeconds = 0;
+  
+           try {
+              pushSeconds = engine.getParameterService().getInt("job.push.period.time.ms") / 1000;
+           } catch (Exception var9) {
+           }
+  
+           groupLinkAction.append(" every ").append(pushSeconds).append("s");
+        }
+  
+        return groupLinkAction.toString();
+     }
 
+     private String outgoingBatchSummary(ISymmetricEngine engine, Map<NodeGroupLink, Set<String>> activeConfiguration) {
+         INodeService nodeService = engine.getNodeService();
+        int totalNodesReplicatingWithPush = nodeService.findNodesToPushTo().size();
+        int totalTablesPush = 0;
+        int totalNodesReplicatingWithPull = nodeService.findNodesWhoPullFromMe().size();
+        int totalTablesPull = 0;
+  
+        for (Map.Entry<NodeGroupLink, Set<String>> entry : activeConfiguration.entrySet()) {
+           NodeGroupLink link = entry.getKey();
+           if (link.getSourceNodeGroupId().equals(engine.getParameterService().getNodeGroupId())) {
+              if (link.getDataEventAction() == NodeGroupLinkAction.P) {
+                 totalTablesPush += entry.getValue().size();
+              } else if (link.getDataEventAction() == NodeGroupLinkAction.W) {
+                 totalTablesPull += entry.getValue().size();
+              }
+           }
+        }
+  
+        StringBuilder groupLinkAction = new StringBuilder();
+        if (totalTablesPull > 0 || totalNodesReplicatingWithPull > 0) {
+           groupLinkAction.append(totalTablesPull);
+           if (totalTablesPull > 1) {
+              groupLinkAction.append(" tables sent to ");
+           } else {
+              groupLinkAction.append(" table sent to ");
+           }
+  
+           groupLinkAction.append(totalNodesReplicatingWithPull);
+           if (totalNodesReplicatingWithPull > 1) {
+              groupLinkAction.append(" nodes when pulled");
+           } else {
+              groupLinkAction.append(" node when pulled");
+           }
+  
+           int pullSeconds = 0;
+  
+           try {
+              pullSeconds = engine.getParameterService().getInt("job.pull.period.time.ms") / 1000;
+           } catch (Exception var10) {
+           }
+  
+           groupLinkAction.append(" every ").append(pullSeconds).append("s");
+        }
+  
+        if (totalTablesPush > 0 || totalNodesReplicatingWithPush > 0) {
+           groupLinkAction.append("Push ").append(totalTablesPush);
+           if (totalTablesPush > 1) {
+              groupLinkAction.append(" tables to ");
+           } else {
+              groupLinkAction.append(" table to ");
+           }
+  
+           groupLinkAction.append(totalNodesReplicatingWithPush);
+           if (totalNodesReplicatingWithPush > 1) {
+              groupLinkAction.append(" nodes");
+           } else {
+              groupLinkAction.append(" node");
+           }
+  
+           int pushSeconds = 0;
+  
+           try {
+              pushSeconds = engine.getParameterService().getInt("job.push.period.time.ms") / 1000;
+           } catch (Exception var9) {
+           }
+  
+           groupLinkAction.append(" every ").append(pushSeconds).append("s");
+        }
+  
+        return groupLinkAction.toString();
+     }
+  
+
+     public String getIncomingBatchSummary() {
+        List<ISymmetricEngine> list = new ArrayList<>(AbstractSymmetricEngine.findEngines());
+        ISymmetricEngine engine = list.get(0);
+        Map<NodeGroupLink, Set<String>> activeConfiguration = getActiveConfiguration(engine);
+        return incomingBatchSummary(engine, activeConfiguration);
+     }
+
+     public String getOutgoingBatchSummary() {
+        List<ISymmetricEngine> list = new ArrayList<>(AbstractSymmetricEngine.findEngines());
+        ISymmetricEngine engine = list.get(0);
+        Map<NodeGroupLink, Set<String>> activeConfiguration = getActiveConfiguration(engine);
+        return outgoingBatchSummary(engine, activeConfiguration);
+     }
 }

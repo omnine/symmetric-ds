@@ -11,11 +11,15 @@ import { ProgressBar } from '@vaadin/react-components/ProgressBar.js';
 import HillaBatch from 'Frontend/generated/com/jumpmind/symmetric/console/ui/data/HillaBatch';
 
 export default function BatchesView() {
+  const [outgoingSummary, setOutgoingSummary] = useState<string>("");
+  const [incomingSummary, setIncomingSummary] = useState<string>("");
 
   const [outgoingBatches, setOutgoingBatches] = useState<(HillaBatch | undefined)[]>([]);
   const [incomingBatches, setIncomingBatches] = useState<(HillaBatch | undefined)[]>([]);
 
   useEffect(() => {
+    ProAPIEndpoint.getOutgoingBatchSummary().then((summary: string | undefined) => setOutgoingSummary(summary || ""));
+    ProAPIEndpoint.getIncomingBatchSummary().then((summary: string | undefined) => setIncomingSummary(summary || ""));
 
     ProAPIEndpoint.getOutgoingBatches().then(batches => setOutgoingBatches(batches || []));
     ProAPIEndpoint.getIncomingBatches().then(batches => setIncomingBatches(batches || []));
@@ -62,7 +66,8 @@ export default function BatchesView() {
 
   return (
     <>
-		  <h2>Outgoing Batches</h2>
+		  <h3>Outgoing Batches</h3>
+      <h4>{outgoingSummary}</h4>
       <Grid items={outgoingBatches} columnReorderingAllowed>
         <GridSelectionColumn />
         <GridColumn path="nodeId" header="Node" resizable>
@@ -77,7 +82,8 @@ export default function BatchesView() {
         </GridColumn>
         <GridColumn path="bulkLoaderFlag" header="Bulk Loaded"/>
       </Grid>
-		  <h2>Incoming Batches</h2>	  
+		  <h3>Incoming Batches</h3>
+      <h4>{incomingSummary}</h4>      
       <Grid items={incomingBatches} columnReorderingAllowed>
         <GridSelectionColumn />
         <GridColumn path="nodeId" header="Node" resizable>
