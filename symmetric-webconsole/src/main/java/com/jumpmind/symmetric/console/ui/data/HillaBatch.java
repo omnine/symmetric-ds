@@ -1,6 +1,6 @@
 package com.jumpmind.symmetric.console.ui.data;
 
-public class HillaOutgoingBatch {
+public class HillaBatch {
     public long batchId = -1L;
     public String nodeId;
     public String channelId;

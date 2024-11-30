@@ -1,31 +1,30 @@
-import {Grid, GridEventContext} from '@vaadin/react-components/Grid';
+import {Grid} from '@vaadin/react-components/Grid';
 import {GridColumn} from '@vaadin/react-components/GridColumn';
 import {GridSelectionColumn} from '@vaadin/react-components/GridSelectionColumn';
 import { ProAPIEndpoint } from 'Frontend/generated/endpoints.js';
 import { useState, useEffect } from 'react';
 
-import NodeStatus from 'Frontend/generated/com/jumpmind/symmetric/console/model/NodeStatus';
-
-
 import '@vaadin/icons';
 import { Icon } from '@vaadin/react-components/Icon.js';
-import { Tooltip } from '@vaadin/react-components/Tooltip.js';
-import HealthInfo from 'Frontend/generated/com/jumpmind/symmetric/console/ui/data/HealthInfo';
+
 import { ProgressBar } from '@vaadin/react-components/ProgressBar.js';
-import HillaOutgoingBatch from 'Frontend/generated/com/jumpmind/symmetric/console/ui/data/HillaOutgoingBatch';
+import HillaBatch from 'Frontend/generated/com/jumpmind/symmetric/console/ui/data/HillaBatch';
 
 export default function BatchesView() {
-  const [healthInfo, setHealthInfo] = useState<HealthInfo | null>(null);
-  const [nodes, setNodes] = useState<(NodeStatus | undefined)[]>([]);
+
+  const [outgoingBatches, setOutgoingBatches] = useState<(HillaBatch | undefined)[]>([]);
+  const [incomingBatches, setIncomingBatches] = useState<(HillaBatch | undefined)[]>([]);
+
   useEffect(() => {
-    ProAPIEndpoint.checkHealth().then(healthInfo => setHealthInfo(healthInfo));
-    ProAPIEndpoint.listNodes().then(nodes => setNodes(nodes));
+
+    ProAPIEndpoint.getOutgoingBatches().then(batches => setOutgoingBatches(batches || []));
+    ProAPIEndpoint.getIncomingBatches().then(batches => setIncomingBatches(batches || []));
   }, []);
 
 
 
 
-  const progressRenderer = (item: HillaOutgoingBatch) => {
+  const progressRenderer = (item: HillaBatch) => {
     if (item.percent == -1) {
         return <Icon icon="vaadin:check" style={{ color: "#81C784" }} />;
 
@@ -38,6 +37,9 @@ export default function BatchesView() {
     else if(item.percent == -4){
       return <Icon icon="vaadin:hourglass-start" style={{ color: "#000000" }} />;
     }
+    else if(item.percent == -5){
+      return <span>N/A</span>;
+    }      
     else {
       let percent = item.percent;
       if (percent > 100.0) {
@@ -50,15 +52,22 @@ export default function BatchesView() {
     }
    }
   
-
+   const nodeRenderer = (item: HillaBatch) => {
+    if(item.nodeId == "-1"){
+      return "Unrouted";
+    }
+    return item.nodeId;
+   }
 
 
   return (
     <>
 		  <h2>Outgoing Batches</h2>
-      <Grid items={nodes} columnReorderingAllowed>
+      <Grid items={outgoingBatches} columnReorderingAllowed>
         <GridSelectionColumn />
-        <GridColumn path="nodeId" header="Node" resizable />
+        <GridColumn path="nodeId" header="Node" resizable>
+        {({ item }) => nodeRenderer(item)}          
+        </GridColumn>
         <GridColumn path="batchId" header="Batch ID" resizable>
         </GridColumn>
         <GridColumn path="outgoingDataCountRemaining" header="Progress">
@@ -69,7 +78,22 @@ export default function BatchesView() {
         <GridColumn path="bulkLoaderFlag" header="Bulk Loaded"/>
       </Grid>
 		  <h2>Incoming Batches</h2>	  
+      <Grid items={incomingBatches} columnReorderingAllowed>
+        <GridSelectionColumn />
+        <GridColumn path="nodeId" header="Node" resizable>
+        {({ item }) => nodeRenderer(item)}          
+        </GridColumn>
+        <GridColumn path="batchId" header="Batch ID" resizable>
 
+        </GridColumn>
+        <GridColumn path="summaryShort" header="Table(s)" resizable />
+        <GridColumn path="outgoingDataCountRemaining" header="Progress">
+        {({ item }) => progressRenderer(item)}
+        </GridColumn>
+        <GridColumn path="failedLineNumber" header="Failed Line Number">
+        </GridColumn>
+        <GridColumn path="bulkLoaderFlag" header="Bulk Loaded"/>
+      </Grid>
 
     </>
   );
