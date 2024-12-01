@@ -56,6 +56,18 @@ import org.jumpmind.symmetric.web.FailedEngineInfo;
 @AnonymousAllowed
 public class ProAPIEndpoint {
     private long unroutedDataCount = 0;
+    private ProEngineHelper proEngineHelper;
+    // Constructor
+    public ProAPIEndpoint() {
+        this.proEngineHelper = new ProEngineHelper();
+    }
+
+    public String getOutgoingBatchSummary() {
+        ISymmetricEngine engine = proEngineHelper.getSymmetricEngine();
+        Map<NodeGroupLink, Set<String>> activeConfiguration = getActiveConfiguration(engine);
+        return outgoingBatchSummary(engine, activeConfiguration);
+     }
+
     @Nonnull
     public String sayHello() {
         VaadinServlet vs = VaadinServlet.getCurrent();
@@ -86,8 +98,7 @@ public class ProAPIEndpoint {
     @Nonnull
     public HealthInfo checkHealth() {
         Set<String> sysChannels = new HashSet<>(Arrays.asList("heartbeat", "config", "monitor", "dynamic"));
-        List<ISymmetricEngine> list = new ArrayList<>(AbstractSymmetricEngine.findEngines());
-        ISymmetricEngine engine = list.get(0);        
+        ISymmetricEngine engine = proEngineHelper.getSymmetricEngine();       
         HealthInfo healthInfo = new HealthInfo();
 
         healthInfo.engineNodeId = engine.getNodeId();
@@ -144,17 +155,7 @@ public class ProAPIEndpoint {
     @Nonnull
     public ArrayList<NodeStatus> listNodes() {
 
-        // ISymmetricEngine engine = AbstractSymmetricEngine.findEngineByName(engineName);
-        List<ISymmetricEngine> list = new ArrayList<>(AbstractSymmetricEngine.findEngines());
-        /*
-         * File sourceProperties = new File("master-nano190013.properties"); ISymmetricEngine engine = new ClientSymmetricEngine(sourceProperties, false); //
-         * no need to register! Node targetNode = engine.getNodeService().findIdentity(); List<Node> nodes = engine.getNodeService().findAllNodes(); add(new
-         * Paragraph(greetService.greet(textField.getValue())));
-         *
-         */
-        ISymmetricEngine engine = list.get(0);
-//        add(new Paragraph(greetService.greet(engine.getEngineName())));
-//        add(new Paragraph("Nodes:"));
+        ISymmetricEngine engine = proEngineHelper.getSymmetricEngine();
 
         IOutgoingBatchService outgoingService = engine.getOutgoingBatchService();
         IIncomingBatchService incomingService = engine.getIncomingBatchService();
@@ -582,8 +583,7 @@ public class ProAPIEndpoint {
      public List<HillaBatch> getOutgoingBatches() {
         Map<String, Long> blockedChannels = new HashMap<>();
 
-        List<ISymmetricEngine> list = new ArrayList<>(AbstractSymmetricEngine.findEngines());
-        ISymmetricEngine engine = list.get(0);
+        ISymmetricEngine engine = proEngineHelper.getSymmetricEngine();
         List<OutgoingBatch> outgoingBatches = listOutgoingBatches(engine);
         List<HillaBatch> hillaOutgoingBatches = new ArrayList<>();
         for (OutgoingBatch outgoingBatch : outgoingBatches) {
@@ -767,8 +767,7 @@ public class ProAPIEndpoint {
     public List<HillaBatch> getIncomingBatches() {
         Map<String, Long> blockedChannels = new HashMap<>();
 
-        List<ISymmetricEngine> list = new ArrayList<>(AbstractSymmetricEngine.findEngines());
-        ISymmetricEngine engine = list.get(0);
+        ISymmetricEngine engine = proEngineHelper.getSymmetricEngine();
 
         Map<Long, MixedIncomingStatus> inBatchStatusMap = new HashMap<>();
         List<ProcessInfo> processInfos = filterProcessInfo(engine.getStatisticManager().getProcessInfos());
@@ -1007,17 +1006,12 @@ public class ProAPIEndpoint {
   
 
      public String getIncomingBatchSummary() {
-        List<ISymmetricEngine> list = new ArrayList<>(AbstractSymmetricEngine.findEngines());
-        ISymmetricEngine engine = list.get(0);
+        ISymmetricEngine engine = proEngineHelper.getSymmetricEngine();
         Map<NodeGroupLink, Set<String>> activeConfiguration = getActiveConfiguration(engine);
         return incomingBatchSummary(engine, activeConfiguration);
      }
 
-     public String getOutgoingBatchSummary() {
-        ISymmetricEngine engine = new ProEngineHelper().getSymmetricEngine();
-        Map<NodeGroupLink, Set<String>> activeConfiguration = getActiveConfiguration(engine);
-        return outgoingBatchSummary(engine, activeConfiguration);
-     }
+
 
 
 }

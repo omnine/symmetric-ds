@@ -9,6 +9,7 @@ import org.jumpmind.symmetric.ISymmetricEngine;
 
 public class ProEngineHelper {
     private String engineRegName;
+    private ISymmetricEngine currentEngine;
 
     private Collection<ISymmetricEngine> getSymmetricEngines() {
         List<ISymmetricEngine> list = new ArrayList<>(AbstractSymmetricEngine.findEngines());
@@ -36,14 +37,19 @@ public class ProEngineHelper {
      }    
 
     public ISymmetricEngine getSymmetricEngine() {
-        ISymmetricEngine engine = this.getSymmetricEngine(engineRegName);
+        if(currentEngine != null) {
+            return currentEngine;
+        }
+        ISymmetricEngine engine = getSymmetricEngine(engineRegName);
         if (engine == null) {
-            Collection<ISymmetricEngine> engines = this.getSymmetricEngines();
+            Collection<ISymmetricEngine> engines = getSymmetricEngines();
             if (engines != null && engines.size() > 0) {
                 engine = engines.iterator().next();
-                this.setSymmetricEngine(engine.getEngineName());
+                setSymmetricEngine(engine.getEngineName());
             }
         }
+
+        currentEngine = engine;
 
         return engine;
     }
