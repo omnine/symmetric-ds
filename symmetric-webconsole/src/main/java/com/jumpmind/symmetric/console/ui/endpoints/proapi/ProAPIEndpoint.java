@@ -18,6 +18,7 @@ import com.vaadin.hilla.Nonnull;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 import java.util.HashSet;
 import java.util.HashMap;
@@ -586,16 +587,16 @@ public class ProAPIEndpoint {
         List<OutgoingBatch> outgoingBatches = listOutgoingBatches(engine);
         List<HillaBatch> hillaOutgoingBatches = new ArrayList<>();
         for (OutgoingBatch outgoingBatch : outgoingBatches) {
-            HillaBatch hillaOutgoingBatch = new HillaBatch();
-            hillaOutgoingBatch.channelId = outgoingBatch.getChannelId();
-            hillaOutgoingBatch.nodeId = outgoingBatch.getNodeId();
-            hillaOutgoingBatch.batchId = Long.parseLong(outgoingBatch.getNodeBatchId());
-            hillaOutgoingBatch.summary = outgoingBatch.getSummary();
-            hillaOutgoingBatch.failedLineNumber = outgoingBatch.getFailedLineNumber();
-            hillaOutgoingBatch.bulkLoaderFlag = outgoingBatch.isBulkLoaderFlag();
-            hillaOutgoingBatch.errorFlag = outgoingBatch.isErrorFlag();
-            hillaOutgoingBatch.processedRowCount = outgoingBatch.getProcessedRowCount();
-            hillaOutgoingBatch.status = outgoingBatch.getStatus().toString();
+            HillaBatch hillaBatch = new HillaBatch();
+            hillaBatch.channelId = outgoingBatch.getChannelId();
+            hillaBatch.nodeId = outgoingBatch.getNodeId();
+            hillaBatch.batchId = Long.parseLong(outgoingBatch.getNodeBatchId());
+            hillaBatch.summary = outgoingBatch.getSummary();
+            hillaBatch.failedLineNumber = outgoingBatch.getFailedLineNumber();
+            hillaBatch.bulkLoaderFlag = outgoingBatch.isBulkLoaderFlag();
+            hillaBatch.errorFlag = outgoingBatch.isErrorFlag();
+            hillaBatch.processedRowCount = outgoingBatch.getProcessedRowCount();
+            hillaBatch.status = outgoingBatch.getStatus().toString();
 
 
 //                  AbstractBatch value = this.a(outgoingBatch.toString());
@@ -608,7 +609,7 @@ public class ProAPIEndpoint {
                         blockedChannels.remove(outgoingBatch.getNodeId() + "-" + outgoingBatch.getChannelId());
                      }
 
-                     hillaOutgoingBatch.percent = -1;
+                     hillaBatch.percent = -1;
 
 
                   } else if (outgoingBatch.isErrorFlag()) {
@@ -616,16 +617,16 @@ public class ProAPIEndpoint {
                      Long batchId = outgoingBatch.getBatchId();
                      String nodeId = outgoingBatch.getNodeId();
                      blockedChannels.put(nodeId + "-" + channel, batchId);
-                     hillaOutgoingBatch.percent = -2;
+                     hillaBatch.percent = -2;
                   } else {
                      Long batchId = outgoingBatch.getBatchId();
                      String channel = outgoingBatch.getChannelId();
                      String nodeId = outgoingBatch.getNodeId();
                      Long blockedBatchId = blockedChannels.get(nodeId + "-" + channel);
                      if (blockedBatchId != null && batchId > blockedBatchId) {
-                        hillaOutgoingBatch.percent = -3;
+                        hillaBatch.percent = -3;
                      } else if (processedRowCount == 0L) {
-                        hillaOutgoingBatch.percent = -4;
+                        hillaBatch.percent = -4;
                      } else {
                         if (percent > 100.0) {
                            percent = 100.0;
@@ -637,7 +638,7 @@ public class ProAPIEndpoint {
 
 
 
-            hillaOutgoingBatches.add(hillaOutgoingBatch);
+            hillaOutgoingBatches.add(hillaBatch);
         }
         return hillaOutgoingBatches;
      }
@@ -798,16 +799,16 @@ public class ProAPIEndpoint {
         List<OutgoingBatch> outgoingBatches = listOutgoingBatches(engine);
         List<HillaBatch> hillaOutgoingBatches = new ArrayList<>();
         for (OutgoingBatch outgoingBatch : outgoingBatches) {
-            HillaBatch hillaOutgoingBatch = new HillaBatch();
-            hillaOutgoingBatch.channelId = outgoingBatch.getChannelId();
-            hillaOutgoingBatch.nodeId = outgoingBatch.getNodeId();
-            hillaOutgoingBatch.batchId = Long.parseLong(outgoingBatch.getNodeBatchId());
-            hillaOutgoingBatch.summary = outgoingBatch.getSummary();
-            hillaOutgoingBatch.failedLineNumber = outgoingBatch.getFailedLineNumber();
-            hillaOutgoingBatch.bulkLoaderFlag = outgoingBatch.isBulkLoaderFlag();
-            hillaOutgoingBatch.errorFlag = outgoingBatch.isErrorFlag();
-            hillaOutgoingBatch.processedRowCount = outgoingBatch.getProcessedRowCount();
-            hillaOutgoingBatch.status = outgoingBatch.getStatus().toString();
+            HillaBatch hillaBatch = new HillaBatch();
+            hillaBatch.channelId = outgoingBatch.getChannelId();
+            hillaBatch.nodeId = outgoingBatch.getNodeId();
+            hillaBatch.batchId = Long.parseLong(outgoingBatch.getNodeBatchId());
+            hillaBatch.summary = outgoingBatch.getSummary();
+            hillaBatch.failedLineNumber = outgoingBatch.getFailedLineNumber();
+            hillaBatch.bulkLoaderFlag = outgoingBatch.isBulkLoaderFlag();
+            hillaBatch.errorFlag = outgoingBatch.isErrorFlag();
+            hillaBatch.processedRowCount = outgoingBatch.getProcessedRowCount();
+            hillaBatch.status = outgoingBatch.getStatus().toString();
 
             MixedIncomingStatus batchStatus = inBatchStatusMap.get(outgoingBatch.getBatchId());
             if (batchStatus != null) {
@@ -818,20 +819,20 @@ public class ProAPIEndpoint {
                outgoingBatch.setDataRowCount(totalRowCount);
                double percent = totalRowCount == 0L ? 0.0 : (double)processedRowCount / (double)totalRowCount * 100.0;
                if (status.equals(Status.OK.name()) || status.equals(Status.IG.name())) {
-                hillaOutgoingBatch.percent = -1;
+                hillaBatch.percent = -1;
                } else if (status.equals(Status.ER.name())) {
-                hillaOutgoingBatch.percent = -2;
+                hillaBatch.percent = -2;
                } else if (processedRowCount == 0L) {
-                hillaOutgoingBatch.percent = -4;
+                hillaBatch.percent = -4;
                } else {
                   if (percent > 100.0) {
                      percent = 100.0;
 //                     this.a.debug("Loading percent > 100: processedRowCount = %s / dataRowCount = %s", processedRowCount, item.getDataRowCount());
                   }
-                  hillaOutgoingBatch.percent = (int)percent; 
+                  hillaBatch.percent = (int)percent; 
                }
             } else {
-                hillaOutgoingBatch.percent = -5;
+                hillaBatch.percent = -5;
             }
 
         }
@@ -1018,4 +1019,20 @@ public class ProAPIEndpoint {
         Map<NodeGroupLink, Set<String>> activeConfiguration = getActiveConfiguration(engine);
         return outgoingBatchSummary(engine, activeConfiguration);
      }
+
+
+   private Collection<ISymmetricEngine> getSymmetricEngines() {
+      List<ISymmetricEngine> list = new ArrayList<>(AbstractSymmetricEngine.findEngines());
+      list.sort((o1, o2) -> {
+          if (o1.getNodeService().isRegistrationServer() && !o2.getNodeService().isRegistrationServer()) {
+              return -1;
+          } else {
+              return !o1.getNodeService().isRegistrationServer() && o2.getNodeService().isRegistrationServer()
+                      ? 1
+                      : o1.getEngineName().compareTo(o2.getEngineName());
+          }
+      });
+      return list;
+   }
+
 }
