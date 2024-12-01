@@ -1014,25 +1014,10 @@ public class ProAPIEndpoint {
      }
 
      public String getOutgoingBatchSummary() {
-        List<ISymmetricEngine> list = new ArrayList<>(AbstractSymmetricEngine.findEngines());
-        ISymmetricEngine engine = list.get(0);
+        ISymmetricEngine engine = new ProEngineHelper().getSymmetricEngine();
         Map<NodeGroupLink, Set<String>> activeConfiguration = getActiveConfiguration(engine);
         return outgoingBatchSummary(engine, activeConfiguration);
      }
 
-
-   private Collection<ISymmetricEngine> getSymmetricEngines() {
-      List<ISymmetricEngine> list = new ArrayList<>(AbstractSymmetricEngine.findEngines());
-      list.sort((o1, o2) -> {
-          if (o1.getNodeService().isRegistrationServer() && !o2.getNodeService().isRegistrationServer()) {
-              return -1;
-          } else {
-              return !o1.getNodeService().isRegistrationServer() && o2.getNodeService().isRegistrationServer()
-                      ? 1
-                      : o1.getEngineName().compareTo(o2.getEngineName());
-          }
-      });
-      return list;
-   }
 
 }
