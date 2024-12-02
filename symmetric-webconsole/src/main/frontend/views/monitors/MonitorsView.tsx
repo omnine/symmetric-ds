@@ -19,7 +19,7 @@ export default function MonitorsView() {
     }, []);
 
     const drawItem = (item:any, head:string) => {
-      if(head === "nodeId") {
+      if(head === "node-0") {
         return item.item[head].iconColor;
       }
 //      console.log(item);
@@ -32,7 +32,7 @@ export default function MonitorsView() {
     
       const { column, item } = context;
       if (column && item) {
-        if(column.path != 'nodeId') {
+        if(column.path != 'node-0') {
             text = item[column.path].tip;
         }
       }
@@ -49,7 +49,7 @@ export default function MonitorsView() {
         <Tooltip slot="tooltip" generator={tooltipGenerator} />
           {multiResult.headers.map((head: string | undefined) => 
             head ? (
-              <GridColumn header={head} path={head} key={head}>
+              <GridColumn header={head=="node-0"? "Monitor": head} path={head} key={head}>
                 {(item) => drawItem(item, head)}
               </GridColumn>
             ) : null

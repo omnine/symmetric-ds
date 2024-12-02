@@ -302,46 +302,50 @@ public class ProAPIEndpoint {
 
 
         multiResult.headers = new ArrayList<>();
-        multiResult.headers.add("nodeId");
-        ArrayList<Map<String, MonitorCell>> rows = new ArrayList<>();
-        boolean first = true;
 
-        for (NodeMonitors item : h.values()) {
+        ArrayList<Map<String, MonitorCell>> rows = new ArrayList<>();
+
+        multiResult.headers.add("node-0");
+        for(int i = 1; i < h.values().size()+1; i++)
+        {
+            multiResult.headers.add("node-"+i);
+        }
+        
+        for (Monitor monitor : monitors) {
             Map<String, MonitorCell> cols = new HashMap<>();
-            
+        
              MonitorCell cell = new MonitorCell();
              cell.tip = "N/A";
-             cell.iconColor = item.getNodeId();
-             cell.key = item.getNodeId();
-             cols.put("nodeId", cell);
-
-
-             for (Monitor monitor : monitors) {
-                 MonitorEvent event = item.getMonitorEvents().get(monitor.getType());
-                 MonitorCell monitorCell = new MonitorCell();
-                 monitorCell.tip = "N/A";
-                 monitorCell.iconColor = "#77DD76";
-                 if (event != null && !event.isResolved()) {
-                     monitorCell.tip = event.getDetails();
-                     if (event.getSeverityLevel() == 100) {
-                         monitorCell.iconColor = "#FFD700";
-                     } else if (event.getSeverityLevel() == 200) {
-                         monitorCell.iconColor = "#f39c12";
-                     } else if (event.getSeverityLevel() == 300) {
-                         monitorCell.iconColor = "#FF6962";
-                     }
-                 }
-                 monitorCell.key = monitor.getType() + "-" + monitor.getTargetNode() + "-" + monitor.getSeverityLevel() + "-" + monitor.getCreateTime();
-                 cols.put(monitor.getMonitorId(),monitorCell);
-
-                if(first) {
-                    multiResult.headers.add(monitor.getMonitorId());
+             cell.iconColor = monitor.getMonitorId();
+             cell.key = monitor.getMonitorId();
+             cols.put("node-0", cell);			 
+        
+        
+            int index = 1;
+            for (NodeMonitors item : h.values()) {
+                MonitorEvent event = item.getMonitorEvents().get(monitor.getType());
+                MonitorCell monitorCell = new MonitorCell();
+                monitorCell.tip = "N/A";
+                monitorCell.iconColor = "#77DD76";
+                if (event != null && !event.isResolved()) {
+                    monitorCell.tip = event.getDetails();
+                    if (event.getSeverityLevel() == 100) {
+                        monitorCell.iconColor = "#FFD700";
+                    } else if (event.getSeverityLevel() == 200) {
+                        monitorCell.iconColor = "#f39c12";
+                    } else if (event.getSeverityLevel() == 300) {
+                        monitorCell.iconColor = "#FF6962";
+                    }
                 }
-            }
-            first = false;
-            rows.add(cols);
+                monitorCell.key = monitor.getType() + "-" + monitor.getTargetNode() + "-" + monitor.getSeverityLevel() + "-" + monitor.getCreateTime();
+                cols.put("node-"+index,monitorCell);
+                index++;
 
+            }
+
+            rows.add(cols);
         }
+
 
         multiResult.rows = rows;
 
