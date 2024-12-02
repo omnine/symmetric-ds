@@ -8,27 +8,14 @@ import com.jumpmind.symmetric.console.remote.BatchStatus;
 import com.jumpmind.symmetric.console.remote.IBatchStatusService;
 import com.jumpmind.symmetric.console.service.IMonitorService;
 import com.jumpmind.symmetric.console.service.impl.MonitorService;
-import com.jumpmind.symmetric.console.ui.data.HillaBatch;
-import com.jumpmind.symmetric.console.ui.data.MixedIncomingStatus;
-import com.jumpmind.symmetric.console.ui.data.MonitorCell;
-import com.jumpmind.symmetric.console.ui.data.MultiResult;
-import com.jumpmind.symmetric.console.ui.data.VNNode;
-import com.jumpmind.symmetric.console.ui.data.HealthInfo;
+import com.jumpmind.symmetric.console.ui.data.*;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.hilla.Endpoint;
 import com.vaadin.hilla.Nonnull;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-import java.util.HashSet;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.Collections;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.Comparator;
 
 import org.jumpmind.symmetric.AbstractSymmetricEngine;
 import org.jumpmind.symmetric.ISymmetricEngine;
@@ -52,6 +39,9 @@ import com.jumpmind.symmetric.console.model.NodeStatus;
 
 
 import org.jumpmind.symmetric.service.IOutgoingBatchService;
+import org.jumpmind.symmetric.service.IStatisticService;
+import org.jumpmind.symmetric.statistic.ChannelStats;
+import org.jumpmind.symmetric.statistic.IStatisticManager;
 import org.jumpmind.symmetric.web.ServletUtils;
 import org.jumpmind.symmetric.web.SymmetricEngineHolder;
 import org.jumpmind.symmetric.web.FailedEngineInfo;
@@ -1062,6 +1052,28 @@ public class ProAPIEndpoint {
      }
 
 
+    public List<HillaStat> convert2Chart() {
+        ISymmetricEngine engine = proEngineHelper.getSymmetricEngine();
+        ProStatHelper proStatHelper = new ProStatHelper();
+        TreeMap<Date, Map<String, ChannelStats>> data = proStatHelper.getNodeStatsForPeriod(engine);
 
+        String nodeId = proStatHelper.findNodeId(engine);
+
+        List<HillaStat> listHS = new ArrayList<>();
+        for (Date time : data.keySet()) {
+            ChannelStats stats = data.get(time).get(nodeId);
+            HillaStat hs = new HillaStat();
+            hs.routed = stats == null ? 0 : stats.getDataRouted();
+            hs.extracted = stats == null ? 0 : stats.getDataExtracted();
+            hs.sent = stats == null ? 0 : stats.getDataSent();
+            hs.loaded = stats == null ? 0 : stats.getDataLoaded();
+            hs.unrouted = stats == null ? 0 : stats.getDataUnRouted();
+            hs.strDate = new SimpleDateFormat("hh:mm:ss aaa").format(time);
+            hs.time = time;
+            listHS.add(hs);
+        }
+
+        return listHS;
+    }
 
 }
