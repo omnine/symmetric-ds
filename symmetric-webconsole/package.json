@@ -76,6 +76,8 @@
     "@vaadin/router": "$@vaadin/router",
     "@vaadin/vaadin-usage-statistics": "$@vaadin/vaadin-usage-statistics",
     "@vaadin/react-components": "$@vaadin/react-components",
+    "react-is": "$react-is",
+    "recharts": "$recharts",
     "@vaadin/common-frontend": "$@vaadin/common-frontend",
     "react-dom": "$react-dom",
     "@vaadin/hilla-frontend": "$@vaadin/hilla-frontend",
@@ -155,6 +157,6 @@
       "workbox-core": "7.3.0",
       "workbox-precaching": "7.3.0"
     },
-    "hash": "001479ee2d1a4994f1d112d90083fc45bf543a44d583946cd748e2a558010353"
+    "hash": "ed4baf72726aaf42cf823a3331dda6519275c34c5996a5ae34b7ca64f51f0181"
   }
 }
