@@ -4,12 +4,12 @@ import {ProAPIEndpoint} from "Frontend/generated/endpoints";
 
 import {Grid} from '@vaadin/react-components/Grid';
 import {GridColumn} from '@vaadin/react-components/GridColumn';
-import {GridColumnGroup} from '@vaadin/react-components/GridColumnGroup';
-import {GridSelectionColumn} from '@vaadin/react-components/GridSelectionColumn';
+
 import { Icon } from '@vaadin/react-components/Icon.js';
-import MonitorEvent from "Frontend/generated/com/jumpmind/symmetric/console/model/MonitorEvent";
-import Monitor from "Frontend/generated/com/jumpmind/symmetric/console/model/Monitor";
-import MultiResult from "Frontend/generated/com/jumpmind/symmetric/console/ui/endpoints/proapi/MultiResult";
+
+import MultiResult from "Frontend/generated/com/jumpmind/symmetric/console/ui/data/MultiResult";
+import { Tooltip } from "@vaadin/react-components/Tooltip.js";
+
 
 export default function MonitorsView() {
     const [multiResult, setMultiResult] = useState<MultiResult | null>(null);
@@ -18,38 +18,42 @@ export default function MonitorsView() {
       ProAPIEndpoint.getMonitorEvents().then(mr => setMultiResult(mr));
     }, []);
 
-    const drawItem = ({item, monitor}: {item: any, monitor: Monitor}) => {
-       const me: MonitorEvent = monitor.type ? item.monitorEvents[monitor.type] : null;
-
-      var iconColor = "#77DD76";
-      if (me != null && !me.resolved) {
-         if (me.severityLevel == 100) {
-            iconColor ="#FFD700";
-         } else if (me.severityLevel == 200) {
-            iconColor = "#f39c12";
-         } else if (me.severityLevel == 300) {
-            iconColor = "#FF6962";
-         }
+    const drawItem = (item:any, head:string) => {
+      if(head === "nodeId") {
+        return item.item[head].iconColor;
       }
-
-
-      return (<Icon icon="vaadin:stop" style={{ color: iconColor }}/>);    
+//      console.log(item);
+//      console.log(head);
+      return (<Icon icon="vaadin:stop" style={{ color: item.item[head].iconColor }}/>);    
     }
+
+    const tooltipGenerator = (context: any): string => {
+      let text = '';
+    
+      const { column, item } = context;
+      if (column && item) {
+        if(column.path != 'nodeId') {
+            text = item[column.path].tip;
+        }
+      }
+    
+      return text;
+    };
+
 
 
     const drawMonitors = () => {
-      if (!multiResult) {
-        return null;
-      }
-      return (<Grid items={multiResult.nodeMonitors} columnReorderingAllowed>
-        <GridColumn path="nodeId" header="nodeId" resizable />
-        {multiResult.monitors && multiResult.monitors.filter((monitor): monitor is Monitor => monitor !== undefined).map((monitor: Monitor) => (
-            <GridColumn header={monitor.monitorId}>
-              {({ item }) => drawItem({item, monitor})}
-            </GridColumn>
-      ))}
-
-
+      if (!multiResult) return null;
+      if(!multiResult.headers) return null;
+      return (<Grid items={multiResult.rows} columnReorderingAllowed>
+        <Tooltip slot="tooltip" generator={tooltipGenerator} />
+          {multiResult.headers.map((head: string | undefined) => 
+            head ? (
+              <GridColumn header={head} path={head} key={head}>
+                {(item) => drawItem(item, head)}
+              </GridColumn>
+            ) : null
+          )}
       </Grid>);
     }
 

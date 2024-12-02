@@ -40,9 +40,9 @@ export const routes: readonly ViewRouteObject[] = [
     handle: { icon: 'null', title: 'Main' },
     children: [
       { path: '/', element: <DashboardView />, handle: { icon: 'dashboard', title: ' Overview' } },
+      { path: '/nodes', element: <NodesView />, handle: { icon: 'server', title: ' Nodes' } },
       { path: '/monitors', element: <MonitorsView />, handle: { icon: 'desktop', title: ' Monitors' } },
       { path: '/batches', element: <BatchesView />, handle: { icon: 'exchange', title: ' Batches' } },
-      { path: '/nodes', element: <NodesView />, handle: { icon: 'server', title: ' Nodes' } },
       { path: '/recentactivities', element: <RAView />, handle: { icon: 'clock', title: ' Recent Activities' } },
       { path: '/about', element: <AboutView />, handle: { icon: 'file', title: ' About' } },
     ],

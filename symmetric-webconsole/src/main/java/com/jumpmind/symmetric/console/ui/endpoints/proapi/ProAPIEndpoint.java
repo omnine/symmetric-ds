@@ -1,6 +1,7 @@
 package com.jumpmind.symmetric.console.ui.endpoints.proapi;
 
 import com.jumpmind.symmetric.console.model.Monitor;
+import com.jumpmind.symmetric.console.model.MonitorEvent;
 import com.jumpmind.symmetric.console.model.NodeMonitors;
 import com.jumpmind.symmetric.console.model.RecentActivity;
 import com.jumpmind.symmetric.console.remote.BatchStatus;
@@ -9,6 +10,8 @@ import com.jumpmind.symmetric.console.service.IMonitorService;
 import com.jumpmind.symmetric.console.service.impl.MonitorService;
 import com.jumpmind.symmetric.console.ui.data.HillaBatch;
 import com.jumpmind.symmetric.console.ui.data.MixedIncomingStatus;
+import com.jumpmind.symmetric.console.ui.data.MonitorCell;
+import com.jumpmind.symmetric.console.ui.data.MultiResult;
 import com.jumpmind.symmetric.console.ui.data.VNNode;
 import com.jumpmind.symmetric.console.ui.data.HealthInfo;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
@@ -37,10 +40,12 @@ import org.jumpmind.symmetric.route.IDataRouter;
 import org.jumpmind.symmetric.service.IIncomingBatchService;
 import org.jumpmind.symmetric.service.INodeService;
 
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.server.VaadinServlet;
 
 import com.jumpmind.symmetric.console.model.NodeStatus;
@@ -270,6 +275,8 @@ public class ProAPIEndpoint {
 
     @Nonnull
     public MultiResult getMonitorEvents() {
+
+        MultiResult multiResult = new MultiResult();
         List<ISymmetricEngine> list = new ArrayList<>(AbstractSymmetricEngine.findEngines());
         ISymmetricEngine engine = list.get(0);
         Map<String, NodeMonitors> h = new HashMap<>();
@@ -286,17 +293,59 @@ public class ProAPIEndpoint {
              h.get(monitorEvent.getNodeId()).getMonitorEvents().put(monitorEvent.getType(), monitorEvent);
           }
        });
-       ArrayList<Monitor> monitors = (ArrayList<Monitor>) monitorService
-       .getMonitors()
-       .stream()
-       .filter(monitor -> !monitor.isInsight())
-       .sorted(Comparator.comparing(Monitor::getLastUpdateTime).reversed())
-       .collect(Collectors.toList());
+        ArrayList<Monitor> monitors = (ArrayList<Monitor>) monitorService
+        .getMonitors()
+        .stream()
+        .filter(monitor -> !monitor.isInsight())
+        .sorted(Comparator.comparing(Monitor::getLastUpdateTime).reversed())
+        .collect(Collectors.toList());
 
-        MultiResult mr = new MultiResult();
-        mr.monitors = monitors;
-        mr.nodeMonitors = new ArrayList<>(h.values());
-        return mr;
+
+        multiResult.headers = new ArrayList<>();
+        multiResult.headers.add("nodeId");
+        ArrayList<Map<String, MonitorCell>> rows = new ArrayList<>();
+        boolean first = true;
+
+        for (NodeMonitors item : h.values()) {
+            Map<String, MonitorCell> cols = new HashMap<>();
+            
+             MonitorCell cell = new MonitorCell();
+             cell.tip = "N/A";
+             cell.iconColor = item.getNodeId();
+             cell.key = item.getNodeId();
+             cols.put("nodeId", cell);
+
+
+             for (Monitor monitor : monitors) {
+                 MonitorEvent event = item.getMonitorEvents().get(monitor.getType());
+                 MonitorCell monitorCell = new MonitorCell();
+                 monitorCell.tip = "N/A";
+                 monitorCell.iconColor = "#77DD76";
+                 if (event != null && !event.isResolved()) {
+                     monitorCell.tip = event.getDetails();
+                     if (event.getSeverityLevel() == 100) {
+                         monitorCell.iconColor = "#FFD700";
+                     } else if (event.getSeverityLevel() == 200) {
+                         monitorCell.iconColor = "#f39c12";
+                     } else if (event.getSeverityLevel() == 300) {
+                         monitorCell.iconColor = "#FF6962";
+                     }
+                 }
+                 monitorCell.key = monitor.getType() + "-" + monitor.getTargetNode() + "-" + monitor.getSeverityLevel() + "-" + monitor.getCreateTime();
+                 cols.put(monitor.getMonitorId(),monitorCell);
+
+                if(first) {
+                    multiResult.headers.add(monitor.getMonitorId());
+                }
+            }
+            first = false;
+            rows.add(cols);
+
+        }
+
+        multiResult.rows = rows;
+
+        return multiResult;
 
     }
 
