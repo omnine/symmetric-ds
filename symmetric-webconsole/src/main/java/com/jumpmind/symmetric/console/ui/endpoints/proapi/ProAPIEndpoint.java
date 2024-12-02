@@ -306,9 +306,8 @@ public class ProAPIEndpoint {
         ArrayList<Map<String, MonitorCell>> rows = new ArrayList<>();
 
         multiResult.headers.add("node-0");
-        for(int i = 1; i < h.values().size()+1; i++)
-        {
-            multiResult.headers.add("node-"+i);
+        for (NodeMonitors item : h.values()) {
+            multiResult.headers.add(item.getNodeId());
         }
         
         for (Monitor monitor : monitors) {
@@ -320,8 +319,7 @@ public class ProAPIEndpoint {
              cell.key = monitor.getMonitorId();
              cols.put("node-0", cell);			 
         
-        
-            int index = 1;
+
             for (NodeMonitors item : h.values()) {
                 MonitorEvent event = item.getMonitorEvents().get(monitor.getType());
                 MonitorCell monitorCell = new MonitorCell();
@@ -338,8 +336,7 @@ public class ProAPIEndpoint {
                     }
                 }
                 monitorCell.key = monitor.getType() + "-" + monitor.getTargetNode() + "-" + monitor.getSeverityLevel() + "-" + monitor.getCreateTime();
-                cols.put("node-"+index,monitorCell);
-                index++;
+                cols.put(item.getNodeId(),monitorCell);
 
             }
 
