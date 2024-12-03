@@ -6,6 +6,9 @@
            http://www.springframework.org/schema/context
            http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
+    <bean id="proConsoleService"
+        class="com.jumpmind.symmetric.console.service.impl.ProConsoleService" />
+        
 	<bean id="mailService"
 	    class="com.jumpmind.symmetric.console.service.impl.MailService"/>
 
@@ -15,8 +18,7 @@
     <bean id="backgroundNoHangupService"
         class="com.jumpmind.symmetric.console.service.impl.BackgroundNoHangupService" />              
 <!--
-    <bean id="proConsoleService"
-        class="com.jumpmind.symmetric.console.service.impl.ProConsoleService" />
+
     
     <bean id="consoleUserService"
         class="com.jumpmind.symmetric.console.service.impl.ConsoleUserService" />
