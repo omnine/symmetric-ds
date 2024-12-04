@@ -1,8 +1,34 @@
 # todo
 
-IProConsoleService
+# Update service
+#
+# DatabaseOverridable: false
+# Tags: misc
+update.service.class=com.jumpmind.symmetric.console.service.impl.ConsoleUpdateService
 
-ThroughputStatisticManager
+# Staging Manager
+#
+# DatabaseOverridable: false
+# Tags: misc
+staging.manager.class=com.jumpmind.symmetric.stage.EnhancedStagingManager
+
+# Statistics Manager
+#
+# DatabaseOverridable: false
+# Tags: misc
+statistic.manager.class=com.jumpmind.symmetric.statistic.ThroughputStatisticManager
+
+# A comma-seperated list of custom interceptors which wrap URI handlers.
+#
+# DatabaseOverridable: true
+# Tags: remote status
+server.engine.uri.interceptors=com.jumpmind.symmetric.console.remote.RemoteStatusInterceptor
+
+# Custom http transport manager supporting remote status.
+#
+# DatabaseOverridable: true
+# Tags: remote status
+http.transport.manager.class=com.jumpmind.symmetric.console.remote.RemoteStatusHttpTransportManager
 
 # questions
 

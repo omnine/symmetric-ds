@@ -9,19 +9,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 public class MonitorJob extends AbstractJob {
-   private static final String a = "MonitorJob";
+//   private static final String a = "MonitorJob";
 
    public MonitorJob(ISymmetricEngine engine) {
       this.engine = engine;
       this.jobName = "Monitor";
       this.parameterService = engine.getParameterService();
       this.randomTimeSlot = new RandomTimeSlot(this.parameterService.getExternalId(), this.parameterService.getInt("job.random.max.start.time.ms"));
-      this.log = LoggerFactory.getLogger(a);
+      this.log = LoggerFactory.getLogger(this.getClass());
    }
 
    public MonitorJob(ISymmetricEngine engine, ThreadPoolTaskScheduler taskScheduler) {
       super("Monitor", engine, taskScheduler);
-      this.log = LoggerFactory.getLogger(a);
+      this.log = LoggerFactory.getLogger(this.getClass());
    }
 
    public JobDefaults getDefaults() {
