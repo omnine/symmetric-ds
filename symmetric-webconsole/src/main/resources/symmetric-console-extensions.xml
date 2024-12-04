@@ -8,6 +8,9 @@
 
     <bean id="proConsoleService"
         class="com.jumpmind.symmetric.console.service.impl.ProConsoleService" />
+
+	<bean id="proCacheManager"
+		class="com.jumpmind.symmetric.cache.ProCacheManager" />        
         
 	<bean id="mailService"
 	    class="com.jumpmind.symmetric.console.service.impl.MailService"/>
@@ -65,8 +68,7 @@
     <bean id="tableGroupService"
     	class="com.jumpmind.symmetric.console.service.impl.TableGroupService"/>
 
-	<bean id="proCacheManager"
-		class="com.jumpmind.symmetric.cache.ProCacheManager" />
+
 
     <bean id="compareService" class="com.jumpmind.symmetric.console.service.impl.CompareService" />
 	
