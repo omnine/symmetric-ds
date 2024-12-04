@@ -8,7 +8,7 @@ import com.jumpmind.symmetric.console.impl.*;
 //import com.jumpmind.symmetric.console.impl.LicenseRowsMonitor;
 
 
-//import com.jumpmind.symmetric.console.impl.ChannelsForeignKeyMonitor;
+import com.jumpmind.symmetric.console.impl.ChannelsForeignKeyMonitor;
 
 import com.jumpmind.symmetric.console.model.Monitor;
 import com.jumpmind.symmetric.console.model.MonitorEvent;
@@ -111,7 +111,7 @@ public class MonitorService extends AbstractService implements IMonitorService, 
          new MaxChannelsMonitor(),
          new ChannelSuspendMonitor(),
          new MissingPrimaryKeyMonitor(),
-//         new ChannelsForeignKeyMonitor(),
+         new ChannelsForeignKeyMonitor(),
          new JobTrendingMonitor(),
          new ConnectionPoolMonitor(),
          new ConnectionResetMonitor(),
