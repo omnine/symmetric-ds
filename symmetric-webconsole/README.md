@@ -1,5 +1,8 @@
 # todo
 
+ com/jumpmind/symmetric/console/impl/fk.java
+
+
 # Update service
 #
 # DatabaseOverridable: false
