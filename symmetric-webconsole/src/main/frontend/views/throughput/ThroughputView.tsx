@@ -2,6 +2,12 @@ import HillaStat from 'Frontend/generated/com/jumpmind/symmetric/console/ui/data
 import { ProAPIEndpoint } from 'Frontend/generated/endpoints';
 import { useEffect, useState } from 'react';
 import { ResponsiveContainer, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip, Area } from 'recharts';
+import { Select, TextField } from '@vaadin/react-components';
+
+const timeUnits = [
+  { value: 'day', label: 'Day' },
+  { value: 'hour', label: 'Hour' }
+];
 
 export default function ThroughputView() {
 
@@ -16,6 +22,7 @@ export default function ThroughputView() {
   return (
     <>
     <h5>Stats are available since {hillaStat.sinceDate}</h5>
+    <div><TextField value="1" ></TextField><Select items={timeUnits}  value={timeUnits[0].value}/></div>
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
           width={500}
