@@ -43,4 +43,8 @@ public class ProStatHelper {
         int interval = nodeStatsPeriodInMinutes / 120 * 5;
         return statisticManager.getNodeStatsForPeriod(startTime.getTime(), endTime.getTime(), nodeService.findIdentityNodeId(), interval > 0 ? interval : 5);
     }
+
+    public Date getMinDate() {
+        return minDate;
+    }
 }

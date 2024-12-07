@@ -55,6 +55,7 @@ export default function RAView() {
 
   return (
     <>
+      <h5>Processes that have worked on at least one row of data</h5>
       {recentActivities && drawRecentActivities(recentActivities)}
     </>
   );

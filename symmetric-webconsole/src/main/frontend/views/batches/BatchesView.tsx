@@ -66,8 +66,8 @@ export default function BatchesView() {
 
   return (
     <>
-		  <h3>Outgoing Batches</h3>
-      <h4>{outgoingSummary}</h4>
+		  <h4>Outgoing Batches</h4>
+      <h5>{outgoingSummary}</h5>
       <Grid items={outgoingBatches} columnReorderingAllowed>
         <GridSelectionColumn />
         <GridColumn path="nodeId" header="Node" resizable>

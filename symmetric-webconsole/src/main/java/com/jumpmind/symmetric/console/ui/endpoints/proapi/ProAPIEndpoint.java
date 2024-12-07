@@ -17,7 +17,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.jumpmind.symmetric.AbstractSymmetricEngine;
 import org.jumpmind.symmetric.ISymmetricEngine;
 import org.jumpmind.symmetric.model.*;
 import org.jumpmind.symmetric.model.AbstractBatch.Status;
@@ -27,21 +26,14 @@ import org.jumpmind.symmetric.route.IDataRouter;
 import org.jumpmind.symmetric.service.IIncomingBatchService;
 import org.jumpmind.symmetric.service.INodeService;
 
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.progressbar.ProgressBar;
-import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.server.VaadinServlet;
 
 import com.jumpmind.symmetric.console.model.NodeStatus;
 
 
 import org.jumpmind.symmetric.service.IOutgoingBatchService;
-import org.jumpmind.symmetric.service.IStatisticService;
 import org.jumpmind.symmetric.statistic.ChannelStats;
-import org.jumpmind.symmetric.statistic.IStatisticManager;
+
 import org.jumpmind.symmetric.web.ServletUtils;
 import org.jumpmind.symmetric.web.SymmetricEngineHolder;
 import org.jumpmind.symmetric.web.FailedEngineInfo;
@@ -267,8 +259,7 @@ public class ProAPIEndpoint {
     public MultiResult getMonitorEvents() {
 
         MultiResult multiResult = new MultiResult();
-        List<ISymmetricEngine> list = new ArrayList<>(AbstractSymmetricEngine.findEngines());
-        ISymmetricEngine engine = list.get(0);
+        ISymmetricEngine engine = proEngineHelper.getSymmetricEngine();
         Map<String, NodeMonitors> h = new HashMap<>();
         engine.getNodeService().findAllNodes().forEach(node -> h.put(node.getNodeId(), new NodeMonitors(node.getNodeId())));
         IMonitorService monitorService = engine.getExtensionService().getExtensionPoint(IMonitorService.class);
@@ -418,8 +409,7 @@ public class ProAPIEndpoint {
     }
 
     public ArrayList<RecentActivity> getRecentActivities() {
-        List<ISymmetricEngine> list = new ArrayList<>(AbstractSymmetricEngine.findEngines());
-        ISymmetricEngine engine = list.get(0);
+        ISymmetricEngine engine = proEngineHelper.getSymmetricEngine();
         Set<String> setChannels = new HashSet<>(
                 getConsoleDisplayChannelIds(engine, ChannelType.BOTH)
         );
@@ -541,6 +531,9 @@ public class ProAPIEndpoint {
         BOTH
      }
 
+     /*
+     Return the configured replication channels plus config and reload of system
+      */
     private List<String> getConsoleDisplayChannelIds(ISymmetricEngine engine, ChannelType type) {
         List<String> channels;
         if (engine.getParameterService().is("console.web.hide.system.info")) {  // this is generally true
@@ -1052,28 +1045,31 @@ public class ProAPIEndpoint {
      }
 
 
-    public List<HillaStat> convert2Chart() {
+    public HillaStat convert2Chart() {
         ISymmetricEngine engine = proEngineHelper.getSymmetricEngine();
         ProStatHelper proStatHelper = new ProStatHelper();
         TreeMap<Date, Map<String, ChannelStats>> data = proStatHelper.getNodeStatsForPeriod(engine);
 
         String nodeId = proStatHelper.findNodeId(engine);
 
-        List<HillaStat> listHS = new ArrayList<>();
+        HillaStat hillaStat = new HillaStat();
+        List<ChartPoint> listPoint = new ArrayList<>();
         for (Date time : data.keySet()) {
             ChannelStats stats = data.get(time).get(nodeId);
-            HillaStat hs = new HillaStat();
-            hs.routed = stats == null ? 0 : stats.getDataRouted();
-            hs.extracted = stats == null ? 0 : stats.getDataExtracted();
-            hs.sent = stats == null ? 0 : stats.getDataSent();
-            hs.loaded = stats == null ? 0 : stats.getDataLoaded();
-            hs.unrouted = stats == null ? 0 : stats.getDataUnRouted();
-            hs.strDate = new SimpleDateFormat("hh:mm:ss aaa").format(time);
-            hs.time = time;
-            listHS.add(hs);
+            ChartPoint cp = new ChartPoint();
+            cp.routed = stats == null ? 0 : stats.getDataRouted();
+            cp.extracted = stats == null ? 0 : stats.getDataExtracted();
+            cp.sent = stats == null ? 0 : stats.getDataSent();
+            cp.loaded = stats == null ? 0 : stats.getDataLoaded();
+            cp.unrouted = stats == null ? 0 : stats.getDataUnRouted();
+            cp.strDate = new SimpleDateFormat("hh:mm:ss aaa").format(time);
+            cp.time = time;
+            listPoint.add(cp);
         }
 
-        return listHS;
+        hillaStat.chartPoints = listPoint;
+        hillaStat.sinceDate = proStatHelper.getMinDate();
+        return hillaStat;
     }
 
 }
