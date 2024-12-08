@@ -3,35 +3,60 @@ import { ProAPIEndpoint } from 'Frontend/generated/endpoints';
 import { useEffect, useState } from 'react';
 import { ResponsiveContainer, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip, Area } from 'recharts';
 
-import { Input, Select } from 'antd';
-const { Option } = Select;
-
-const selectAfter = (
-  <Select defaultValue="hour">
-    <Option value="hour">Hour</Option>
-    <Option value="day">Day</Option>
-  </Select>
-);
+import { Flex, Input, Select } from 'antd';
+import { i18n } from "@lingui/core";
 
 export default function ThroughputView() {
+  i18n.activate("en");
+
   const [period, setPeriod] = useState(1);
+  const [isDay, setIsDay] = useState(false);
   const [hillaStat, setHillaStat] = useState<HillaStat | null>(null);
 
-  const onChange = (e: any) => {
-    setPeriod(e.target.value);
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const numberValue = parseInt(value, 10); // Convert string to number
+    setPeriod(numberValue);
   };
+
+  const handleChange = (value: string) => {
+    console.log(`selected ${value}`);
+    if (value === 'day') {
+      setIsDay(true);
+    } else {
+      setIsDay(false);
+    }
+  };
+
+
+  const showLocalTime = (value: string) => {
+    console.log(`selected ${value}`);
+    const d = new Date(value);
+    return i18n.date(d, { dateStyle: "medium", timeStyle: "medium" });
+  };  
 
   useEffect(() => {
 
-    ProAPIEndpoint.convert2Chart(period, false).then(hs => setHillaStat(hs || null));
-  }, [period]);  
+    ProAPIEndpoint.convert2Chart(period, isDay).then((hs: HillaStat | undefined) => setHillaStat(hs || null));
+  }, [period, isDay]);  
 
   if (!hillaStat) return null;
 
   return (
     <>
-      <h5>Stats are available since {hillaStat.sinceDate}</h5>
-      <Input addonAfter={selectAfter} defaultValue="1" onChange={onChange}/>
+      <h5>Stats are available since {hillaStat.sinceDate ? showLocalTime(hillaStat.sinceDate) : 'N/A'}</h5>
+      <Flex gap="middle">
+        <Input defaultValue="1" onChange={onChange}/>
+        <Select
+        defaultValue="hour"
+        style={{ width: 120 }}
+        onChange={handleChange}
+        options={[
+          { value: 'hour', label: 'Hour' },
+          { value: 'day', label: 'Day' },
+        ]}
+      />        
+      </Flex>
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
           width={500}

@@ -3,6 +3,8 @@
   "license": "UNLICENSED",
   "type": "module",
   "dependencies": {
+    "@lingui/core": "^5.1.0",
+    "@lingui/react": "^5.1.0",
     "@polymer/polymer": "3.5.2",
     "@vaadin-component-factory/vcf-nav": "1.1.0",
     "@vaadin/bundles": "24.5.2",
@@ -37,6 +39,7 @@
   },
   "devDependencies": {
     "@babel/preset-react": "7.25.7",
+    "@lingui/vite-plugin": "^5.1.0",
     "@lit-labs/react": "^1.1.0",
     "@preact/signals-react-transform": "0.4.0",
     "@rollup/plugin-replace": "6.0.1",
@@ -80,6 +83,8 @@
     "@vaadin/router": "$@vaadin/router",
     "@vaadin/vaadin-usage-statistics": "$@vaadin/vaadin-usage-statistics",
     "@vaadin/react-components": "$@vaadin/react-components",
+    "@lingui/core": "$@lingui/core",
+    "@lingui/react": "$@lingui/react",
     "@vaadin/common-frontend": "$@vaadin/common-frontend",
     "react-dom": "$react-dom",
     "@vaadin/hilla-frontend": "$@vaadin/hilla-frontend",
@@ -159,6 +164,6 @@
       "workbox-core": "7.3.0",
       "workbox-precaching": "7.3.0"
     },
-    "hash": "752996a7172a4789f689e375963402f920e513ad9a128a36d877d8ae9e78987a"
+    "hash": "527d1ac9b3b4201e8bdd079066b7ccdef6f2b33443d66caea898a4b0b440b19a"
   }
 }
