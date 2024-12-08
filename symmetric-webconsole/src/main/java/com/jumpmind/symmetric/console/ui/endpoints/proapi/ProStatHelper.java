@@ -30,8 +30,8 @@ public class ProStatHelper {
         return node != null ? node.getNodeId() : null;
     }
 
-    public TreeMap<Date, Map<String, ChannelStats>> getNodeStatsForPeriod(ISymmetricEngine engine) {
-        int nodeStatsPeriodInMinutes = getScaleFactor(1, false);    // last 1 hour, get from front-end
+    public TreeMap<Date, Map<String, ChannelStats>> getNodeStatsForPeriod(ISymmetricEngine engine, int period, boolean isDay) {
+        int nodeStatsPeriodInMinutes = getScaleFactor(period, isDay);    // last 1 hour, get from front-end
         IStatisticService statisticsService = engine.getStatisticService();
         IStatisticManager statisticManager = engine.getStatisticManager();
         INodeService nodeService = engine.getNodeService();

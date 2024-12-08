@@ -36,3 +36,6 @@ http.transport.manager.class=com.jumpmind.symmetric.console.remote.RemoteStatusH
 # questions
 
 We can use `dbimport` on `src\main\resources\console-schema.xml` to generate the pro-related tables, but how we replace the variable such as  `$(monitor)` in  `com/jumpmind/symmetric/console/service/impl/MonitorServiceSqlMap.java`?
+
+# build
+gradlew build -Pvaadin.productionMode

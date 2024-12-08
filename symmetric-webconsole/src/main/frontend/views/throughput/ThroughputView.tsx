@@ -2,27 +2,36 @@ import HillaStat from 'Frontend/generated/com/jumpmind/symmetric/console/ui/data
 import { ProAPIEndpoint } from 'Frontend/generated/endpoints';
 import { useEffect, useState } from 'react';
 import { ResponsiveContainer, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip, Area } from 'recharts';
-import { Select, TextField } from '@vaadin/react-components';
 
-const timeUnits = [
-  { value: 'day', label: 'Day' },
-  { value: 'hour', label: 'Hour' }
-];
+import { Input, Select } from 'antd';
+const { Option } = Select;
+
+const selectAfter = (
+  <Select defaultValue="hour">
+    <Option value="hour">Hour</Option>
+    <Option value="day">Day</Option>
+  </Select>
+);
 
 export default function ThroughputView() {
-
+  const [period, setPeriod] = useState(1);
   const [hillaStat, setHillaStat] = useState<HillaStat | null>(null);
+
+  const onChange = (e: any) => {
+    setPeriod(e.target.value);
+  };
+
   useEffect(() => {
 
-    ProAPIEndpoint.convert2Chart().then(hs => setHillaStat(hs || null));
-  }, []);  
+    ProAPIEndpoint.convert2Chart(period, false).then(hs => setHillaStat(hs || null));
+  }, [period]);  
 
   if (!hillaStat) return null;
 
   return (
     <>
-    <h5>Stats are available since {hillaStat.sinceDate}</h5>
-    <div><TextField value="1" ></TextField><Select items={timeUnits}  value={timeUnits[0].value}/></div>
+      <h5>Stats are available since {hillaStat.sinceDate}</h5>
+      <Input addonAfter={selectAfter} defaultValue="1" onChange={onChange}/>
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
           width={500}

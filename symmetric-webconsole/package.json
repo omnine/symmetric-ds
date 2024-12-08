@@ -23,6 +23,7 @@
     "@vaadin/vaadin-material-styles": "24.5.2",
     "@vaadin/vaadin-themable-mixin": "24.5.2",
     "@vaadin/vaadin-usage-statistics": "2.1.3",
+    "antd": "^5.22.3",
     "classnames": "^2.3.2",
     "construct-style-sheets-polyfill": "3.1.0",
     "date-fns": "2.29.3",
@@ -72,6 +73,7 @@
     "react-loader-spinner": "$react-loader-spinner",
     "react-is": "$react-is",
     "recharts": "$recharts",
+    "antd": "$antd",
     "@vaadin/bundles": "$@vaadin/bundles",
     "@vaadin/polymer-legacy-adapter": "$@vaadin/polymer-legacy-adapter",
     "@vaadin/vaadin-development-mode-detector": "$@vaadin/vaadin-development-mode-detector",
@@ -157,6 +159,6 @@
       "workbox-core": "7.3.0",
       "workbox-precaching": "7.3.0"
     },
-    "hash": "ed4baf72726aaf42cf823a3331dda6519275c34c5996a5ae34b7ca64f51f0181"
+    "hash": "752996a7172a4789f689e375963402f920e513ad9a128a36d877d8ae9e78987a"
   }
 }

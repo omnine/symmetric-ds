@@ -1045,10 +1045,10 @@ public class ProAPIEndpoint {
      }
 
 
-    public HillaStat convert2Chart() {
+    public HillaStat convert2Chart(int period, boolean isDay) {
         ISymmetricEngine engine = proEngineHelper.getSymmetricEngine();
         ProStatHelper proStatHelper = new ProStatHelper();
-        TreeMap<Date, Map<String, ChannelStats>> data = proStatHelper.getNodeStatsForPeriod(engine);
+        TreeMap<Date, Map<String, ChannelStats>> data = proStatHelper.getNodeStatsForPeriod(engine, period, isDay);
 
         String nodeId = proStatHelper.findNodeId(engine);
 
