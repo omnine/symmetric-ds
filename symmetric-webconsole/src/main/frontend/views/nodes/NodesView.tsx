@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 
 import NodeStatus from 'Frontend/generated/com/jumpmind/symmetric/console/model/NodeStatus';
 
-import { Table } from "antd";
+import { Table, Tooltip } from "antd";
 import '@vaadin/icons';
 import { Icon } from '@vaadin/react-components/Icon.js';
 
@@ -57,12 +57,18 @@ export default function NodesView() {
       key: 'status',
       render: (text: string) => {
         if (text === '1') {
-          return <Icon icon="vaadin:warning" />;
+          return (<Tooltip title="warning">
+            <Icon icon="vaadin:warning" />
+          </Tooltip>);
         }
         else if (text === '4') {
-          return <Icon icon="vaadin:check" />;
+          return   (<Tooltip title="OK">
+            <Icon icon="vaadin:check" />
+          </Tooltip>);
         }
-        return <Icon icon="vaadin:unlink" />;
+        return   (<Tooltip title="Disconnected">
+          <Icon icon="vaadin:unlink" />
+        </Tooltip>);
       }
     },
     {
