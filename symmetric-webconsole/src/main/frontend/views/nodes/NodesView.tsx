@@ -1,16 +1,12 @@
-import {Grid, GridEventContext} from '@vaadin/react-components/Grid';
-import {GridColumn} from '@vaadin/react-components/GridColumn';
-import {GridColumnGroup} from '@vaadin/react-components/GridColumnGroup';
-import {GridSelectionColumn} from '@vaadin/react-components/GridSelectionColumn';
 import { ProAPIEndpoint } from 'Frontend/generated/endpoints.js';
 import { useState, useEffect } from 'react';
 
 import NodeStatus from 'Frontend/generated/com/jumpmind/symmetric/console/model/NodeStatus';
 
-
+import { Table } from "antd";
 import '@vaadin/icons';
 import { Icon } from '@vaadin/react-components/Icon.js';
-import { Tooltip } from '@vaadin/react-components/Tooltip.js';
+
 import HealthInfo from 'Frontend/generated/com/jumpmind/symmetric/console/ui/data/HealthInfo';
 
 export default function NodesView() {
@@ -22,31 +18,8 @@ export default function NodesView() {
   }, []);
 
 
-  const statusRenderer = (ns: NodeStatus) => {
-    if (ns.status === '1') {
-      return <Icon icon="vaadin:warning" />;
-    }
-    else if (ns.status === '4') {
-      return <Icon icon="vaadin:check" />;
-    }
-    return <Icon icon="vaadin:unlink" />;
 
-  }
-
-  const outRowRenderer = (ns: NodeStatus) => {
-    if (healthInfo && ns.nodeId === healthInfo.engineNodeId) {
-      return "N/A";
-    }
-    return <>{ns.outgoingDataCountRemaining}</>;
-  }
-
-  const outBatchRenderer = (ns: NodeStatus) => {
-    if (healthInfo && ns.nodeId === healthInfo.engineNodeId) {
-      return "N/A";
-    }
-    return <>{ns.outgoingBatchCountRemaining}</>;
-  }
-
+/*
 
   const tooltipGenerator = (context: GridEventContext<NodeStatus>): string => {
     let text = '';
@@ -70,33 +43,89 @@ export default function NodesView() {
     return text;
   };
 
+*/
+  
+  const columns = [
+    {
+      title: 'Node',
+      dataIndex: 'nodeId',
+      key: 'nodeId',
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      render: (text: string) => {
+        if (text === '1') {
+          return <Icon icon="vaadin:warning" />;
+        }
+        else if (text === '4') {
+          return <Icon icon="vaadin:check" />;
+        }
+        return <Icon icon="vaadin:unlink" />;
+      }
+    },
+    {
+      title: 'Outgoing',
+      children: [
+        {
+          title: 'Rows',
+          dataIndex: 'outgoingDataCountRemaining',
+          key: 'outgoingDataCountRemaining',
+          render: (_: any, record: NodeStatus) => {
+            if (healthInfo && record.nodeId === healthInfo.engineNodeId) {
+              return "N/A";
+            }
+            return <>{record.outgoingDataCountRemaining}</>;
+          }          
+
+        },
+        {
+          title: 'Batches',
+          dataIndex: 'outgoingBatchCountRemaining',
+          key: 'outgoingBatchCountRemaining',
+          render: (_: any, record: NodeStatus) => {
+            if (healthInfo && record.nodeId === healthInfo.engineNodeId) {
+              return "N/A";
+            }
+            return <>{record.outgoingBatchCountRemaining}</>;
+          }
+        },
+        {
+          title: 'Last',
+          dataIndex: 'lastOutgoingTime',
+          key: 'lastOutgoingTime',
+        },                
+      ],
+    },
+    {
+      title: 'Incoming',
+      children: [
+        {
+          title: 'Rows',
+          dataIndex: 'incomingDataCountRemaining',
+          key: 'incomingDataCountRemaining',
+        },
+        {
+          title: 'Batches',
+          dataIndex: 'incomingBatchCountRemaining',
+          key: 'incomingBatchCountRemaining',
+        },
+        {
+          title: 'Last',
+          dataIndex: 'lastIncomingTime',
+          key: 'lastIncomingTime',
+        },
+      ],
+
+    },
+
+  ];
+  
 
   return (
     <>
-      <Grid items={nodes} columnReorderingAllowed>
-        <Tooltip slot="tooltip" generator={tooltipGenerator} />
-        <GridSelectionColumn />
-        <GridColumn path="nodeId" header="Node" resizable />
-        <GridColumn path="status" header="Status" resizable>
-          {({ item }) => statusRenderer(item)}
-        </GridColumn>
-
-        <GridColumnGroup header="Outgoing">
-          <GridColumn path="outgoingDataCountRemaining" header="Rows">
-            {({ item }) => outRowRenderer(item)}
-          </GridColumn>
-          <GridColumn path="outgoingBatchCountRemaining" header="Batches">
-            {({ item }) => outBatchRenderer(item)}            
-          </GridColumn>
-          <GridColumn path="lastOutgoingTime" header="Last"/>
-        </GridColumnGroup>
-        <GridColumnGroup header="Incoming">
-          <GridColumn path="incomingDataCountRemaining" header="Rows"/>
-          <GridColumn path="incomingBatchCountRemaining" header="Batches"/>
-          <GridColumn path="lastIncomingTime" header="Last"/>
-        </GridColumnGroup>
-      </Grid>
-
+      <Table<NodeStatus> dataSource={nodes.filter((node): node is NodeStatus => node !== undefined)} columns={columns} />;
     </>
   );
 }
