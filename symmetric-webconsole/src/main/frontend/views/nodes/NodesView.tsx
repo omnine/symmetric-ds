@@ -16,35 +16,7 @@ export default function NodesView() {
     ProAPIEndpoint.checkHealth().then(healthInfo => setHealthInfo(healthInfo));
     ProAPIEndpoint.listNodes().then(nodes => setNodes(nodes));
   }, []);
-
-
-
-/*
-
-  const tooltipGenerator = (context: GridEventContext<NodeStatus>): string => {
-    let text = '';
-  
-    const { column, item } = context;
-    if (column && item) {
-      switch (column.path) {
-        case 'status':
-          if(item.status === '4') {
-            text = 'OK';
-          }
-          else {
-            text = 'Warning';
-          }
-          break;
-        default:
-          break;
-      }
-    }
-  
-    return text;
-  };
-
-*/
-  
+ 
   const columns = [
     {
       title: 'Node',
