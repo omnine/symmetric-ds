@@ -1,6 +1,3 @@
-import {Grid} from '@vaadin/react-components/Grid';
-import {GridColumn} from '@vaadin/react-components/GridColumn';
-import {GridSelectionColumn} from '@vaadin/react-components/GridSelectionColumn';
 import { ProAPIEndpoint } from 'Frontend/generated/endpoints.js';
 import { useState, useEffect } from 'react';
 
@@ -9,6 +6,7 @@ import { Icon } from '@vaadin/react-components/Icon.js';
 
 import { ProgressBar } from '@vaadin/react-components/ProgressBar.js';
 import HillaBatch from 'Frontend/generated/com/jumpmind/symmetric/console/ui/data/HillaBatch';
+import { Table } from 'antd';
 
 export default function BatchesView() {
   const [outgoingSummary, setOutgoingSummary] = useState<string>("");
@@ -63,44 +61,51 @@ export default function BatchesView() {
     return item.nodeId;
    }
 
+   const outgoingColumns = [
+    {
+      title: 'Node',
+      dataIndex: 'nodeId',
+      key: 'nodeId',
+      render: (text: string) => {
+        if (text === '-1') {
+          return "Unrouted";
+        }
+        return text;
+      }
+    },
+    {
+      title: 'Batch ID',
+      dataIndex: 'batchId',
+      key: 'batchId',
+    },
+    {
+      title: 'Progress',
+      dataIndex: 'percent',
+      key: 'percent',
+      render: (_: any, record: HillaBatch) => {
+        return progressRenderer(record);
+      }
+    },
+    {
+      title: 'Failed Line Number',
+      dataIndex: 'failedLineNumber',
+      key: 'failedLineNumber',
+    },
+    {
+      title: 'Bulk Loaded',
+      dataIndex: 'bulkLoaderFlag',
+      key: 'bulkLoaderFlag',
+    },           
+  ];
 
   return (
     <>
 		  <h4>Outgoing Batches</h4>
       <h5>{outgoingSummary}</h5>
-      <Grid items={outgoingBatches} columnReorderingAllowed>
-        <GridSelectionColumn />
-        <GridColumn path="nodeId" header="Node" resizable>
-        {({ item }) => nodeRenderer(item)}          
-        </GridColumn>
-        <GridColumn path="batchId" header="Batch ID" resizable>
-        </GridColumn>
-        <GridColumn path="outgoingDataCountRemaining" header="Progress">
-        {({ item }) => progressRenderer(item)}
-        </GridColumn>
-        <GridColumn path="failedLineNumber" header="Failed Line Number">
-        </GridColumn>
-        <GridColumn path="bulkLoaderFlag" header="Bulk Loaded"/>
-      </Grid>
+      <Table<HillaBatch> dataSource={outgoingBatches.filter(batch => batch !== undefined) as HillaBatch[]} columns={outgoingColumns} />
 		  <h3>Incoming Batches</h3>
-      <h4>{incomingSummary}</h4>      
-      <Grid items={incomingBatches} columnReorderingAllowed>
-        <GridSelectionColumn />
-        <GridColumn path="nodeId" header="Node" resizable>
-        {({ item }) => nodeRenderer(item)}          
-        </GridColumn>
-        <GridColumn path="batchId" header="Batch ID" resizable>
-
-        </GridColumn>
-        <GridColumn path="summaryShort" header="Table(s)" resizable />
-        <GridColumn path="outgoingDataCountRemaining" header="Progress">
-        {({ item }) => progressRenderer(item)}
-        </GridColumn>
-        <GridColumn path="failedLineNumber" header="Failed Line Number">
-        </GridColumn>
-        <GridColumn path="bulkLoaderFlag" header="Bulk Loaded"/>
-      </Grid>
-
+      <h4>{incomingSummary}</h4>
+      <Table<HillaBatch> dataSource={incomingBatches.filter(batch => batch !== undefined) as HillaBatch[]} columns={outgoingColumns} />     
     </>
   );
 }
