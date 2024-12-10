@@ -127,7 +127,7 @@ public class MonitorService extends AbstractService implements IMonitorService, 
       INotificationExtension[] notificationExtensions = new INotificationExtension[]{new LoggerNotification(), new EmailNotification()};
 
       for (INotificationExtension ext : notificationExtensions) {
-         this.extensionService.addExtensionPoint(ext.a(), ext);
+         this.extensionService.addExtensionPoint(ext.channel(), ext);
       }
    }
 

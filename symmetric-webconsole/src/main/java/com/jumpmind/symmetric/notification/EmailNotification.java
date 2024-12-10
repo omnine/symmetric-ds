@@ -23,11 +23,11 @@ import org.slf4j.LoggerFactory;
 
 public class EmailNotification implements INotificationExtension, IBuiltInExtensionPoint, ISymmetricEngineAware {
    private final Logger b = LoggerFactory.getLogger(this.getClass());
-   protected ISymmetricEngine a;
+   protected ISymmetricEngine engine;
 
    @Override
    public void output(Notification notification, List<MonitorEvent> monitorEvents) {
-      Map<String, String> eventListReplacements = NotificationTemplate.a(this.a, monitorEvents);
+      Map<String, String> eventListReplacements = NotificationTemplate.a(engine, monitorEvents);
       Notification.EmailExpression expression = notification.getEmailExpression();
       String subject = FormatUtils.replaceTokens(expression.getSubject(), eventListReplacements, true);
       Map<String, String> templateMap = expression.getTemplateMap();
@@ -38,7 +38,7 @@ public class EmailNotification implements INotificationExtension, IBuiltInExtens
 
       for (MonitorEvent event : monitorEvents) {
          try {
-            Map<String, String> eventReplacements = NotificationTemplate.a(this.a, event);
+            Map<String, String> eventReplacements = NotificationTemplate.a(engine, event);
             if (event.getType().equals("log")) {
                eventReplacements.put("eventDetails", c(event));
             } else if (event.getType().equals("batchError")) {
@@ -76,7 +76,7 @@ public class EmailNotification implements INotificationExtension, IBuiltInExtens
       String recipients = String.join(",", expression.getEmails());
       if (recipients != null) {
          this.b.info("Sending email with subject '" + subject + "' to " + recipients);
-         ((IMailService)this.a.getExtensionService().getExtensionPoint(IMailService.class)).sendEmail(subject, text.toString(), recipients);
+         ((IMailService)engine.getExtensionService().getExtensionPoint(IMailService.class)).sendEmail(subject, text.toString(), recipients);
       } else {
          this.b.warn("Notification " + notification.getNotificationId() + " has no email recipients configured.");
       }
@@ -172,11 +172,11 @@ public class EmailNotification implements INotificationExtension, IBuiltInExtens
    }
 
    @Override
-   public String a() {
+   public String channel() {
       return "email";
    }
 
    public void setSymmetricEngine(ISymmetricEngine engine) {
-      this.a = engine;
+      this.engine = engine;
    }
 }

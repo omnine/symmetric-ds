@@ -39,7 +39,7 @@ public class LoggerNotification implements INotificationExtension, IBuiltInExten
    }
 
    @Override
-   public String a() {
+   public String channel() {
       return "log";
    }
 
