@@ -16,7 +16,7 @@ public class LoggerNotification implements INotificationExtension, IBuiltInExten
    protected ISymmetricEngine a;
 
    @Override
-   public void a(Notification notification, List<MonitorEvent> monitorEvents) {
+   public void output(Notification notification, List<MonitorEvent> monitorEvents) {
       Notification.LogExpression expression = notification.getLogExpression();
 
       for (MonitorEvent monitorEvent : monitorEvents) {

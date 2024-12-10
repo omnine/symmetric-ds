@@ -26,7 +26,7 @@ public class EmailNotification implements INotificationExtension, IBuiltInExtens
    protected ISymmetricEngine a;
 
    @Override
-   public void a(Notification notification, List<MonitorEvent> monitorEvents) {
+   public void output(Notification notification, List<MonitorEvent> monitorEvents) {
       Map<String, String> eventListReplacements = NotificationTemplate.a(this.a, monitorEvents);
       Notification.EmailExpression expression = notification.getEmailExpression();
       String subject = FormatUtils.replaceTokens(expression.getSubject(), eventListReplacements, true);

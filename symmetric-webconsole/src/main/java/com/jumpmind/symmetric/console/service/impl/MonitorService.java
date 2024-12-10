@@ -219,7 +219,7 @@ public class MonitorService extends AbstractService implements IMonitorService, 
                      if (monitorEvents.size() > 0) {
                         INotificationExtension notificationType = notificationTypes.get(notificationx.getType());
                         if (notificationType != null) {
-                           notificationType.a(notificationx, monitorEvents);
+                           notificationType.output(notificationx, monitorEvents);
                            this.updateMonitorEventAsNotified(monitorEvents);
                         } else {
                            this.log.warn("Could not find notification of type '" + notificationx.getType() + "'");
