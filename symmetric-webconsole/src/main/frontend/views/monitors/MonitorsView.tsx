@@ -5,7 +5,7 @@ import { Icon } from '@vaadin/react-components/Icon.js';
 
 import MultiResult from "Frontend/generated/com/jumpmind/symmetric/console/ui/data/MultiResult";
 
-import { Table } from "antd";
+import { Table, Tooltip } from "antd";
 
 
 export default function MonitorsView() {
@@ -17,14 +17,12 @@ export default function MonitorsView() {
 
     const drawItem = (record:any, head:string) => {
       if(head === "node-0") {
-        return record[head].iconColor;
+        return (<Tooltip title={record[head].tip}>{record[head].iconColor}</Tooltip>);
       }
 //      console.log(item);
 //      console.log(head);
-      return (<Icon icon="vaadin:stop" style={{ color: record[head].iconColor }}/>);    
+      return (<Tooltip title={record[head].tip}><Icon icon="vaadin:stop" style={{ color: record[head].iconColor }}/></Tooltip>);    
     }
-
-
 
     const buildColumns = () => {
       if (!multiResult) return [];
