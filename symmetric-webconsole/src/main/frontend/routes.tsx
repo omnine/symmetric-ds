@@ -9,6 +9,7 @@ const NodesView = lazy(async () => import('Frontend/views/nodes/NodesView.js'));
 const RAView = lazy(async () => import('Frontend/views/recentactivities/RAView.js'));
 const BatchesView = lazy(async () => import('Frontend/views/batches/BatchesView.js'));
 const ThroughputView = lazy(async () => import('Frontend/views/throughput/ThroughputView.js'));
+const MailServerView = lazy(async () => import('Frontend/views/mailserver/MailServerView.js'));
 
 
 export type MenuProps = Readonly<{
@@ -46,6 +47,7 @@ export const routes: readonly ViewRouteObject[] = [
       { path: '/batches', element: <BatchesView />, handle: { icon: 'exchange', title: ' Batches' } },
       { path: '/recentactivities', element: <RAView />, handle: { icon: 'clock', title: ' Recent Activities' } },
       { path: '/throughput', element: <ThroughputView />, handle: { icon: 'chart', title: ' Throughput' } },
+      { path: '/mailserver', element: <MailServerView />, handle: { icon: 'at', title: ' Mail Server' } },      
       { path: '/about', element: <AboutView />, handle: { icon: 'file', title: ' About' } },
     ],
   },
