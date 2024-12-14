@@ -10,5 +10,6 @@ public class MailServerSetting {
     public boolean starttls;
     public boolean ssl_auth;
     public boolean allow_untrust_cert;
-    public boolean user_auth;    
+    public boolean user_auth;
+    public String recipients; 
 }

@@ -17,11 +17,13 @@ import com.vaadin.hilla.Nonnull;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 
 import org.jumpmind.properties.DefaultParameterParser;
 import org.jumpmind.properties.DefaultParameterParser.ParameterMetaData;
 import org.jumpmind.properties.TypedProperties;
 import org.jumpmind.symmetric.ISymmetricEngine;
+import org.jumpmind.symmetric.common.ParameterConstants;
 import org.jumpmind.symmetric.model.*;
 import org.jumpmind.symmetric.model.AbstractBatch.Status;
 import org.jumpmind.symmetric.model.ProcessInfo.ProcessStatus;
@@ -1145,6 +1147,63 @@ public class ProAPIEndpoint {
 
       String error = ((IMailService)engine.getExtensionService().getExtensionPoint(IMailService.class)).testTransport(prop);
       return error;
+   }
+
+   public String sendTestEmail(MailServerSetting mailServerSetting) {
+      ISymmetricEngine engine = proEngineHelper.getSymmetricEngine();
+
+      TypedProperties prop = new TypedProperties();
+      prop.setProperty("smtp.host", mailServerSetting.host);
+      prop.setProperty("smtp.transport", mailServerSetting.transport);
+      prop.setProperty("smtp.port", mailServerSetting.port);
+      prop.setProperty("smtp.from", mailServerSetting.from);
+      prop.setProperty("smtp.starttls", Boolean.toString(mailServerSetting.starttls));
+      prop.setProperty("smtp.auth", Boolean.toString(mailServerSetting.user_auth));
+      if (mailServerSetting.ssl_auth) {
+         prop.setProperty("smtp.socket.factory.class", "javax.net.ssl.SSLSocketFactory");
+      }
+
+      prop.setProperty("smtp.allow.untrusted.cert", Boolean.toString(mailServerSetting.allow_untrust_cert));
+
+      if(mailServerSetting.user_auth)
+      {
+         prop.setProperty("smtp.user", mailServerSetting.username);
+         prop.setProperty("smtp.password", mailServerSetting.password);
+      }
+
+      String error = ((IMailService)engine.getExtensionService().getExtensionPoint(IMailService.class)).sendEmail("SymmetricDS Email Test", "This is a test message sent from the SymmetricDS server", mailServerSetting.recipients);
+      return error;
+   }
+
+
+
+
+   public MailServerSetting getMailServerSetting() {
+      ISymmetricEngine engine = proEngineHelper.getSymmetricEngine();
+      IParameterService ips = engine.getParameterService();
+      TypedProperties prop = ips.getDatabaseParameters("ALL", "ALL");
+
+      MailServerSetting mailServerSetting = new MailServerSetting();
+      mailServerSetting.host = prop.get("smtp.host", "");
+      mailServerSetting.transport = prop.get("smtp.transport", "smtp");
+      mailServerSetting.port = Integer.parseInt(prop.get("smtp.port", "25"));
+      mailServerSetting.from = prop.get("smtp.from", "");
+      mailServerSetting.starttls = prop.is("smtp.starttls", false);
+      mailServerSetting.user_auth = prop.is("smtp.auth", false);
+      mailServerSetting.ssl_auth = StringUtils.isNotBlank(prop.get("smtp.socket.factory.class"));
+      mailServerSetting.allow_untrust_cert = prop.is("smtp.allow.untrusted.cert", false);
+      mailServerSetting.username = prop.get("smtp.user", "");
+
+
+      ParameterMetaData passwordMetaData = (ParameterMetaData)ParameterConstants.getParameterMetaData().get("smtp.password");
+      String password = prop.get("smtp.password", "");
+      if (passwordMetaData != null && password != null && passwordMetaData.isEncryptedType() && password.startsWith("enc:")) {
+         password = engine.getSecurityService().decrypt(password.substring("enc:".length()));
+      }
+
+      mailServerSetting.password = password;
+      return mailServerSetting;
+
    }
 
 }

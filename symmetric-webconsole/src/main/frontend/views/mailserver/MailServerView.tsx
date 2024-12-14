@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'antd/es/form/Form';
 import type { FormProps } from 'antd';
-import { Button, Checkbox, Form, Input, Select, Space } from 'antd';
+import { Button, Checkbox, Form, Input, Select, Space, message, Drawer } from 'antd';
 import { ProAPIEndpoint } from 'Frontend/generated/endpoints.js';
 
 import MailServerSetting from 'Frontend/generated/com/jumpmind/symmetric/console/ui/data/MailServerSetting';
@@ -9,17 +9,53 @@ import MailServerSetting from 'Frontend/generated/com/jumpmind/symmetric/console
 export default function MailServerView() {
   const [form] = Form.useForm();
   const [submitType, setSubmitType] = useState<number>(0);
+  const [messageApi, contextHolder] = message.useMessage();
+  const [recipientVisible, setRecipientVisible] = useState(false);
 
+
+  useEffect(() => {
+    ProAPIEndpoint.getMailServerSetting().then((mailServerSetting: MailServerSetting | undefined) => {
+      if (mailServerSetting) {
+        form.setFieldsValue(mailServerSetting);
+      } else {
+        messageApi.error('Failed to load mail server settings');
+      }
+    });
+  }, []);
 
   
   const onFinish: FormProps<MailServerSetting>['onFinish'] = (values) => {
     console.log('Success:', values);
     if(submitType === 1) {
       setSubmitType(0);
-      ProAPIEndpoint.testSMTPConnection(values);
+      ProAPIEndpoint.testSMTPConnection(values).then((result: string | undefined) => {
+          if (result) {
+              messageApi.info(result);
+          } else {
+              messageApi.error('Test SMTP connection failed');
+          }
+      });
+    }
+    else if(submitType === 2) {
+      setSubmitType(0);
+      ProAPIEndpoint.sendTestEmail(values).then((result: string | undefined) => {
+          if (result) {
+              messageApi.info(result);
+          } else {
+              messageApi.error('Send test email failed');
+          }
+      });
     }
     else{
-      ProAPIEndpoint.saveMailServerSetting(values);
+      ProAPIEndpoint.saveMailServerSetting(values).then((result:number) => {
+        if(result === 1){
+          messageApi.error('Saved the Mail server setting successfully');
+        }
+        else{
+          messageApi.warning('failed to save mail server setting');
+        }
+
+      });
     }
     
   };
@@ -28,15 +64,23 @@ export default function MailServerView() {
     console.log('Failed:', errorInfo);
   };
   
+  const doSend = () => {
+    setSubmitType(2);
+    form.submit();
+  }
 
 
   return (
-    <Form form={form}
+    <>
+      {contextHolder}
+
+
+      <Form form={form}
       name="basic"
       labelCol={{ span: 8 }}
       wrapperCol={{ span: 16 }}
       style={{ maxWidth: 600 }}
-      initialValues={{ user_auth: true }}
+      initialValues={{ user_auth: true, transport: 'smtp', starttls: false, ssl_auth: false, allow_untrust_cert: true }}
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
       autoComplete="off"
@@ -118,7 +162,14 @@ export default function MailServerView() {
           ) : null;
         }}
       </Form.Item>
- 
+
+      {recipientVisible && (<Form.Item<MailServerSetting>
+        label="Recipients"
+        name="recipients"
+        rules={[{ message: 'Please add some recipients, separated by semi-colon!' }]}
+      >
+        <Input />
+      </Form.Item> )}
 
       <Form.Item label={null}>
         <Space>
@@ -131,11 +182,15 @@ export default function MailServerView() {
           }}>
             Test Connection
           </Button>
-          <Button>
-            Send Test Email
+          <Button onClick={() => {
+            setRecipientVisible(recipientVisible?false:true);
+          }}>
+            {recipientVisible?"Go":"Send Test Email"}
           </Button>
         </Space>
       </Form.Item>
-    </Form>
+    </Form>  
+    </>
+
   );
 }
