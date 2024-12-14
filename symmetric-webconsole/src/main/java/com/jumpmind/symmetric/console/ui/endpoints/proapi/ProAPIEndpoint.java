@@ -6,6 +6,7 @@ import com.jumpmind.symmetric.console.model.NodeMonitors;
 import com.jumpmind.symmetric.console.model.RecentActivity;
 import com.jumpmind.symmetric.console.remote.BatchStatus;
 import com.jumpmind.symmetric.console.remote.IBatchStatusService;
+import com.jumpmind.symmetric.console.service.IMailService;
 import com.jumpmind.symmetric.console.service.IMonitorService;
 import com.jumpmind.symmetric.console.service.impl.MonitorService;
 import com.jumpmind.symmetric.console.ui.data.*;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 
 import org.jumpmind.properties.DefaultParameterParser;
 import org.jumpmind.properties.DefaultParameterParser.ParameterMetaData;
+import org.jumpmind.properties.TypedProperties;
 import org.jumpmind.symmetric.ISymmetricEngine;
 import org.jumpmind.symmetric.model.*;
 import org.jumpmind.symmetric.model.AbstractBatch.Status;
@@ -1094,7 +1096,7 @@ public class ProAPIEndpoint {
 
          ips.saveParameter("smtp.allow.untrusted.cert", mailServerSetting.allow_untrust_cert, userId);
 
-         ips.saveParameter("smtp.user", mailServerSetting.username, userId);
+
 
          if(mailServerSetting.ssl_auth) {
             ips.saveParameter("smtp.socket.factory.class", "javax.net.ssl.SSLSocketFactory", userId);
@@ -1102,19 +1104,47 @@ public class ProAPIEndpoint {
             ips.deleteParameter("smtp.socket.factory.class");
          }
 
-         Map<String, ParameterMetaData> propMap = new DefaultParameterParser("/symmetric-console-default.properties").parse();
+         if(mailServerSetting.user_auth) {   // save username and password when user auth is enabled
+            ips.saveParameter("smtp.user", mailServerSetting.username, userId);
+            Map<String, ParameterMetaData> propMap = new DefaultParameterParser("/symmetric-console-default.properties").parse();
 
-         ParameterMetaData passwordMetaData = propMap.get("smtp.password");
-         String password = mailServerSetting.password;
-         if (passwordMetaData != null && passwordMetaData.isEncryptedType()) {
+            ParameterMetaData passwordMetaData = propMap.get("smtp.password");
+            String password = mailServerSetting.password;
+            if (passwordMetaData != null && passwordMetaData.isEncryptedType()) {
+               password = "enc:" + engine.getSecurityService().encrypt(password);
+            }
+   
             password = "enc:" + engine.getSecurityService().encrypt(password);
+            ips.saveParameter("smtp.password", password, userId);
          }
-
-
-         password = "enc:" + engine.getSecurityService().encrypt(password);
-         ips.saveParameter("smtp.password", password, userId);
 
          return 1;
   }
+
+   public String testSMTPConnection(MailServerSetting mailServerSetting) {
+      ISymmetricEngine engine = proEngineHelper.getSymmetricEngine();
+
+      TypedProperties prop = new TypedProperties();
+      prop.setProperty("smtp.host", mailServerSetting.host);
+      prop.setProperty("smtp.transport", mailServerSetting.transport);
+      prop.setProperty("smtp.port", mailServerSetting.port);
+      prop.setProperty("smtp.from", mailServerSetting.from);
+      prop.setProperty("smtp.starttls", Boolean.toString(mailServerSetting.starttls));
+      prop.setProperty("smtp.auth", Boolean.toString(mailServerSetting.user_auth));
+      if (mailServerSetting.ssl_auth) {
+         prop.setProperty("smtp.socket.factory.class", "javax.net.ssl.SSLSocketFactory");
+      }
+
+      prop.setProperty("smtp.allow.untrusted.cert", Boolean.toString(mailServerSetting.allow_untrust_cert));
+
+      if(mailServerSetting.user_auth)
+      {
+         prop.setProperty("smtp.user", mailServerSetting.username);
+         prop.setProperty("smtp.password", mailServerSetting.password);
+      }
+
+      String error = ((IMailService)engine.getExtensionService().getExtensionPoint(IMailService.class)).testTransport(prop);
+      return error;
+   }
 
 }
