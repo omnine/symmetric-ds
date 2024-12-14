@@ -17,6 +17,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.jumpmind.properties.DefaultParameterParser;
+import org.jumpmind.properties.DefaultParameterParser.ParameterMetaData;
 import org.jumpmind.symmetric.ISymmetricEngine;
 import org.jumpmind.symmetric.model.*;
 import org.jumpmind.symmetric.model.AbstractBatch.Status;
@@ -32,6 +34,7 @@ import com.jumpmind.symmetric.console.model.NodeStatus;
 
 
 import org.jumpmind.symmetric.service.IOutgoingBatchService;
+import org.jumpmind.symmetric.service.IParameterService;
 import org.jumpmind.symmetric.statistic.ChannelStats;
 
 import org.jumpmind.symmetric.web.ServletUtils;
@@ -1071,5 +1074,47 @@ public class ProAPIEndpoint {
         hillaStat.sinceDate = proStatHelper.getMinDate();
         return hillaStat;
     }
+
+
+    public int saveMailServerSetting(MailServerSetting mailServerSetting) {
+         ISymmetricEngine engine = proEngineHelper.getSymmetricEngine();
+         IParameterService ips = engine.getParameterService();
+
+
+//      String userId = this.controller.getConsoleUser().getUserId();
+//      String nodeGroupId = (String)this.e.getValue();
+//      this.d.saveParameter("ALL", nodeGroupId, "smtp.host", this.f.getValue(), userId);
+         String userId = "admin";
+         ips.saveParameter("smtp.host", mailServerSetting.host, userId);
+         ips.saveParameter("smtp.transport", mailServerSetting.transport, userId);
+         ips.saveParameter("smtp.port", mailServerSetting.port, userId);
+         ips.saveParameter("smtp.from", mailServerSetting.from, userId);
+         ips.saveParameter("smtp.starttls", mailServerSetting.starttls, userId);
+         ips.saveParameter("smtp.auth", mailServerSetting.user_auth, userId);
+
+         ips.saveParameter("smtp.allow.untrusted.cert", mailServerSetting.allow_untrust_cert, userId);
+
+         ips.saveParameter("smtp.user", mailServerSetting.username, userId);
+
+         if(mailServerSetting.ssl_auth) {
+            ips.saveParameter("smtp.socket.factory.class", "javax.net.ssl.SSLSocketFactory", userId);
+         } else {
+            ips.deleteParameter("smtp.socket.factory.class");
+         }
+
+         Map<String, ParameterMetaData> propMap = new DefaultParameterParser("/symmetric-console-default.properties").parse();
+
+         ParameterMetaData passwordMetaData = propMap.get("smtp.password");
+         String password = mailServerSetting.password;
+         if (passwordMetaData != null && passwordMetaData.isEncryptedType()) {
+            password = "enc:" + engine.getSecurityService().encrypt(password);
+         }
+
+
+         password = "enc:" + engine.getSecurityService().encrypt(password);
+         ips.saveParameter("smtp.password", password, userId);
+
+         return 1;
+  }
 
 }
