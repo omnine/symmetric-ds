@@ -173,16 +173,20 @@ export default function MailServerView() {
 
       <Form.Item label={null}>
         <Space>
-          <Button type="primary" htmlType="submit">
-            Submit
+          <Button type="primary" htmlType="submit" disabled={recipientVisible}>
+            Save
           </Button>
-          <Button onClick={() => {
+          <Button disabled={recipientVisible} onClick={() => {
             setSubmitType(1);
             form.submit();
           }}>
             Test Connection
           </Button>
           <Button onClick={() => {
+            if(recipientVisible){
+              setSubmitType(2);
+              form.submit();
+            }
             setRecipientVisible(recipientVisible?false:true);
           }}>
             {recipientVisible?"Go":"Send Test Email"}
