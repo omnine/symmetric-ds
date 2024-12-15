@@ -1,6 +1,9 @@
+import { useEffect, useState } from 'react';
 import { Button, Checkbox, Form, Input, Select, Space, message, Slider, Switch } from 'antd';
 import type { SliderSingleProps } from 'antd';
 import type { FormProps } from 'antd';
+import { ProAPIEndpoint } from 'Frontend/generated/endpoints.js';
+
 type FieldType = {
   notificationId?: string;
   targetNode?: string;
@@ -24,6 +27,31 @@ const marks: SliderSingleProps['marks'] = {
 
 export default function NotificationsView() {
   const [form] = Form.useForm();
+
+  const [typeOptions, setTypeOptions] = useState<string[]>([]);
+  const [targetNodeOptions, setTargetNodeOptions] = useState<string[]>([]);
+
+  useEffect(() => {
+    ProAPIEndpoint.getTargetNodes().then((targetNodes: (string | undefined)[] | undefined) => {
+      if (targetNodes) {
+        setTargetNodeOptions(targetNodes.filter((node): node is string => node !== undefined));
+        form.setFieldsValue({ targetNode: targetNodes[0] });
+      } else {
+        message.error('Failed to load target nodes');
+      }
+    });
+
+    ProAPIEndpoint.getNotificationTypes().then((notificationTypes: (string | undefined)[] | undefined) => {
+      if (notificationTypes) {
+        const filteredNotificationTypes = notificationTypes.filter((type): type is string => type !== undefined);
+        setTypeOptions(filteredNotificationTypes);
+        form.setFieldsValue({ type: filteredNotificationTypes[0] });
+      } else {
+        message.error('Failed to load notification types');
+      }
+    });
+
+  }, []);
 
   const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
     console.log('Success:', values);
@@ -60,15 +88,10 @@ export default function NotificationsView() {
         rules={[{ required: true, message: 'Please select Transport!' }]}
       >
         <Select
-          defaultValue="smtp"
           style={{ width: 120 }}
-          options={[
-            { value: 'smtp', label: 'smtp' },
-            { value: 'smtps', label: 'smtps' },
-          ]}
+          options={targetNodeOptions.map((value) => ({ value, label: value }))}
         />
       </Form.Item>
-
 
       <Form.Item<FieldType >
         label="Notification Type"
@@ -76,12 +99,9 @@ export default function NotificationsView() {
         rules={[{ required: true, message: 'Please select Transport!' }]}
       >
         <Select
-          defaultValue="smtp"
           style={{ width: 120 }}
-          options={[
-            { value: 'smtp', label: 'smtp' },
-            { value: 'smtps', label: 'smtps' },
-          ]}
+          options={typeOptions.map((value) => ({ value, label: value }) ) }
+          
         />
       </Form.Item>
 
