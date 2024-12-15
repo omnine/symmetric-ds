@@ -1206,4 +1206,33 @@ public class ProAPIEndpoint {
 
    }
 
+   public List<String> getNotificationTypes() {
+      ISymmetricEngine engine = proEngineHelper.getSymmetricEngine();
+
+      List<String> typeList = new ArrayList<>();
+
+      for (com.jumpmind.symmetric.notification.INotificationExtension notificationType : engine
+         .getExtensionService()
+         .getExtensionPointList(com.jumpmind.symmetric.notification.INotificationExtension.class)) {
+         typeList.add(notificationType.channel());
+      }
+
+      return typeList;
+
+   }
+
+
+   public List<String> getTargetNodes() {
+      ISymmetricEngine engine = proEngineHelper.getSymmetricEngine();
+
+      List<String> targetNodeList = new ArrayList<>();
+      targetNodeList.add(engine.getParameterService().getExternalId() + " only");
+      targetNodeList.add("ALL");
+
+      for (NodeGroup nodeGroup : engine.getConfigurationService().getNodeGroups()) {
+         targetNodeList.add(nodeGroup.getNodeGroupId());
+      }
+      return targetNodeList;
+   }   
+
 }
