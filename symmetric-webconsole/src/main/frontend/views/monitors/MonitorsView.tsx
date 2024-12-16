@@ -56,6 +56,10 @@ export default function MonitorsView() {
   return (
     <div className="flex flex-col h-full items-center justify-center p-l text-center box-border">
       {drawMonitors()}
+      <div>
+      A monitor watches some part of the system for a problem, checking to see if the monitored value exceeds a threshold. 
+      (To be notified immediately of new monitor events, configure a notification.)
+      </div>
     </div>
   );
 }

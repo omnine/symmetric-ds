@@ -1,8 +1,17 @@
+/*
+[SymmetricDS Notifications](https://medium.com/data-weekly/symmetricds-notifications-3a9044a4c0a)
+The notification rows are tied to the monitors by the severity_level specified on the monitors. 
+For example, if you set up a notification for a severity level of INFO (100), 
+then it will send emails for all monitors that are configured with the severity level of 100 
+or above. Similarly, notifications with a severity level of ‘SEVERE’ (300) will send emails 
+for all monitors with a severity level of 300 or above.
+*/
 import { useEffect, useState } from 'react';
-import { Button, Checkbox, Form, Input, Select, Space, message, Slider, Switch } from 'antd';
+import { Button, Checkbox, Form, Input, Select, Space, message, Slider, Switch, Table, Drawer } from 'antd';
 import type { SliderSingleProps } from 'antd';
 import type { FormProps } from 'antd';
 import { ProAPIEndpoint } from 'Frontend/generated/endpoints.js';
+import HillaNotification from 'Frontend/generated/com/jumpmind/symmetric/console/ui/data/HillaNotification';
 
 type FieldType = {
   notificationId?: string;
@@ -27,11 +36,20 @@ const marks: SliderSingleProps['marks'] = {
 
 export default function NotificationsView() {
   const [form] = Form.useForm();
+  const [notifications, setNotifications] = useState<(HillaNotification | undefined)[]>([]);
 
   const [typeOptions, setTypeOptions] = useState<string[]>([]);
   const [targetNodeOptions, setTargetNodeOptions] = useState<string[]>([]);
 
   useEffect(() => {
+    ProAPIEndpoint.getNotifications().then((notifications: (HillaNotification | undefined)[] | undefined) => {
+      if (notifications) {
+        setNotifications(notifications);
+      } else {
+        message.error('Failed to load notifications');
+      }
+    });
+
     ProAPIEndpoint.getTargetNodes().then((targetNodes: (string | undefined)[] | undefined) => {
       if (targetNodes) {
         setTargetNodeOptions(targetNodes.filter((node): node is string => node !== undefined));
@@ -61,9 +79,71 @@ export default function NotificationsView() {
     console.log('Failed:', errorInfo);
   };
 
+  const columns = [
+    {
+      title: 'Notification Id',
+      dataIndex: 'notificationId',
+      key: 'notificationId',
+    },
+    {
+      title: 'Node GroupId ID',
+      dataIndex: 'nodeGroupId',
+      key: 'nodeGroupId',
+    },
+    {
+      title: 'External ID',
+      dataIndex: 'externalId',
+      key: 'externalId',
+    },
+    
+    {
+      title: 'Severity Level',
+      dataIndex: 'severityLevel',
+      key: 'severityLevel',
+    },
+    {
+      title: 'Type',
+      dataIndex: 'type',
+      key: 'type',
+    },
+    {
+      title: 'Expression',
+      dataIndex: 'expression',
+      key: 'expression',
+    },
+    {
+      title: 'Enabled',
+      dataIndex: 'enabled',
+      key: 'enabled',
+    },    
+  ];
+
+  const [open, setOpen] = useState(false);
+  const onClose = () => {
+    setOpen(false);
+  };
+
   return (
     <>
+      <Table<HillaNotification> dataSource={notifications.filter((notification): notification is HillaNotification => notification !== undefined)} columns={columns} />
+    
+      <Button type="primary" onClick={()=>setOpen(true)}>Create</Button>
 
+      <Drawer
+        title="Create a new notification"
+        placement="right"
+        size="large"
+        onClose={onClose}
+        open={open}
+        extra={
+          <Space>
+            <Button onClick={onClose}>Cancel</Button>
+            <Button type="primary" onClick={onClose}>
+              OK
+            </Button>
+          </Space>
+        }
+      >
       <Form form={form}
       name="basic"
       labelCol={{ span: 8 }}
@@ -73,7 +153,7 @@ export default function NotificationsView() {
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
       autoComplete="off"
-    >
+      >
       <Form.Item<FieldType >
         label="Notification Id"
         name="notificationId"
@@ -119,7 +199,7 @@ export default function NotificationsView() {
       <Form.Item<FieldType > name="enabled"  label={null}>
         <Switch checkedChildren="Enabled" unCheckedChildren="Disabled" defaultChecked />
       </Form.Item>
-     
+
 
       <Form.Item label={null}>
         <Space>
@@ -129,7 +209,16 @@ export default function NotificationsView() {
 
         </Space>
       </Form.Item>
-    </Form>  
+      </Form>
+      </Drawer>
+
+
+
+      <div>
+      A notification sends a message to the user when a monitor event records a system problem. 
+      First configure a monitor to watch the system and record events with a specific severity level. 
+      Then, configure a notification to match the severity level and write to the log or send an email.
+      </div>
     </>
 
   );

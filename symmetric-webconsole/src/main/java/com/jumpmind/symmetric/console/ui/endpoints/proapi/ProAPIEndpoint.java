@@ -35,6 +35,7 @@ import org.jumpmind.symmetric.service.INodeService;
 import com.vaadin.flow.server.VaadinServlet;
 
 import com.jumpmind.symmetric.console.model.NodeStatus;
+import com.jumpmind.symmetric.console.model.Notification;
 
 
 import org.jumpmind.symmetric.service.IOutgoingBatchService;
@@ -1234,5 +1235,27 @@ public class ProAPIEndpoint {
       }
       return targetNodeList;
    }   
+
+   public List<HillaNotification> getNotifications() {
+      ISymmetricEngine engine = proEngineHelper.getSymmetricEngine();
+      IMonitorService monitorService = engine.getExtensionService().getExtensionPoint(IMonitorService.class);
+      List<Notification> notifications = monitorService.getNotifications();
+
+      //we cannot use Notification class for the frontend, so we need to convert it to HillaNotification
+      List<HillaNotification> hillaNotifications = new ArrayList<>();
+      for (Notification notification : notifications) {
+         HillaNotification hillaNotification = new HillaNotification();
+         hillaNotification.notificationId = notification.getNotificationId();
+         hillaNotification.nodeGroupId = notification.getNodeGroupId();
+         hillaNotification.externalId = notification.getExternalId();
+         hillaNotification.severityLevel = notification.getSeverityLevel();
+         hillaNotification.type = notification.getType();
+         hillaNotification.expression = notification.getExpression();
+         hillaNotification.enabled = notification.isEnabled();
+         hillaNotifications.add(hillaNotification);
+      }
+
+      return hillaNotifications;
+   }      
 
 }
