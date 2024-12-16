@@ -12,15 +12,8 @@ import type { SliderSingleProps } from 'antd';
 import type { FormProps } from 'antd';
 import { ProAPIEndpoint } from 'Frontend/generated/endpoints.js';
 import HillaNotification from 'Frontend/generated/com/jumpmind/symmetric/console/ui/data/HillaNotification';
-
-type FieldType = {
-  notificationId?: string;
-  targetNode?: string;
-  type?: string;
-  severityLevel?: number;
-  enabled?: boolean;
-  email?: string;
-};
+import '@vaadin/icons';
+import { Icon } from '@vaadin/react-components/Icon.js';
 
 const marks: SliderSingleProps['marks'] = {
   0: 'OK',
@@ -71,11 +64,15 @@ export default function NotificationsView() {
 
   }, []);
 
-  const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
+  const onFinish: FormProps<HillaNotification>['onFinish'] = (values) => {
     console.log('Success:', values);
+
+    ProAPIEndpoint.saveNotification(values);
+
+    setOpen(false);
   };
   
-  const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
+  const onFinishFailed: FormProps<HillaNotification>['onFinishFailed'] = (errorInfo) => {
     console.log('Failed:', errorInfo);
   };
 
@@ -115,6 +112,12 @@ export default function NotificationsView() {
       title: 'Enabled',
       dataIndex: 'enabled',
       key: 'enabled',
+      render: (_: any, record: HillaNotification) => {
+        if (record.enabled) {
+          return (<Icon icon="vaadin:play" />);
+        }
+        return <Icon icon="vaadin:stop" />;
+      },      
     },    
   ];
 
@@ -125,9 +128,16 @@ export default function NotificationsView() {
 
   return (
     <>
-      <Table<HillaNotification> dataSource={notifications.filter((notification): notification is HillaNotification => notification !== undefined)} columns={columns} />
-    
-      <Button type="primary" onClick={()=>setOpen(true)}>Create</Button>
+       <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
+        <Table<HillaNotification> dataSource={notifications.filter((notification): notification is HillaNotification => notification !== undefined)} columns={columns} />
+          <Button type="primary" onClick={()=>setOpen(true)}>Create</Button>
+          <div>
+            A notification sends a message to the user when a monitor event records a system problem. 
+            First configure a monitor to watch the system and record events with a specific severity level. 
+            Then, configure a notification to match the severity level and write to the log or send an email.
+          </div>
+       </Space>
+
 
       <Drawer
         title="Create a new notification"
@@ -154,7 +164,7 @@ export default function NotificationsView() {
       onFinishFailed={onFinishFailed}
       autoComplete="off"
       >
-      <Form.Item<FieldType >
+      <Form.Item<HillaNotification >
         label="Notification Id"
         name="notificationId"
         rules={[{ required: true, message: 'Please input smtp port!' }]}
@@ -162,9 +172,9 @@ export default function NotificationsView() {
         <Input />
       </Form.Item>
 
-      <Form.Item<FieldType >
+      <Form.Item<HillaNotification >
         label="Target Nodes"
-        name="targetNode"
+        name="nodeGroupId"
         rules={[{ required: true, message: 'Please select Transport!' }]}
       >
         <Select
@@ -173,7 +183,7 @@ export default function NotificationsView() {
         />
       </Form.Item>
 
-      <Form.Item<FieldType >
+      <Form.Item<HillaNotification >
         label="Notification Type"
         name="type"
         rules={[{ required: true, message: 'Please select Transport!' }]}
@@ -185,18 +195,18 @@ export default function NotificationsView() {
         />
       </Form.Item>
 
-      <Form.Item<FieldType >
+      <Form.Item<HillaNotification >
           label="Email Address"
-          name="email"
+          name="expression"
           rules={[{ required: true, message: 'Please input the connection username!' }]}
         >
           <Input />
       </Form.Item> 
-      <Form.Item<FieldType > name="severityLevel" label="Severity Level">
+      <Form.Item<HillaNotification > name="severityLevel" label="Severity Level">
         <Slider defaultValue={0} max={300} marks={marks}/>
       </Form.Item>
 
-      <Form.Item<FieldType > name="enabled"  label={null}>
+      <Form.Item<HillaNotification > name="enabled"  label={null}>
         <Switch checkedChildren="Enabled" unCheckedChildren="Disabled" defaultChecked />
       </Form.Item>
 
@@ -211,14 +221,6 @@ export default function NotificationsView() {
       </Form.Item>
       </Form>
       </Drawer>
-
-
-
-      <div>
-      A notification sends a message to the user when a monitor event records a system problem. 
-      First configure a monitor to watch the system and record events with a specific severity level. 
-      Then, configure a notification to match the severity level and write to the log or send an email.
-      </div>
     </>
 
   );

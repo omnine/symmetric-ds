@@ -1256,6 +1256,21 @@ public class ProAPIEndpoint {
       }
 
       return hillaNotifications;
-   }      
+   }
+   
+   public void saveNotification(HillaNotification hillaNotification) {
+      ISymmetricEngine engine = proEngineHelper.getSymmetricEngine();
+      IMonitorService monitorService = engine.getExtensionService().getExtensionPoint(IMonitorService.class);
+      Notification notification = new Notification();
+      notification.setNotificationId(hillaNotification.notificationId);
+      notification.setNodeGroupId(hillaNotification.nodeGroupId);
+//      engine.getParameterService().getExternalId();
+      notification.setExternalId(hillaNotification.nodeGroupId);
+      notification.setSeverityLevel(hillaNotification.severityLevel);
+      notification.setType(hillaNotification.type);
+      notification.setExpression(hillaNotification.expression);
+      notification.setEnabled(hillaNotification.enabled);
+      monitorService.saveNotification(notification);
+   }
 
 }
