@@ -7,13 +7,14 @@ import RecentActivity from 'Frontend/generated/com/jumpmind/symmetric/console/mo
 
 import '@vaadin/icons';
 import { Icon } from '@vaadin/react-components/Icon.js';
-
+import { i18n } from "@lingui/core";
 
 import { Circles } from 'react-loader-spinner'
 import { Table } from 'antd';
 
 
 export default function RAView() {
+  i18n.activate("en");  //todo should move to root
   const [recentActivities, setRecentActivities] = useState<RecentActivity[] | null>(null);
 
 
@@ -57,6 +58,10 @@ export default function RAView() {
       title: 'When',
       dataIndex: 'endTime',
       key: 'endTime',
+      render:(value: string) => {
+        const d = new Date(value);
+        return i18n.date(d, { dateStyle: "medium", timeStyle: "medium" });
+      }
     },        
   ];
 

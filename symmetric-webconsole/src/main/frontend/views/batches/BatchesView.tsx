@@ -103,8 +103,8 @@ export default function BatchesView() {
 		  <h4>Outgoing Batches</h4>
       <h5>{outgoingSummary}</h5>
       <Table<HillaBatch> dataSource={outgoingBatches.filter(batch => batch !== undefined) as HillaBatch[]} columns={outgoingColumns} />
-		  <h3>Incoming Batches</h3>
-      <h4>{incomingSummary}</h4>
+		  <h4>Incoming Batches</h4>
+      <h5>{incomingSummary}</h5>
       <Table<HillaBatch> dataSource={incomingBatches.filter(batch => batch !== undefined) as HillaBatch[]} columns={outgoingColumns} />     
     </>
   );
