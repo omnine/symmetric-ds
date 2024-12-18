@@ -703,10 +703,12 @@ public class ProAPIEndpoint {
         List<Status> statusQuery = new ArrayList<>();
          List<Long> loads = new ArrayList<>(0);
          List<Status> statusErrors = new ArrayList<>();
+         //Only show batches with status of QUEUED, SENDING, LOADING
          statusQuery.add(Status.QY);
          statusQuery.add(Status.SE);
          statusQuery.add(Status.LD);
 
+         //this is to check the table sym_outgoing_batch.
          statusErrors.add(Status.ER);
 
         List<OutgoingBatch> inProcessBatchList = service.listOutgoingBatches(nodeIds, channels, statusQuery, loads, -1L, null, -1, true);

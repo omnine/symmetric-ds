@@ -6,7 +6,7 @@ import { Icon } from '@vaadin/react-components/Icon.js';
 
 import { ProgressBar } from '@vaadin/react-components/ProgressBar.js';
 import HillaBatch from 'Frontend/generated/com/jumpmind/symmetric/console/ui/data/HillaBatch';
-import { Table } from 'antd';
+import { Table, Divider } from 'antd';
 
 export default function BatchesView() {
   const [outgoingSummary, setOutgoingSummary] = useState<string>("");
@@ -102,9 +102,12 @@ export default function BatchesView() {
     <>
 		  <h4>Outgoing Batches</h4>
       <h5>{outgoingSummary}</h5>
+      <div>The following table only shows the batches which are querying | sending | loading | failed.</div>
       <Table<HillaBatch> dataSource={outgoingBatches.filter(batch => batch !== undefined) as HillaBatch[]} columns={outgoingColumns} />
+      <Divider />
 		  <h4>Incoming Batches</h4>
       <h5>{incomingSummary}</h5>
+      <div>The following table only shows the batches which are querying | sending | loading | failed.</div>
       <Table<HillaBatch> dataSource={incomingBatches.filter(batch => batch !== undefined) as HillaBatch[]} columns={outgoingColumns} />     
     </>
   );
