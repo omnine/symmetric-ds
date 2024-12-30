@@ -148,7 +148,7 @@ public class ProAPIEndpoint {
    
 
     @Nonnull
-    public ArrayList<NodeStatus> listNodes() {
+    public ArrayList<HillNodeStatus> listNodes() {
 
         ISymmetricEngine engine = proEngineHelper.getSymmetricEngine();
 
@@ -260,7 +260,49 @@ public class ProAPIEndpoint {
         List<Router> routers = engine.getTriggerRouterService().getRouters();
         // return vnNodes;
 
-        return new ArrayList<>(mapNode2Status.values());
+      String nodeOnEngine = engine.getNodeId();
+
+        ArrayList<HillNodeStatus> hillNodeStatuses = new ArrayList<>();
+      for (NodeStatus ns : mapNode2Status.values()) {
+            HillNodeStatus hillNodeStatus = new HillNodeStatus();
+            hillNodeStatus.nodeId = ns.getNodeId();
+            hillNodeStatus.minMaxBatchToSend = ns.getMinMaxBatchToSend();
+            hillNodeStatus.minMaxDataToRoute = ns.getMinMaxDataToRoute();
+
+            if (ns.getNodeId() != null && ns.getNodeId().equals(nodeOnEngine)) {
+               hillNodeStatus.lastIncomingTime = "N/A";
+               hillNodeStatus.lastOutgoingTime = "N/A";
+            } else {
+               if (ns.getLastIncomingTime() == null) {
+                  hillNodeStatus.lastIncomingTime = "-";
+               } else {
+                  hillNodeStatus.lastIncomingTime = ns.getLastIncomingTime().toString();
+               }
+
+               if (ns.getLastOutgoingTime() == null) {
+                  hillNodeStatus.lastOutgoingTime = "-";
+               } else {
+                  hillNodeStatus.lastOutgoingTime = ns.getLastOutgoingTime().toString();
+               }  
+
+
+            }
+
+            hillNodeStatus.incomingDataCountRemaining = ns.getIncomingDataCountRemaining();
+            hillNodeStatus.outgoingDataCountRemaining = ns.getOutgoingDataCountRemaining();
+            hillNodeStatus.incomingBatchCountRemaining = ns.getIncomingBatchCountRemaining();
+            hillNodeStatus.outgoingBatchCountRemaining = ns.getOutgoingBatchCountRemaining();
+            hillNodeStatus.outgoingErrorFlag = ns.isOutgoingErrorFlag();
+            hillNodeStatus.incomingErrorFlag = ns.isIncomingErrorFlag();
+            hillNodeStatus.outgoingProcessingErrorFlag = ns.isOutgoingProcessingErrorFlag();
+            hillNodeStatus.incomingProcessingErrorFlag = ns.isIncomingProcessingErrorFlag();
+            hillNodeStatus.batchesInErrorWithAnyNode = ns.isBatchesInErrorWithAnyNode();
+            hillNodeStatus.status = ns.getStatus();
+            hillNodeStatus.averageRowsPerMilli = ns.getAverageRowsPerMilli();
+            hillNodeStatuses.add(hillNodeStatus);
+      }
+
+      return hillNodeStatuses;
     }
 
     @Nonnull
