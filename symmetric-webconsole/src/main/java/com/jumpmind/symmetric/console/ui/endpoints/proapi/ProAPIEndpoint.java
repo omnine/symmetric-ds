@@ -148,7 +148,7 @@ public class ProAPIEndpoint {
    
 
     @Nonnull
-    public ArrayList<HillNodeStatus> listNodes() {
+    public ArrayList<HillaNodeStatus> listNodes() {
 
         ISymmetricEngine engine = proEngineHelper.getSymmetricEngine();
 
@@ -262,9 +262,9 @@ public class ProAPIEndpoint {
 
       String nodeOnEngine = engine.getNodeId();
 
-        ArrayList<HillNodeStatus> hillNodeStatuses = new ArrayList<>();
+        ArrayList<HillaNodeStatus> hillNodeStatuses = new ArrayList<>();
       for (NodeStatus ns : mapNode2Status.values()) {
-            HillNodeStatus hillNodeStatus = new HillNodeStatus();
+            HillaNodeStatus hillNodeStatus = new HillaNodeStatus();
             hillNodeStatus.nodeId = ns.getNodeId();
             hillNodeStatus.minMaxBatchToSend = ns.getMinMaxBatchToSend();
             hillNodeStatus.minMaxDataToRoute = ns.getMinMaxDataToRoute();

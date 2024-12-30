@@ -7,11 +7,11 @@ import '@vaadin/icons';
 import { Icon } from '@vaadin/react-components/Icon.js';
 
 import HealthInfo from 'Frontend/generated/com/jumpmind/symmetric/console/ui/data/HealthInfo';
-import HillNodeStatus from 'Frontend/generated/com/jumpmind/symmetric/console/ui/data/HillNodeStatus';
+import HillaNodeStatus from 'Frontend/generated/com/jumpmind/symmetric/console/ui/data/HillaNodeStatus';
 
 export default function NodesView() {
   const [healthInfo, setHealthInfo] = useState<HealthInfo | null>(null);
-  const [nodes, setNodes] = useState<(HillNodeStatus | undefined)[]>([]);
+  const [nodes, setNodes] = useState<(HillaNodeStatus | undefined)[]>([]);
   useEffect(() => {
     ProAPIEndpoint.checkHealth().then(healthInfo => setHealthInfo(healthInfo));
     ProAPIEndpoint.listNodes().then(nodes => setNodes(nodes));
@@ -50,7 +50,7 @@ export default function NodesView() {
           title: 'Rows',
           dataIndex: 'outgoingDataCountRemaining',
           key: 'outgoingDataCountRemaining',
-          render: (_: any, record: HillNodeStatus) => {
+          render: (_: any, record: HillaNodeStatus) => {
             if (healthInfo && record.nodeId === healthInfo.engineNodeId) {
               return "N/A";
             }
@@ -62,7 +62,7 @@ export default function NodesView() {
           title: 'Batches',
           dataIndex: 'outgoingBatchCountRemaining',
           key: 'outgoingBatchCountRemaining',
-          render: (_: any, record: HillNodeStatus) => {
+          render: (_: any, record: HillaNodeStatus) => {
             if (healthInfo && record.nodeId === healthInfo.engineNodeId) {
               return "N/A";
             }
@@ -103,7 +103,7 @@ export default function NodesView() {
 
   return (
     <>
-      <Table<HillNodeStatus> dataSource={nodes.filter((node): node is HillNodeStatus => node !== undefined)} columns={columns} />;
+      <Table<HillaNodeStatus> dataSource={nodes.filter((node): node is HillaNodeStatus => node !== undefined)} columns={columns} />;
     </>
   );
 }

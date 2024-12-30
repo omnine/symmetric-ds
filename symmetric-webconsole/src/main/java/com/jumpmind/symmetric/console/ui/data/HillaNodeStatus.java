@@ -1,6 +1,6 @@
 package com.jumpmind.symmetric.console.ui.data;
 
-public class HillNodeStatus {
+public class HillaNodeStatus {
     public String nodeId;
     public int minMaxBatchToSend;
     public int minMaxDataToRoute;
