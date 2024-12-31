@@ -5,11 +5,14 @@ import { useState, useEffect } from 'react';
 import { Table, Tooltip } from "antd";
 import '@vaadin/icons';
 import { Icon } from '@vaadin/react-components/Icon.js';
+import { i18n } from "@lingui/core";
 
 import HealthInfo from 'Frontend/generated/com/jumpmind/symmetric/console/ui/data/HealthInfo';
 import HillaNodeStatus from 'Frontend/generated/com/jumpmind/symmetric/console/ui/data/HillaNodeStatus';
 
 export default function NodesView() {
+  i18n.activate("en");  //todo should move to root
+
   const [healthInfo, setHealthInfo] = useState<HealthInfo | null>(null);
   const [nodes, setNodes] = useState<(HillaNodeStatus | undefined)[]>([]);
   useEffect(() => {
@@ -29,12 +32,12 @@ export default function NodesView() {
       key: 'status',
       render: (text: string) => {
         if (text === '1') {
-          return (<Tooltip title="warning">
+          return (<Tooltip title="Warning">
             <Icon icon="vaadin:warning" />
           </Tooltip>);
         }
         else if (text === '4') {
-          return   (<Tooltip title="OK">
+          return   (<Tooltip title="Good">
             <Icon icon="vaadin:check" />
           </Tooltip>);
         }
@@ -73,6 +76,16 @@ export default function NodesView() {
           title: 'Last',
           dataIndex: 'lastOutgoingTime',
           key: 'lastOutgoingTime',
+          render: (text: string) => {
+            if ((text === 'N/A') || (text === '-')) {
+              return text;
+            }
+            else{
+              const d = new Date(text);
+              return i18n.date(d, { dateStyle: "medium", timeStyle: "medium" });
+            }
+
+          }          
         },                
       ],
     },
@@ -93,6 +106,16 @@ export default function NodesView() {
           title: 'Last',
           dataIndex: 'lastIncomingTime',
           key: 'lastIncomingTime',
+          render: (text: string) => {
+            if ((text === 'N/A') || (text === '-')) {
+              return text;
+            }
+            else{
+              const d = new Date(text);
+              return i18n.date(d, { dateStyle: "medium", timeStyle: "medium" });
+            }
+
+          }           
         },
       ],
 
@@ -103,7 +126,10 @@ export default function NodesView() {
 
   return (
     <>
-      <Table<HillaNodeStatus> dataSource={nodes.filter((node): node is HillaNodeStatus => node !== undefined)} columns={columns} />;
+      <Table<HillaNodeStatus> dataSource={nodes.filter((node): node is HillaNodeStatus => node !== undefined)} columns={columns} />
+      <div>
+        Note: Dash "-" means no data. N/A means not applicable.
+      </div> 
     </>
   );
 }
