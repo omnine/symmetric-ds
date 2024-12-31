@@ -20,7 +20,7 @@ export default function ThroughputView() {
   };
 
   const handleChange = (value: string) => {
-    console.log(`selected ${value}`);
+    // console.log(`selected ${value}`);
     if (value === 'day') {
       setIsDay(true);
     } else {
@@ -30,7 +30,7 @@ export default function ThroughputView() {
 
 
   const showLocalTime = (value: string) => {
-    console.log(`selected ${value}`);
+    // console.log(`selected ${value}`);
     const d = new Date(value);
     return i18n.date(d, { dateStyle: "medium", timeStyle: "medium" });
   };  
