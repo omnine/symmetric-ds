@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react';
 import { ResponsiveContainer, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip, Area } from 'recharts';
 
 import { Flex, Input, Select } from 'antd';
-import { i18n } from "@lingui/core";
+import { useLingui } from "@lingui/react"
 
 export default function ThroughputView() {
-  i18n.activate("en");
+  const { i18n } = useLingui();
 
   const [period, setPeriod] = useState(1);
   const [isDay, setIsDay] = useState(false);

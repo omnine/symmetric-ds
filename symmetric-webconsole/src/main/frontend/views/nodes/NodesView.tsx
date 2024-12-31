@@ -5,13 +5,13 @@ import { useState, useEffect } from 'react';
 import { Table, Tooltip } from "antd";
 import '@vaadin/icons';
 import { Icon } from '@vaadin/react-components/Icon.js';
-import { i18n } from "@lingui/core";
+import { useLingui } from "@lingui/react"
 
 import HealthInfo from 'Frontend/generated/com/jumpmind/symmetric/console/ui/data/HealthInfo';
 import HillaNodeStatus from 'Frontend/generated/com/jumpmind/symmetric/console/ui/data/HillaNodeStatus';
 
 export default function NodesView() {
-  i18n.activate("en");  //todo should move to root
+  const { i18n } = useLingui();
 
   const [healthInfo, setHealthInfo] = useState<HealthInfo | null>(null);
   const [nodes, setNodes] = useState<(HillaNodeStatus | undefined)[]>([]);

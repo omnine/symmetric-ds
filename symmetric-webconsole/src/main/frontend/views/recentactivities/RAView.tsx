@@ -7,14 +7,13 @@ import RecentActivity from 'Frontend/generated/com/jumpmind/symmetric/console/mo
 
 import '@vaadin/icons';
 import { Icon } from '@vaadin/react-components/Icon.js';
-import { i18n } from "@lingui/core";
 
 import { Circles } from 'react-loader-spinner'
 import { Table } from 'antd';
-
+import { useLingui } from "@lingui/react"
 
 export default function RAView() {
-  i18n.activate("en");  //todo should move to root
+  const { i18n } = useLingui();
   const [recentActivities, setRecentActivities] = useState<RecentActivity[] | null>(null);
 
 
