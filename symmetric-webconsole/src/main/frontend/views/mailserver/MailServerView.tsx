@@ -25,7 +25,7 @@ export default function MailServerView() {
 
   
   const onFinish: FormProps<MailServerSetting>['onFinish'] = (values) => {
-    console.log('Success:', values);
+    // console.log('Success:', values);
     if(submitType === 1) {
       setSubmitType(0);
       ProAPIEndpoint.testSMTPConnection(values).then((result: string | undefined) => {
@@ -61,7 +61,7 @@ export default function MailServerView() {
   };
   
   const onFinishFailed: FormProps<MailServerSetting>['onFinishFailed'] = (errorInfo) => {
-    console.log('Failed:', errorInfo);
+    // console.log('Failed:', errorInfo);
   };
   
   const doSend = () => {

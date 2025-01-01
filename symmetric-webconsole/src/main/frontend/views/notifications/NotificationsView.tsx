@@ -65,7 +65,7 @@ export default function NotificationsView() {
   }, []);
 
   const onFinish: FormProps<HillaNotification>['onFinish'] = (values) => {
-    console.log('Success:', values);
+    // console.log('Success:', values);
 
     ProAPIEndpoint.saveNotification(values);
 
@@ -73,7 +73,7 @@ export default function NotificationsView() {
   };
   
   const onFinishFailed: FormProps<HillaNotification>['onFinishFailed'] = (errorInfo) => {
-    console.log('Failed:', errorInfo);
+    // console.log('Failed:', errorInfo);
   };
 
   const columns = [
